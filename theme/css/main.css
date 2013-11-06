@@ -330,6 +330,8 @@ img.left, figure.left {float: left; margin: 0 2em 2em 0;}
 		.social a[href*='twitter.com'] {background-image: url('../images/icons/twitter.png');}
 		.social a[href*='vimeo.com'] {background-image: url('../images/icons/vimeo.png');}
 		.social a[href*='youtube.com'] {background-image: url('../images/icons/youtube.png');}
+		.social a[href*='weibo.com'] {background-image: url('../images/icons/sinaweibo.png');}
+		.social a[href*='zhihu.com'] {background-image: url('../images/icons/zhihu.png');}
 
 /*
 	About
