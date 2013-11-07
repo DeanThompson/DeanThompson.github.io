@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>python字典切片</title>
+        <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/DeanThompson">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
+                <nav><ul>
+                    <li><a href="http://deanthompson.github.io/category/linux.html">linux</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/python.html">python</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2012/12/01/python-dict-slice/" rel="bookmark"
+           title="Permalink to python字典切片">python字典切片</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2012-12-01T15:09:00">
+                2012-12-01
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/dict.html">dict</a></p>
+</footer><!-- /.post-info -->      <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
+<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
+<div class="highlight"><pre><span class="n">def</span> <span class="n">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span><span class="o">:</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="p">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">dict_slice</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="n">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="o">:</span><span class="n">end</span><span class="p">]</span><span class="o">:</span>
+        <span class="n">dict_slice</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dict_slice</span>
+</pre></div>
+
+
+<hr />
+<p><strong>EDIT 2013-10-26 01:13</strong></p>
+<p>补充一个一行的版本（one-liner）:</p>
+<div class="highlight"><pre><span class="n">dict_slice</span> <span class="o">=</span> <span class="n">lambda</span> <span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">:</span> <span class="n">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="n">in</span> <span class="n">adict</span><span class="p">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="o">:</span><span class="n">end</span><span class="p">])</span>
+</pre></div>
+
+
+<p>这行代码主要是用了 <code>lambda</code> 来创建一个匿名函数，再用 built-in 函数 <code>dict()</code> 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 <code>dict()</code> 函数：</p>
+<div class="highlight"><pre><span class="n">dict_slice</span> <span class="o">=</span> <span class="n">lambda</span> <span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">:</span> <span class="p">{</span> <span class="n">k</span><span class="o">:</span><span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="n">in</span> <span class="n">adict</span><span class="p">.</span><span class="n">keys</span><span class="p">()[</span><span class="n">start</span><span class="o">:</span><span class="n">end</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>这个看起来和 list comprehension 就很像了。非常优雅，且节省空间 ：）</p>
+<hr />
+<p>简单验证：</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{}.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span>
+<span class="p">{</span><span class="mi">0</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="o">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span> <span class="o">=</span> <span class="n">dict_slice</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span>
+<span class="p">{</span><span class="mi">3</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="o">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span> <span class="o">=</span> <span class="n">dict_slice</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span>
+<span class="p">{</span><span class="mi">4</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="o">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span> <span class="o">=</span> <span class="n">dict_slice</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">slice</span>
+<span class="p">{</span><span class="mi">5</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="o">:</span> <span class="mi">5</span><span class="p">}</span>
+</pre></div>
+
+
+<p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p>
+<hr />
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "posts/2012/12/01/python-dict-slice/";
+        var disqus_url = "http://deanthompson.github.io/posts/2012/12/01/python-dict-slice/";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="http://flask.pocoo.org/">Flask</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
+                            <li><a href="https://github.com/DeanThompson">Github</a></li>
+                            <li><a href="http://www.douban.com/people/Touchthesky/">豆瓣</a></li>
+                            <li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-45384257-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'liyangliang';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>
