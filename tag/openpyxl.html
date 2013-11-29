@@ -17,14 +17,14 @@
         <header id="banner" class="body">
                 <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
                 <nav><ul>
-                    <li><a href="http://deanthompson.github.io/category/linux.html">linux</a></li>
-                    <li><a href="http://deanthompson.github.io/category/python.html">python</a></li>
+                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
+                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2013/02/25/using-openpyxl-to-read-and-write-xlsx-files/">用 openpyxl 处理 xlsx 文件</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">用 openpyxl 处理 xlsx 文件</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2013-02-25T16:39:00">
                 2013-02-25
@@ -33,7 +33,7 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a></p>
 </footer><!-- /.post-info --><p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
@@ -44,52 +44,52 @@
 </blockquote>
 <h1>2. 读</h1>
 <p>用openpyxl读一个xlsx文件很简单：</p>
-<div class="highlight"><pre><span class="n">from</span> <span class="n">openpyxl</span> <span class="n">import</span> <span class="n">load_workbook</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">load_workbook</span>
 
-<span class="n">wb</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">r</span><span class="err">&#39;</span><span class="n">existing_file</span><span class="p">.</span><span class="n">xlsx</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="n">wb</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">r&#39;existing_file.xlsx&#39;</span><span class="p">)</span>
 
-<span class="n">sheets</span> <span class="o">=</span> <span class="n">wb</span><span class="p">.</span><span class="n">get_sheet_names</span><span class="p">()</span>   <span class="err">#</span> <span class="err">获取所有表格</span><span class="p">(</span><span class="n">worksheet</span><span class="p">)</span><span class="err">的名字</span>
-<span class="n">sheet0</span> <span class="o">=</span> <span class="n">sheets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="err">#</span> <span class="err">第一个表格的名称</span>
-<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="p">.</span><span class="n">get_sheet_by_name</span><span class="p">(</span><span class="err">&#39;</span><span class="n">sheet_name</span><span class="err">&#39;</span><span class="p">)</span> <span class="err">#</span> <span class="err">获取特定的</span> <span class="n">worksheet</span>
+<span class="n">sheets</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_names</span><span class="p">()</span>   <span class="c"># 获取所有表格(worksheet)的名字</span>
+<span class="n">sheet0</span> <span class="o">=</span> <span class="n">sheets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># 第一个表格的名称</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_by_name</span><span class="p">(</span><span class="s">&#39;sheet_name&#39;</span><span class="p">)</span> <span class="c"># 获取特定的 worksheet</span>
 
-<span class="cp"># 获取表格所有行和列，两者都是可迭代的</span>
-<span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="p">.</span><span class="n">rows</span>
-<span class="n">columns</span> <span class="o">=</span> <span class="n">ws</span><span class="p">.</span><span class="n">columns</span>
+<span class="c"># 获取表格所有行和列，两者都是可迭代的</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">rows</span>
+<span class="n">columns</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">columns</span>
 
-<span class="cp"># 行迭代</span>
+<span class="c"># 行迭代</span>
 <span class="n">content</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">row</span> <span class="n">in</span> <span class="n">rows</span><span class="o">:</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="p">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">col</span> <span class="n">in</span> <span class="n">row</span><span class="p">]</span>
-    <span class="n">content</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+    <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
-<span class="cp"># 通过坐标读取值</span>
-<span class="n">print</span> <span class="n">ws</span><span class="p">.</span><span class="n">cell</span><span class="p">(</span><span class="err">&#39;</span><span class="n">B12</span><span class="err">&#39;</span><span class="p">).</span><span class="n">value</span>    <span class="err">#</span> <span class="n">B</span> <span class="err">表示列，</span><span class="mi">12</span> <span class="err">表示行</span>
-<span class="n">print</span> <span class="n">ws</span><span class="p">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">).</span><span class="n">value</span>
+<span class="c"># 通过坐标读取值</span>
+<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="s">&#39;B12&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>    <span class="c"># B 表示列，12 表示行</span>
+<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 </pre></div>
 
 
 <p>当调用 <code>get_sheet_by_name('sheet_name')</code> 方法获取表格时，如果名字为 <code>sheet_name</code> 的表格不存在，不会报错或抛出异常，而只是返回 <code>None</code>.</p>
 <h1>3. 写</h1>
-<div class="highlight"><pre><span class="n">from</span> <span class="n">openpyxl</span> <span class="n">import</span> <span class="n">Workbook</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span>
 
-<span class="cp"># 在内存中创建一个workbook对象，而且会至少创建一个 worksheet</span>
+<span class="c"># 在内存中创建一个workbook对象，而且会至少创建一个 worksheet</span>
 <span class="n">wb</span> <span class="o">=</span> <span class="n">Workbook</span><span class="p">()</span>
 
-<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="p">.</span><span class="n">get_active_sheet</span><span class="p">()</span>
-<span class="n">print</span> <span class="n">ws</span><span class="p">.</span><span class="n">title</span>
-<span class="n">ws</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">New</span> <span class="n">Title</span><span class="err">&#39;</span>  <span class="err">#</span> <span class="err">设置</span><span class="n">worksheet</span><span class="err">的标题</span>
+<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_active_sheet</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">title</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">&#39;New Title&#39;</span>  <span class="c"># 设置worksheet的标题</span>
 
-<span class="cp"># 设置单元格的值</span>
-<span class="n">ws</span><span class="p">.</span><span class="n">cell</span><span class="p">(</span><span class="err">&#39;</span><span class="n">D3</span><span class="err">&#39;</span><span class="p">).</span><span class="n">value</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">ws</span><span class="p">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">).</span><span class="n">value</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="c"># 设置单元格的值</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="s">&#39;D3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">6</span>
 
-<span class="n">new_ws</span> <span class="o">=</span> <span class="n">wb</span><span class="p">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="err">&#39;</span><span class="n">new_sheet</span><span class="err">&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">row</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">:</span>
-    <span class="k">for</span> <span class="n">col</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">:</span>
-        <span class="n">new_ws</span><span class="p">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col</span><span class="p">).</span><span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="o">+</span><span class="n">col</span>
+<span class="n">new_ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;new_sheet&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">new_ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="o">+</span><span class="n">col</span>
 
-<span class="cp"># 最后一定要保存！</span>
-<span class="n">wb</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="err">&#39;</span><span class="n">new_file</span><span class="p">.</span><span class="n">xlsx</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="c"># 最后一定要保存！</span>
+<span class="n">wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;new_file.xlsx&#39;</span><span class="p">)</span>
 </pre></div>
 
 
@@ -103,7 +103,7 @@
 <li>下载 openpyxl：<a href="https://pypi.python.org/pypi/openpyxl">https://pypi.python.org/pypi/openpyxl</a></li>
 <li>openpyxl 文档：<a href="http://pythonhosted.org/openpyxl/">http://pythonhosted.org/openpyxl/</a></li>
 </ul>
-<hr /><p>There are <a href="http://deanthompson.github.io/posts/2013/02/25/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </article>
+<hr /><p>There are <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </article>
 <p class="paginator">
     Page 1 / 1
 </p>

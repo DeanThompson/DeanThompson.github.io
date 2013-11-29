@@ -17,14 +17,14 @@
         <header id="banner" class="body">
                 <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
                 <nav><ul>
-                    <li><a href="http://deanthompson.github.io/category/linux.html">linux</a></li>
-                    <li><a href="http://deanthompson.github.io/category/python.html">python</a></li>
+                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
+                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2012/10/21/python-timestamp-to-timestr/">Python时间戳和日期相互转换</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/">Python时间戳和日期相互转换</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2012-10-21T18:53:00">
                 2012-10-21
@@ -33,7 +33,7 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/time.html">time</a><a href="http://deanthompson.github.io/tag/datetime.html">datetime</a></p>
 </footer><!-- /.post-info --><p>在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
 <p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从1970年1月1日00:00:00到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
@@ -41,28 +41,28 @@
 <p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
 </blockquote>
 <p>在Python里，时间戳可以通过 <code>time</code> 模块里的 <code>time()</code> 方法获得，比如:</p>
-<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">:</span> <span class="n">import</span> <span class="n">time</span>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">:</span> <span class="mf">1350816710.8050799</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mf">1350816710.8050799</span>
 </pre></div>
 
 
 <p>这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 <code>time.strftime()</code> 函数来达到这个目的。根据 <code>strftime()</code> 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 <code>time.localtime()</code> 的返回值。而那个9元组其实是 <code>struct_time</code>，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如</p>
-<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">:</span> <span class="n">import</span> <span class="n">time</span>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">localtime</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">struct_time</span><span class="p">(</span><span class="n">tm_year</span><span class="o">=</span><span class="mi">2012</span><span class="p">,</span> <span class="n">tm_mon</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">tm_mday</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span> <span class="n">tm_hour</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="n">tm_min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tm_sec</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">tm_wday</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">tm_yday</span><span class="o">=</span><span class="mi">295</span><span class="p">,</span> <span class="n">tm_isdst</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">struct_time</span><span class="p">(</span><span class="n">tm_year</span><span class="o">=</span><span class="mi">2012</span><span class="p">,</span> <span class="n">tm_mon</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">tm_mday</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span> <span class="n">tm_hour</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="n">tm_min</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tm_sec</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">tm_wday</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">tm_yday</span><span class="o">=</span><span class="mi">295</span><span class="p">,</span> <span class="n">tm_isdst</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 
 
 <p>具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码</p>
-<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">:</span> <span class="n">import</span> <span class="n">time</span>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">:</span> <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">localtime</span><span class="p">(</span><span class="mf">1350816710.8050799</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="mf">1350816710.8050799</span><span class="p">)</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">strftime</span><span class="p">(</span><span class="err">&#39;</span><span class="o">%</span><span class="n">Y</span><span class="o">-%</span><span class="n">m</span><span class="o">-%</span><span class="n">d</span> <span class="o">%</span><span class="n">H</span><span class="o">:%</span><span class="n">M</span><span class="o">:%</span><span class="n">S</span><span class="err">&#39;</span><span class="p">,</span> <span class="n">st</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">:</span> <span class="err">&#39;</span><span class="mi">2012</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">21</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span><span class="o">:</span><span class="mi">50</span><span class="err">&#39;</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">,</span> <span class="n">st</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="s">&#39;2012-10-21 18:51:50&#39;</span>
 </pre></div>
 
 
@@ -73,21 +73,21 @@
 
 
 <p>把字符串形式的时间按照指定格式解析，转换为 <code>struct_time</code>。然后传给<code>time.mktime()</code> 完成最后的工作，整个过程是:</p>
-<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="o">:</span> <span class="n">import</span> <span class="n">time</span>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]</span><span class="o">:</span> <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">strptime</span><span class="p">(</span><span class="err">&#39;</span><span class="mi">2012</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">21</span> <span class="mi">18</span><span class="o">:</span><span class="mi">51</span><span class="o">:</span><span class="mi">50</span><span class="err">&#39;</span><span class="p">,</span> <span class="err">&#39;</span><span class="o">%</span><span class="n">Y</span><span class="o">-%</span><span class="n">m</span><span class="o">-%</span><span class="n">d</span> <span class="o">%</span><span class="n">H</span><span class="o">:%</span><span class="n">M</span><span class="o">:%</span><span class="n">S</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s">&#39;2012-10-21 18:51:50&#39;</span><span class="p">,</span> <span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M:%S&#39;</span><span class="p">)</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span><span class="o">:</span> <span class="mf">1350816710.0</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="mf">1350816710.0</span>
 </pre></div>
 
 
 <p>最后，有两篇参考文章：</p>
-<blockquote>
-<p>Python中时间戳与时间字符串互相转化: <a href="http://www.coder4.com/archives/2239">http://www.coder4.com/archives/2239</a>
-Python中time模块详解（很好）:<a href="http://qinxuye.me/article/details-about-time-module-in-python/">http://qinxuye.me/article/details-about-time-module-in-python/</a></p>
-</blockquote>
-<hr /><p>There are <a href="http://deanthompson.github.io/posts/2012/10/21/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </article>
+<ul>
+<li>Python中时间戳与时间字符串互相转化: <a href="http://www.coder4.com/archives/2239">http://www.coder4.com/archives/2239</a></li>
+<li>Python中time模块详解（很好）:<a href="http://qinxuye.me/article/details-about-time-module-in-python/">http://qinxuye.me/article/details-about-time-module-in-python/</a></li>
+</ul>
+<hr /><p>There are <a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </article>
 <p class="paginator">
     Page 1 / 1
 </p>

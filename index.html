@@ -17,14 +17,14 @@
         <header id="banner" class="body">
                 <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
                 <nav><ul>
-                    <li><a href="http://deanthompson.github.io/category/linux.html">linux</a></li>
-                    <li><a href="http://deanthompson.github.io/category/python.html">python</a></li>
+                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
+                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2013/11/03/less-with-syntax-highlight-and-line-number/">less 命令支持语法高亮和行号</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/">less 命令支持语法高亮和行号</a></h1>
 <footer class="post-info">
         <abbr class="published" title="2013-11-03T00:30:00">
                 2013-11-03
@@ -33,7 +33,7 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/linux.html">linux</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/linux.html">linux</a><a href="http://deanthompson.github.io/tag/less.html">less</a></p>
 </footer><!-- /.post-info --><p>首先来一句装X的话：</p>
 <blockquote>
@@ -41,20 +41,20 @@
 </blockquote>
 <h1>1. How</h1>
 <p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">source</span><span class="o">-</span><span class="n">highlight</span>
+<div class="highlight"><pre>sudo apt-get install <span class="nb">source</span>-highlight
 </pre></div>
 
 
 <p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-<div class="highlight"><pre><span class="cp"># less hightlight</span>
-<span class="n">export</span> <span class="n">LESSOPEN</span><span class="o">=</span><span class="s">&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;</span>
-<span class="n">export</span> <span class="n">LESS</span><span class="o">=</span><span class="s">&quot; -R &quot;</span>
+<div class="highlight"><pre><span class="c"># less hightlight</span>
+<span class="nb">export </span><span class="nv">LESSOPEN</span><span class="o">=</span><span class="s2">&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;</span>
+<span class="nb">export </span><span class="nv">LESS</span><span class="o">=</span><span class="s2">&quot; -R &quot;</span>
 </pre></div>
 
 
 <p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
 <p>使配置生效：</p>
-<div class="highlight"><pre><span class="n">source</span> <span class="o">~/</span><span class="p">.</span><span class="n">bashrc</span>
+<div class="highlight"><pre><span class="nb">source</span> ~/.bashrc
 </pre></div>
 
 
@@ -90,7 +90,7 @@
 <p>Causes a line number to be displayed at the beginning of each line in the display.</p>
 </blockquote>
 <p>就是在每一行开头显示行号。这个非常有用啊～于是只要修改一下配置：</p>
-<div class="highlight"><pre><span class="n">export</span> <span class="n">LESS</span><span class="o">=</span><span class="s">&quot; -R -N &quot;</span>
+<div class="highlight"><pre><span class="nb">export </span><span class="nv">LESS</span><span class="o">=</span><span class="s2">&quot; -R -N &quot;</span>
 </pre></div>
 
 
@@ -101,7 +101,7 @@
 <li>GNU Source-highlight: <a href="http://www.gnu.org/software/src-highlite/">http://www.gnu.org/software/src-highlite/</a></li>
 <li>Powering Less to Highlight Syntax and Display Line Numbers:  <a href="http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/">http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/</a></li>
 </ul>
-<hr /><p>There are <a href="http://deanthompson.github.io/posts/2013/11/03/less-with-syntax-highlight-and-line-number/#disqus_thread">comments</a>.</p>                </article>
+<hr /><p>There are <a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">comments</a>.</p>                </article>
             </aside><!-- /#featured -->
                 <section id="content" class="body">
                     <h1>Other articles</h1>
@@ -110,7 +110,7 @@
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2013/03/13/understand-python-decorators/" rel="bookmark"
+                    <h1><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/" rel="bookmark"
                            title="Permalink to 【翻译】理解 python 装饰器">【翻译】理解 python 装饰器</a></h1>
                 </header>
 
@@ -123,7 +123,7 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/decorator.html">decorator</a></p>
 </footer><!-- /.post-info -->                <h2>Note</h2>
 <p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
@@ -133,20 +133,20 @@
 <hr />
 <h1>1. python的函数是对象（Python's functions are objects）</h1>
 <p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
-<div class="highlight"><pre><span class="n">def</span> <span class="n">shout</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="s">&quot;yes&quot;</span><span class="p">)</span><span class="o">:</span>
-    <span class="k">return</span> <span class="n">word</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;!&quot;</span>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">shout</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="s">&quot;yes&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;!&quot;</span>
 
-<span class="n">print</span> <span class="n">shout</span><span class="p">()</span>
-<span class="cp"># outputs : &#39;Yes!&#39;</span>
+<span class="k">print</span> <span class="n">shout</span><span class="p">()</span>
+<span class="c"># outputs : &#39;Yes!&#39;</span>
 
-<span class="cp"># 作为一个对象，你可以像其他对象一样把函数赋值给其他变量 ...</span></pre></div>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2013/03/13/understand-python-decorators/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2013/03/13/understand-python-decorators/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+<span class="c"># 作为一个对象，你可以像其他对象一样把函数赋值给其他变量 ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2013/02/25/using-openpyxl-to-read-and-write-xlsx-files/" rel="bookmark"
+                    <h1><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" rel="bookmark"
                            title="Permalink to 用 openpyxl 处理 xlsx 文件">用 openpyxl 处理 xlsx 文件</a></h1>
                 </header>
 
@@ -159,17 +159,17 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a></p>
 </footer><!-- /.post-info -->                <p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2013/02/25/using-openpyxl-to-read-and-write-xlsx-files/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2013/02/25/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2012/12/01/python-dict-slice/" rel="bookmark"
+                    <h1><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="bookmark"
                            title="Permalink to python字典切片">python字典切片</a></h1>
                 </header>
 
@@ -182,14 +182,14 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/dict.html">dict</a></p>
 </footer><!-- /.post-info -->                <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
 <p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-<div class="highlight"><pre><span class="n">def</span> <span class="n">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span><span class="o">:</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="p">.</span><span class="n">keys</span><span class="p">()</span>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="n">dict_slice</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="n">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="o">:</span><span class="n">end</span><span class="p">]</span><span class="o">:</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]:</span>
         <span class="n">dict_slice</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">dict_slice</span>
 </pre></div>
@@ -198,13 +198,13 @@
 <hr />
 <p><strong>EDIT 2013-10-26 01:13</strong></p>
 <p>补充一个一行的版本（one-liner ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2012/12/01/python-dict-slice/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2012/12/01/python-dict-slice/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2012/10/21/python-timestamp-to-timestr/" rel="bookmark"
+                    <h1><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/" rel="bookmark"
                            title="Permalink to Python时间戳和日期相互转换">Python时间戳和日期相互转换</a></h1>
                 </header>
 
@@ -217,7 +217,7 @@
         <address class="vcard author">
                 By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
-<p>In <a href="http://deanthompson.github.io/category/python.html">python</a>. </p>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/time.html">time</a><a href="http://deanthompson.github.io/tag/datetime.html">datetime</a></p>
 </footer><!-- /.post-info -->                <p>在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
 <p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从1970年1月1日00:00:00到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
@@ -225,16 +225,16 @@
 <p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
 </blockquote>
 <p>在Python里，时间戳可以通过 <code>time</code> 模块里的 <code>time()</code> 方法获得，比如:</p>
-<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">:</span> <span class="n">import</span> <span class="n">time</span>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">:</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">:</span> <span class="mf">1350816710.8050799</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mf">1350816710.8050799</span>
 </pre></div>
 
 
 <p>这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 <code>time.strftime()</code> 函数来达到这个目的。根据 <code>strftime()</code> 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2012/10/21/python-timestamp-to-timestr/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2012/10/21/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+                <a class="readmore" href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">

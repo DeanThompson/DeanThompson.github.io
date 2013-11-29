@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
         <meta charset="utf-8" />
-        <title>李林克斯 - dict</title>
+        <title>python字典切片</title>
         <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
 
         <!--[if IE]>
@@ -18,13 +18,19 @@
                 <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
                 <nav><ul>
                     <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="bookmark"
+           title="Permalink to python字典切片">python字典切片</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">python字典切片</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2012-12-01T15:09:00">
                 2012-12-01
@@ -35,7 +41,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/dict.html">dict</a></p>
-</footer><!-- /.post-info --><p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
+</footer><!-- /.post-info -->      <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
 <p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
 <div class="highlight"><pre><span class="k">def</span> <span class="nf">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -80,13 +86,24 @@
 
 
 <p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p>
-<hr /><p>There are <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/#disqus_thread">comments</a>.</p>                </article>
-<p class="paginator">
-    Page 1 / 1
-</p>
-            </aside><!-- /#featured -->
-            </ol><!-- /#posts-list -->
-            </section><!-- /#content -->
+<hr />
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "posts/2012/12/python-dict-slice/";
+        var disqus_url = "http://deanthompson.github.io/posts/2012/12/python-dict-slice/";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
