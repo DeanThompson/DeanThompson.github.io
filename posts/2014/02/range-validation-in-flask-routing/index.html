@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Flask 路由做范围限制</title>
+        <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/DeanThompson">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
+                <nav><ul>
+                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
+                    <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/" rel="bookmark"
+           title="Permalink to Flask 路由做范围限制">Flask 路由做范围限制</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-02-26T23:15:00">
+                2014-02-26
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/flask.html">flask</a><a href="http://deanthompson.github.io/tag/stackoverflow.html">stackoverflow</a></p>
+</footer><!-- /.post-info -->      <p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
+<h1>1. What</h1>
+<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
+<p>简单翻译一下，大致如下：</p>
+<p>Flask 应用里面有一个这样的路由</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">get_foo</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/foo/&lt;int:id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">get_foo</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+</pre></div>
+</td></tr></table>
+
+<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route("/foo/&lt;int:id(1-300)")</code>.</p>
+<h1>2. How</h1>
+<p>这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。</p>
+<p>虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 <a href="http://werkzeug.pocoo.org/">WSGI Utility Library: Werkzeug</a> 和 <a href="http://jinja.pocoo.org">模板引擎 Jinja2</a>，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。</p>
+<h2>2.1 Builtin Converters</h2>
+<p>如前所述，Werkzeug 提供了几种 <a href="http://werkzeug.pocoo.org/docs/routing/#builtin-converters">builtin converters</a>，分别是：</p>
+<ul>
+<li><code>class werkzeug.routing.UnicodeConverter(map, minlength=1, maxlength=None, length=None)</code>：字符串转换器，接受除了路径类型（含有 <code>/</code>）的所有字符串，这也是默认的转换器。</li>
+<li><code>class werkzeug.routing.PathConverter(map)</code>：路径类型转换器，一般用得不多吧。</li>
+<li><code>class werkzeug.routing.IntegerConverter(map, fixed_digits=0, min=None, max=None)</code>：整型转换器，接受并转换成 <code>int</code> 类型，不支持负数。</li>
+<li><code>class werkzeug.routing.FloatConverter(map, min=None, max=None)</code>：浮点型转换器，接受并转换成 <code>float</code> 类型，不支持负数。</li>
+<li><code>class werkzeug.routing.AnyConverter(map, *items)</code>：匹配任意一个给定的选项，这些选项可以是 python 标识符或字符串。</li>
+</ul>
+<p>从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（<code>minlength</code>）、最大长度（<code>maxlength</code>）或者指定长度（<code>length</code>）。IntergerConverter 和 FloatConverter 都可以指定最小值（<code>min</code>）和最大值（<code>max</code>）。所以看完这些，就可以解决最开始的问题了。</p>
+<h2>2.2 Solution</h2>
+<p>回到原题，是需要对 <code>id</code> 做范围限制（<code>1～300</code>），因此路由就可以这样写了（<a href="http://stackoverflow.com/a/19076418/1461780">我的回答</a>）：</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">get_foo</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/foo/&lt;int(min=1, max=300):id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">get_foo</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+</pre></div>
+</td></tr></table>
+
+<p>这个路由就限定了 <code>id</code> 的范围，对于超出范围的请求，如 <code>/foo/1024/</code>，就会找不到对应的路由，因此会返回 <code>404</code>。</p>
+<h1>3. End</h1>
+<p>题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 <code>404</code>，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。</p>
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "posts/2014/02/range-validation-in-flask-routing/";
+        var disqus_url = "http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="http://flask.pocoo.org/">Flask</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
+                            <li><a href="https://github.com/DeanThompson">Github</a></li>
+                            <li><a href="http://www.douban.com/people/Touchthesky/">豆瓣</a></li>
+                            <li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-45384257-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+    var disqus_shortname = 'liyangliang';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+</html>
