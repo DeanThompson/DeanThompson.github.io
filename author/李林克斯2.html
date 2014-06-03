@@ -27,6 +27,42 @@
                     <ol id="posts-list" class="hfeed" start="4">
             <li><article class="hentry">
                 <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/" rel="bookmark"
+                           title="Permalink to 【翻译】理解 python 装饰器">【翻译】理解 python 装饰器</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-03-13T00:26:00">
+                2013-03-13
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/decorator.html">decorator</a></p>
+</footer><!-- /.post-info -->                <h2>Note</h2>
+<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
+<blockquote>
+<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
+</blockquote>
+<hr />
+<h1>1. python的函数是对象（Python's functions are objects）</h1>
+<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">shout</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="s">&quot;yes&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;!&quot;</span>
+
+<span class="k">print</span> <span class="n">shout</span><span class="p">()</span>
+<span class="c"># outputs : &#39;Yes!&#39;</span>
+
+<span class="c"># 作为一个对象，你可以像其他对象一样把函数赋值给其他变量 ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
                     <h1><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" rel="bookmark"
                            title="Permalink to 用 openpyxl 处理 xlsx 文件">用 openpyxl 处理 xlsx 文件</a></h1>
                 </header>
@@ -131,6 +167,7 @@
                             <li><a href="http://python.org/">Python.org</a></li>
                             <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
                             <li><a href="http://flask.pocoo.org/">Flask</a></li>
+                            <li><a href="http://golang.org">Golang</a></li>
                         </ul>
                 </div><!-- /.blogroll -->
                 <div class="social">

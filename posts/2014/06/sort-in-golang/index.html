@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
         <meta charset="utf-8" />
-        <title>李林克斯</title>
+        <title>Golang 排序</title>
         <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
 
         <!--[if IE]>
@@ -19,13 +19,19 @@
                 <nav><ul>
                     <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
                     <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="bookmark"
+           title="Permalink to Golang 排序">Golang 排序</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">Golang 排序</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-06-03T16:50:00">
                 2014-06-03
@@ -36,7 +42,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a><a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a><a href="http://deanthompson.github.io/tag/python.html">python</a></p>
-</footer><!-- /.post-info --><h2>Interface 接口</h2>
+</footer><!-- /.post-info -->      <h2>Interface 接口</h2>
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 <div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">7</span> <span class="p">{</span>
@@ -208,149 +214,24 @@
 <div class="highlight"><pre>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; 
 
 &lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt; 
-</pre></div><p>There are <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" rel="bookmark"
-                           title="Permalink to MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-03-02T16:16:00">
-                2014-03-02
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a><a href="http://deanthompson.github.io/tag/innodb.html">innodb</a></p>
-</footer><!-- /.post-info -->                <p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
-<h2>1. innodb_flush_log_at_trx_commit</h2>
-<p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
-<ol>
-<li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
-<li>当取值为 <code>1</code> 时 ...</li></ol>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/" rel="bookmark"
-                           title="Permalink to Flask 路由做范围限制">Flask 路由做范围限制</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-02-26T23:15:00">
-                2014-02-26
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/flask.html">flask</a><a href="http://deanthompson.github.io/tag/stackoverflow.html">stackoverflow</a></p>
-</footer><!-- /.post-info -->                <p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
-<h1>1. What</h1>
-<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
-<p>简单翻译一下，大致如下：</p>
-<p>Flask 应用里面有一个这样的路由</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">get_foo</span>
-
-<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/foo/&lt;int:id&gt;&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">foo_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">get_foo</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
 </pre></div>
-</td></tr></table>
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "posts/2014/06/sort-in-golang/";
+        var disqus_url = "http://deanthompson.github.io/posts/2014/06/sort-in-golang/";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
 
-<p>其中 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/01/my-2013/" rel="bookmark"
-                           title="Permalink to 我的 2013">我的 2013</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-01-01T00:01:00">
-                2014-01-01
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Life.html">Life</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/随笔.html">随笔</a></p>
-</footer><!-- /.post-info -->                <p>现在是 2013-12-31 22:11:24 左右，2013马上就将过去，新的一年随之来到。去年的这个时候，还在上海虎扑实习，记得那天更新版本出了问题，然后一直加班到第二天早上三四点。虽然是“加班”，其实我却在和某个人打电话，讲了100多分钟，现在都已经忘了当时的笑声和激情。</p>
-<p>2013就这么来到。</p>
-<p>1月份基本上都在上海度过。狭小的隔板房，冰冷的床，无聊的周末，改不完的bug，偶尔的烧烤和啤酒，公司一楼的乒乓球，中山北一路两边高大的树，对南方的思念，久违的小雪。那段日子其实挺开心，欢声笑语退去，那些生活和时间抽象成几个标签和符号，散落在记忆里，在某些时候不经意间想起。</p>
-<p>1.23 离开上海，上海南直达井冈山。整个2月份除了过年，我都几乎想不起做过什么。对了，2月份应该回到了学校，开始“写”毕业论文。</p>
-<p>3.10日是周日，早就想好的深圳之旅终于实现。说来可笑，在广州读了四年书，2013-03-10还是第一次到深圳 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/01/my-2013/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/01/my-2013/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/" rel="bookmark"
-                           title="Permalink to less 命令支持语法高亮和行号">less 命令支持语法高亮和行号</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-11-03T00:30:00">
-                2013-11-03
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/linux.html">linux</a><a href="http://deanthompson.github.io/tag/less.html">less</a></p>
-</footer><!-- /.post-info -->                <p>首先来一句装X的话：</p>
-<blockquote>
-<p>less is more</p>
-</blockquote>
-<h1>1. How</h1>
-<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-<div class="highlight"><pre>sudo apt-get install <span class="nb">source</span>-highlight
-</pre></div>
-
-
-<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-<div class="highlight"><pre><span class="c"># less hightlight</span>
-<span class="nb">export </span><span class="nv">LESSOPEN</span><span class="o">=</span><span class="s2">&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;</span>
-<span class="nb">export </span><span class="nv">LESS</span><span class="o">=</span><span class="s2">&quot; -R &quot;</span>
-</pre></div>
-
-
-<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
-<p class="paginator">
-    Page 1 / 2
-        <a href="http://deanthompson.github.io/index2.html">&raquo;</a>
-</p>
-            </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>

@@ -25,7 +25,203 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">Golang 排序</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-06-03T16:50:00">
+                2014-06-03
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a><a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a><a href="http://deanthompson.github.io/tag/python.html">python</a></p>
+</footer><!-- /.post-info --><h2>Interface 接口</h2>
+<p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
+<div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">7</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="nx">maxDepth</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+            <span class="nx">heapSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="p">}</span>
+        <span class="nx">maxDepth</span><span class="o">--</span>
+        <span class="nx">mlo</span><span class="p">,</span> <span class="nx">mhi</span> <span class="o">:=</span> <span class="nx">doPivot</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+        <span class="c1">// Avoiding recursion on the larger subproblem guarantees</span>
+        <span class="c1">// a stack depth of at most lg(b-a).</span>
+        <span class="k">if</span> <span class="nx">mlo</span><span class="o">-</span><span class="nx">a</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="o">-</span><span class="nx">mhi</span> <span class="p">{</span>
+            <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">mlo</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
+            <span class="nx">a</span> <span class="p">=</span> <span class="nx">mhi</span> <span class="c1">// i.e., quickSort(data, mhi, b)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">mhi</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
+            <span class="nx">b</span> <span class="p">=</span> <span class="nx">mlo</span> <span class="c1">// i.e., quickSort(data, a, mlo)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="nx">insertionSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Sort sorts data.</span>
+<span class="c1">// It makes one call to data.Len to determine n, and O(n*log(n)) calls to</span>
+<span class="c1">// data.Less and data.Swap. The sort is not guaranteed to be stable.</span>
+<span class="kd">func</span> <span class="nx">Sort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.</span>
+    <span class="nx">n</span> <span class="o">:=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Len</span><span class="p">()</span>
+    <span class="nx">maxDepth</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="nx">maxDepth</span><span class="o">++</span>
+    <span class="p">}</span>
+    <span class="nx">maxDepth</span> <span class="o">*=</span> <span class="mi">2</span>
+    <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。</p>
+<p>标准库提供一个通用接口，只要实现了这个接口，就可以通过调用 <code>sort.Sort</code> 来排序。</p>
+<div class="highlight"><pre><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
+    <span class="c1">// Len is the number of elements in the collection.</span>
+    <span class="nx">Len</span><span class="p">()</span> <span class="kt">int</span>
+    <span class="c1">// Less returns whether the element with index i should sort</span>
+    <span class="c1">// before the element with index j.</span>
+    <span class="nx">Less</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span>
+    <span class="c1">// Swap swaps the elements with indexes i and j.</span>
+    <span class="nx">Swap</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>基本数据类型的排序</h2>
+<p><code>Interface</code> 接口的三个函数分别用于获取长度（<code>Len</code>）、大小比较（<code>Less</code>）和交换（<code>Swap</code>）。对 <code>int</code>、<code>float64</code> 和 <code>string</code> 的排序，标准库已经做好了封装，直接调用即可。以 <code>int</code> 为例简单说明：</p>
+<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>                                                                                                                                                                                                 
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;sort&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">76</span><span class="p">}</span> 
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 5 29 3 76]</span>
+    <span class="nx">sort</span><span class="p">.</span><span class="nx">Ints</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>       <span class="c1">// sort.Sort(IntSlice(a)) 的封装</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [3 5 29 76 100]，默认的 Less() 实现的是升序</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">76</span><span class="p">}</span> 
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 5 29 3 76]</span>
+    <span class="nx">sort</span><span class="p">.</span><span class="nx">Sort</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">Reverse</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">IntSlice</span><span class="p">(</span><span class="nx">a</span><span class="p">)))</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 76 29 5 3]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>对 <code>float64</code> 和 <code>string</code> 的排序，和上面类似。需要注意的是，默认的 <code>sort.Less</code> 实现的是升序排列，如果想要让结果降序，可以先用 <code>sort.Reverse</code> 包装一次。这个调用会得到一个 <code>reverse</code> 的类型，包含一个 <code>Interface</code> 的匿名字段，其 <code>Less</code> 函数与 <code>Interface</code> 里的相反，从而实现逆序。</p>
+<h2>自定义数据类型的排序</h2>
+<p>如果要对自定义的数据类型进行排序，需要实现 <code>sort.Interface</code> 接口，也就是实现 <code>Len</code>、<code>Less</code> 和 <code>Swap</code> 三个函数。很多场景下 <code>Len</code> 和 <code>Swap</code> 基本上和数据类型无关，所以实际上只有 <code>Less</code> 会有差别。</p>
+<p>例如有个游戏下载排行榜，知道游戏ID和对应的下载量，需要把数据根据下载量进行排序。</p>
+<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;math/rand&quot;</span>
+    <span class="s">&quot;sort&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span> <span class="nx">GameDownloadItem</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">GameID</span>        <span class="kt">int</span> <span class="c1">// 游戏ID</span>
+    <span class="nx">DownloadTimes</span> <span class="kt">int</span> <span class="c1">// 下载次数</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">self</span> <span class="nx">GameDownloadItem</span><span class="p">)</span> <span class="nx">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;&lt;Item(%d, %d)&gt;&quot;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">GameID</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">DownloadTimes</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">type</span> <span class="nx">GameDownloadSlice</span> <span class="p">[]</span><span class="o">*</span><span class="nx">GameDownloadItem</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Len</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Swap</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1">// 根据游戏下载量 降序 排列</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Less</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">DownloadTimes</span> <span class="p">&gt;</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">DownloadTimes</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">GameDownloadSlice</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">GameDownloadItem</span><span class="p">{</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">Intn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)}</span>
+    <span class="p">}</span>
+
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nx">sort</span><span class="p">.</span><span class="nx">Sort</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：</p>
+<div class="highlight"><pre>[&lt;Item(1, 81)&gt; &lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(4, 59)&gt; &lt;Item(5, 81)&gt; &lt;Item(6, 318)&gt; &lt;Item(7, 425)&gt;]
+</pre></div>
+
+
+<p>排序后：</p>
+<div class="highlight"><pre>[&lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(7, 425)&gt; &lt;Item(6, 318)&gt; &lt;Item(1, 81)&gt; &lt;Item(5, 81)&gt; &lt;Item(4, 59)&gt;]
+</pre></div>
+
+
+<h2>Vs. Python</h2>
+<p>相比之下，Python 里的排序就非常简单便捷了，直接调用 <code>list</code> 的 <code>sort</code> 方法（in-place）即可，还可以用 built-in 函数 <code>sorted</code> （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 <code>sort</code> 方法的 <code>key</code> 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：</p>
+<div class="highlight"><pre><span class="c">#!/usr/bin/env python                                                                                                                                                                                        </span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="k">class</span> <span class="nc">GameDownloadItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">,</span> <span class="n">download_times</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_id</span> <span class="o">=</span> <span class="n">game_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_times</span> <span class="o">=</span> <span class="n">download_times</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;Item(</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_times</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">item</span><span class="p">,</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">GameDownloadItem</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+
+    <span class="n">items</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">download_times</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</pre></div>
+
+
+<p>某一次的执行结果：</p>
+<div class="highlight"><pre>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; 
+
+&lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt; 
+</pre></div><p>There are <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" rel="bookmark"
+                           title="Permalink to MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-03-02T16:16:00">
                 2014-03-02
@@ -36,24 +232,15 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a><a href="http://deanthompson.github.io/tag/innodb.html">innodb</a></p>
-</footer><!-- /.post-info --><p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
+</footer><!-- /.post-info -->                <p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
 <h2>1. innodb_flush_log_at_trx_commit</h2>
 <p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
 <ol>
 <li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
-<li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
-<li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
-</ol>
-<p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
-<h2>2. sync_binlog</h2>
-<p><a href="https://dev.MySQL.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_sync_binlog">sync_binlog</a> 是 MySQL 的二进制日志（binary log）同步到磁盘的频率。MySQL server 在 binary log 每写入 <code>sync_binlog</code> 次后，刷写到磁盘。</p>
-<p>如果 <code>autocommit</code> 开启，每个语句都写一次 binary log，否则每次事务写一次。默认值是 <code>0</code>，不主动同步，而依赖操作系统本身不定期把文件内容 flush 到磁盘。设为 <code>1</code> 最安全，在每个语句或事务后同步一次 binary log，即使在崩溃时也最多丢失一个语句或事务的日志，但因此也最慢。</p>
-<p>大多数情况下，对数据的一致性并没有很严格的要求，所以并不会把 <code>sync_binlog</code> 配置成 <code>1</code>. 为了追求高并发，提升性能，可以设置为 <code>100</code> 或直接用 <code>0</code>. 而和 <code>innodb_flush_log_at_trx_commit</code> 一样，对于支付服务这样的应用，还是比较推荐 <code>sync_binlog = 1</code>.</p><p>There are <a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<li>当取值为 <code>1</code> 时 ...</li></ol>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -158,42 +345,6 @@
                 <a class="readmore" href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/" rel="bookmark"
-                           title="Permalink to 【翻译】理解 python 装饰器">【翻译】理解 python 装饰器</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-03-13T00:26:00">
-                2013-03-13
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/decorator.html">decorator</a></p>
-</footer><!-- /.post-info -->                <h2>Note</h2>
-<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
-<blockquote>
-<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
-</blockquote>
-<hr />
-<h1>1. python的函数是对象（Python's functions are objects）</h1>
-<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">shout</span><span class="p">(</span><span class="n">word</span><span class="o">=</span><span class="s">&quot;yes&quot;</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">word</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">+</span><span class="s">&quot;!&quot;</span>
-
-<span class="k">print</span> <span class="n">shout</span><span class="p">()</span>
-<span class="c"># outputs : &#39;Yes!&#39;</span>
-
-<span class="c"># 作为一个对象，你可以像其他对象一样把函数赋值给其他变量 ...</span></pre></div>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 2
@@ -208,6 +359,7 @@
                             <li><a href="http://python.org/">Python.org</a></li>
                             <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
                             <li><a href="http://flask.pocoo.org/">Flask</a></li>
+                            <li><a href="http://golang.org">Golang</a></li>
                         </ul>
                 </div><!-- /.blogroll -->
                 <div class="social">
