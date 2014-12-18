@@ -22,34 +22,49 @@
                     <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
-<section id="content" class="body">
-<h1>Archives for 李林克斯</h1>
 
-<dl>
-    <dt>2014-06-11</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/">不要用 fmt.Sprintf 做类型转换</a></dd>
-    <dt>2014-06-03</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/">Golang 的 defer 语句</a></dd>
-    <dt>2014-06-03</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">Golang 排序</a></dd>
-    <dt>2014-03-02</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></dd>
-    <dt>2014-02-26</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/">Flask 路由做范围限制</a></dd>
-    <dt>2014-01-01</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2014/01/my-2013/">我的 2013</a></dd>
-    <dt>2013-11-03</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/">less 命令支持语法高亮和行号</a></dd>
-    <dt>2013-03-13</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/">【翻译】理解 python 装饰器</a></dd>
-    <dt>2013-02-25</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">用 openpyxl 处理 xlsx 文件</a></dd>
-    <dt>2012-12-01</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">python字典切片</a></dd>
-    <dt>2012-10-21</dt>
-    <dd><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/">Python时间戳和日期相互转换</a></dd>
-</dl>
-</section>
+                <section id="content" class="body">
+                    <ol id="posts-list" class="hfeed" start="4">
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/" rel="bookmark"
+                           title="Permalink to Python时间戳和日期相互转换">Python时间戳和日期相互转换</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2012-10-21T18:53:00">
+                2012-10-21
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/time.html">time</a><a href="http://deanthompson.github.io/tag/datetime.html">datetime</a></p>
+</footer><!-- /.post-info -->                <p>在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
+<p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从1970年1月1日00:00:00到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
+<blockquote>
+<p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
+</blockquote>
+<p>在Python里，时间戳可以通过 <code>time</code> 模块里的 <code>time()</code> 方法获得，比如:</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="mf">1350816710.8050799</span>
+</pre></div>
+
+
+<p>这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 <code>time.strftime()</code> 函数来达到这个目的。根据 <code>strftime()</code> 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间 ...</p>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+        <a href="http://deanthompson.github.io/index2.html">&laquo;</a>
+    Page 3 / 3
+</p>
+            </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>

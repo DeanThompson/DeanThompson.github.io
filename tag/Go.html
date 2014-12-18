@@ -136,6 +136,45 @@ hex.EncodeToString taken: 2.080457ms
 
             <li><article class="hentry">
                 <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/" rel="bookmark"
+                           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-03T16:50:00">
+                2014-06-03
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+</footer><!-- /.post-info -->                <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+<p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
+<ul>
+<li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
+</ul>
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">++</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ul>
+<li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
+</ul>
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">b ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
                     <h1><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="bookmark"
                            title="Permalink to Golang 排序">Golang 排序</a></h1>
                 </header>

@@ -136,6 +136,45 @@ hex.EncodeToString taken: 2.080457ms
 
             <li><article class="hentry">
                 <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/" rel="bookmark"
+                           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-03T16:50:00">
+                2014-06-03
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+</footer><!-- /.post-info -->                <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+<p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
+<ul>
+<li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
+</ul>
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span>
+    <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">++</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ul>
+<li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
+</ul>
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">b ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
                     <h1><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="bookmark"
                            title="Permalink to Golang 排序">Golang 排序</a></h1>
                 </header>
@@ -230,35 +269,9 @@ hex.EncodeToString taken: 2.080457ms
                 <a class="readmore" href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/01/my-2013/" rel="bookmark"
-                           title="Permalink to 我的 2013">我的 2013</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-01-01T00:01:00">
-                2014-01-01
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Life.html">Life</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/随笔.html">随笔</a></p>
-</footer><!-- /.post-info -->                <p>现在是 2013-12-31 22:11:24 左右，2013马上就将过去，新的一年随之来到。去年的这个时候，还在上海虎扑实习，记得那天更新版本出了问题，然后一直加班到第二天早上三四点。虽然是“加班”，其实我却在和某个人打电话，讲了100多分钟，现在都已经忘了当时的笑声和激情。</p>
-<p>2013就这么来到。</p>
-<p>1月份基本上都在上海度过。狭小的隔板房，冰冷的床，无聊的周末，改不完的bug，偶尔的烧烤和啤酒，公司一楼的乒乓球，中山北一路两边高大的树，对南方的思念，久违的小雪。那段日子其实挺开心，欢声笑语退去，那些生活和时间抽象成几个标签和符号，散落在记忆里，在某些时候不经意间想起。</p>
-<p>1.23 离开上海，上海南直达井冈山。整个2月份除了过年，我都几乎想不起做过什么。对了，2月份应该回到了学校，开始“写”毕业论文。</p>
-<p>3.10日是周日，早就想好的深圳之旅终于实现。说来可笑，在广州读了四年书，2013-03-10还是第一次到深圳 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/01/my-2013/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/01/my-2013/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
             </ol><!-- /#posts-list -->
 <p class="paginator">
-    Page 1 / 2
+    Page 1 / 3
         <a href="http://deanthompson.github.io/author/李林克斯2.html">&raquo;</a>
 </p>
             </section><!-- /#content -->
