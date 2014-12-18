@@ -25,10 +25,10 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/">不要用 fmt.Sprintf 做类型转换</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/">Golang 的 defer 语句</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2014-06-11T15:50:00">
-                2014-06-11
+        <abbr class="published" title="2014-12-18T15:35:00">
+                2014-12-18
         </abbr>
 
         <address class="vcard author">
@@ -36,122 +36,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
-</footer><!-- /.post-info --><p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
-<h2>int to string</h2>
-<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
-<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
-<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
-
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;fmt&quot;</span>
-    <span class="s">&quot;strconv&quot;</span>
-    <span class="s">&quot;time&quot;</span>
-<span class="p">)</span>
-
-<span class="kd">const</span> <span class="nx">LOOP</span> <span class="p">=</span> <span class="mi">10000</span>
-
-<span class="kd">var</span> <span class="nx">num</span> <span class="kt">int64</span> <span class="p">=</span> <span class="mi">10000</span>
-
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">startTime</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">LOOP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="nx">num</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;fmt.Sprintf taken: %v\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Since</span><span class="p">(</span><span class="nx">startTime</span><span class="p">))</span>
-
-    <span class="nx">startTime</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">LOOP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nx">strconv</span><span class="p">.</span><span class="nx">FormatInt</span><span class="p">(</span><span class="nx">num</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;strconv.FormatInt taken: %v\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Since</span><span class="p">(</span><span class="nx">startTime</span><span class="p">))</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>其中某一次运行结果：</p>
-<div class="highlight"><pre>fmt.Sprintf taken: 2.995178ms
-strconv.FormatInt taken: 1.057318ms
-</pre></div>
-
-
-<p>多次运行结果都类似，结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatInt</code> 的 3 倍。</p>
-<p>同理，对于 <code>float64</code> 类型，推荐使用 <code>strconv.FormatFloat</code>。测试代码和上面类似，得到的结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatFloat</code> 的 1.1 倍。效果没有整型明显，但依然更高效。</p>
-<h2>hexadecimal to string</h2>
-<p>十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 <code>encoding/hex</code> 包提供了十六进制数的编解码函数。</p>
-<p>下面比较一下 <code>fmt.Sprintf</code> 和 <code>hex.EncodeToString</code> 的时间开销：</p>
-<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
-
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;crypto/md5&quot;</span>
-    <span class="s">&quot;encoding/hex&quot;</span>
-    <span class="s">&quot;fmt&quot;</span>
-    <span class="s">&quot;io&quot;</span>
-    <span class="s">&quot;time&quot;</span>
-<span class="p">)</span>
-
-<span class="kd">const</span> <span class="nx">LOOP</span> <span class="p">=</span> <span class="mi">10000</span>
-
-<span class="kd">func</span> <span class="nx">makeMd5</span><span class="p">(</span><span class="nx">data</span> <span class="kt">string</span><span class="p">)</span> <span class="p">[]</span><span class="kt">byte</span> <span class="p">{</span>
-    <span class="nx">h</span> <span class="o">:=</span> <span class="nx">md5</span><span class="p">.</span><span class="nx">New</span><span class="p">()</span>
-    <span class="nx">io</span><span class="p">.</span><span class="nx">WriteString</span><span class="p">(</span><span class="nx">h</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nx">h</span><span class="p">.</span><span class="nx">Sum</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">s</span> <span class="o">:=</span> <span class="s">&quot;123456&quot;</span>
-    <span class="nx">hexBytes</span> <span class="o">:=</span> <span class="nx">makeMd5</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
-    <span class="nx">s1</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%x&quot;</span><span class="p">,</span> <span class="nx">hexBytes</span><span class="p">)</span>
-    <span class="nx">s2</span> <span class="o">:=</span> <span class="nx">hex</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">hexBytes</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="s">&quot;result of fmt.Sprintf == hex.EncodeToString:&quot;</span><span class="p">,</span> <span class="nx">s1</span> <span class="o">==</span> <span class="nx">s2</span><span class="p">)</span> <span class="c1">// 确保结果一致</span>
-
-    <span class="nx">start</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">LOOP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;%x&quot;</span><span class="p">,</span> <span class="nx">hexBytes</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;fmt.Sprintf taken: %v\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Since</span><span class="p">(</span><span class="nx">start</span><span class="p">))</span>
-
-    <span class="nx">start</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">()</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">LOOP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nx">hex</span><span class="p">.</span><span class="nx">EncodeToString</span><span class="p">(</span><span class="nx">hexBytes</span><span class="p">)</span>
-    <span class="p">}</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;hex.EncodeToString taken: %v\n&quot;</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Since</span><span class="p">(</span><span class="nx">start</span><span class="p">))</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>这个程序某一次的运行结果是：</p>
-<div class="highlight"><pre>result of fmt.Sprintf == hex.EncodeToString: true
-fmt.Sprintf taken: 10.285488ms
-hex.EncodeToString taken: 2.080457ms
-</pre></div>
-
-
-<p>多次运行结果都类似，可以得到一个结论：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>hex.EncodeToString</code> 的 5 倍。</p>
-<p>这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 <code>fmt.Sprintf</code>。</p><p>There are <a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/" rel="bookmark"
-                           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-06-03T16:50:00">
-                2014-06-03
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
-</footer><!-- /.post-info -->                <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+</footer><!-- /.post-info --><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
@@ -168,9 +53,85 @@ hex.EncodeToString taken: 2.080457ms
 <ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">b ...</span></pre></div>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/06/defer-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+        <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ul>
+<li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
+</ul>
+<div class="highlight"><pre><span class="n">func</span> <span class="nf">c</span><span class="p">()</span> <span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">defer</span> <span class="n">func</span><span class="p">()</span> <span class="p">{</span> <span class="n">i</span><span class="o">++</span> <span class="p">}()</span>
+    <span class="k">return</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
+<p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
+<p>最近在看 <a href="https://github.com/revel/revel">revel 框架</a> 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，<a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65">其中一个方法源码如下</a>：</p>
+<div class="highlight"><pre><span class="c1">// Add an item to the cache, replacing any existing item. If the duration is 0,</span>
+<span class="c1">// the cache&#39;s default expiration time is used. If it is -1, the item never</span>
+<span class="c1">// expires.</span>
+<span class="n">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">cache</span><span class="p">)</span> <span class="n">Set</span><span class="p">(</span><span class="n">k</span> <span class="k">string</span><span class="p">,</span> <span class="n">x</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">d</span> <span class="k">time</span><span class="p">.</span><span class="n">Duration</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="c1">// TODO: Calls to mu.Unlock are currently not deferred because defer</span>
+    <span class="c1">// adds ~200 ns (as of go1.)</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">Unlock</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>这里没有用 <code>defer</code> 来调用 <code>Unlock</code>，而且在代码里明确注释说 <code>defer</code> 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 <code>defer</code>，却从没考虑过这一点。robfig 说 <code>defer</code> 大概需要 200ns，一时兴起写了个<a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1">简单的 benchmark 测试</a>，来看看 Go 1.4 里究竟如何。</p>
+<p>这是某一次测试的结果：</p>
+<div class="highlight"><pre>testing: warning: no tests to run
+PASS
+BenchmarkDeferredUnlock     10000000            134 ns/op
+BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
+</pre></div>
+
+
+<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p><p>There are <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/" rel="bookmark"
+                           title="Permalink to 不要用 fmt.Sprintf 做类型转换">不要用 fmt.Sprintf 做类型转换</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-06-11T15:50:00">
+                2014-06-11
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+</footer><!-- /.post-info -->                <p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
+<h2>int to string</h2>
+<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
+<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
+
+<span class="kn">import</span> <span class="p">(</span>
+    <span class="s">&quot;fmt&quot;</span>
+    <span class="s">&quot;strconv&quot;</span>
+    <span class="s">&quot;time ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
 
             <li><article class="hentry">

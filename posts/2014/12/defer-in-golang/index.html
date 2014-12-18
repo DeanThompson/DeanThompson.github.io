@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
         <meta charset="utf-8" />
-        <title>李林克斯 - golang</title>
+        <title>Golang 的 defer 语句</title>
         <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
 
         <!--[if IE]>
@@ -19,13 +19,19 @@
                 <nav><ul>
                     <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
                     <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/" rel="bookmark"
+           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/">Golang 的 defer 语句</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-12-18T15:35:00">
                 2014-12-18
@@ -36,7 +42,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
-</footer><!-- /.post-info --><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+</footer><!-- /.post-info -->      <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
@@ -96,79 +102,24 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 </pre></div>
 
 
-<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p><p>There are <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p>
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_identifier = "posts/2014/12/defer-in-golang/";
+        var disqus_url = "http://deanthompson.github.io/posts/2014/12/defer-in-golang/";
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    </div>
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/" rel="bookmark"
-                           title="Permalink to 不要用 fmt.Sprintf 做类型转换">不要用 fmt.Sprintf 做类型转换</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-06-11T15:50:00">
-                2014-06-11
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
-</footer><!-- /.post-info -->                <p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
-<h2>int to string</h2>
-<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
-<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
-<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
-
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;fmt&quot;</span>
-    <span class="s">&quot;strconv&quot;</span>
-    <span class="s">&quot;time ...</span></pre></div>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="bookmark"
-                           title="Permalink to Golang 排序">Golang 排序</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-06-03T16:50:00">
-                2014-06-03
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a><a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a><a href="http://deanthompson.github.io/tag/python.html">python</a></p>
-</footer><!-- /.post-info -->                <h2>Interface 接口</h2>
-<p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
-<div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">7</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="nx">maxDepth</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-            <span class="nx">heapSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="p">}</span>
-        <span class="nx">maxDepth</span><span class="o">--</span>
-        <span class="nx">mlo</span><span class="p">,</span> <span class="nx">mhi</span> <span class="o">:=</span> <span class="nx">doPivot</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a ...</span></pre></div>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
-<p class="paginator">
-    Page 1 / 1
-</p>
-            </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
