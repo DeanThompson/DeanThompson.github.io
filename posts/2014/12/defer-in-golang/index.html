@@ -28,68 +28,68 @@
       <h1 class="entry-title">
         <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/" rel="bookmark"
            title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
     </header>
 
     <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-12-18T15:35:00">
-                2014-12-18
+        <abbr class="published" title="2014-12-18T15:35:00+08:00">
+                Published: 2014-12-18
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
 </footer><!-- /.post-info -->      <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span>
-    <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="n">i</span><span class="o">++</span>
-    <span class="k">return</span>
-<span class="p">}</span>
+<div class="highlight"><pre>func a() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+    return
+}
 </pre></div>
 
 
 <ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre>func b() {
+    for i := 0; i &lt; 4; i++ {
+        defer fmt.Print(i)
+    }
+}
 </pre></div>
 
 
 <ul>
 <li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">c</span><span class="p">()</span> <span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">defer</span> <span class="n">func</span><span class="p">()</span> <span class="p">{</span> <span class="n">i</span><span class="o">++</span> <span class="p">}()</span>
-    <span class="k">return</span> <span class="mi">1</span>
-<span class="p">}</span>
+<div class="highlight"><pre>func c() (i int) {
+    defer func() { i++ }()
+    return 1
+}
 </pre></div>
 
 
 <p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
 <p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
 <p>最近在看 <a href="https://github.com/revel/revel">revel 框架</a> 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，<a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65">其中一个方法源码如下</a>：</p>
-<div class="highlight"><pre><span class="c1">// Add an item to the cache, replacing any existing item. If the duration is 0,</span>
-<span class="c1">// the cache&#39;s default expiration time is used. If it is -1, the item never</span>
-<span class="c1">// expires.</span>
-<span class="n">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">cache</span><span class="p">)</span> <span class="n">Set</span><span class="p">(</span><span class="n">k</span> <span class="k">string</span><span class="p">,</span> <span class="n">x</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">d</span> <span class="k">time</span><span class="p">.</span><span class="n">Duration</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">Lock</span><span class="p">()</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-    <span class="c1">// TODO: Calls to mu.Unlock are currently not deferred because defer</span>
-    <span class="c1">// adds ~200 ns (as of go1.)</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">Unlock</span><span class="p">()</span>
-<span class="p">}</span>
+<div class="highlight"><pre>// Add an item to the cache, replacing any existing item. If the duration is 0,
+// the cache&#39;s default expiration time is used. If it is -1, the item never
+// expires.
+func (c *cache) Set(k string, x interface{}, d time.Duration) {
+    c.Lock()
+    c.set(k, x, d)
+    // TODO: Calls to mu.Unlock are currently not deferred because defer
+    // adds ~200 ns (as of go1.)
+    c.Unlock()
+}
 </pre></div>
 
 
@@ -108,14 +108,16 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
-        var disqus_identifier = "posts/2014/12/defer-in-golang/";
-        var disqus_url = "http://deanthompson.github.io/posts/2014/12/defer-in-golang/";
+        var disqus_shortname = 'liyangliang';
+        var disqus_identifier = 'posts/2014/12/defer-in-golang/';
+        var disqus_url = 'http://deanthompson.github.io/posts/2014/12/defer-in-golang/';
         (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        dsq.src = '//liyangliang.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
       </script>
+      <noscript>Please enable JavaScript to view the comments.</noscript>
     </div>
 
   </article>
@@ -166,7 +168,7 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>

@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>李林克斯</title><link href="http://deanthompson.github.io/" rel="alternate"></link><link href="http://deanthompson.github.io/feeds/li-lin-ke-si.atom.xml" rel="self"></link><id>http://deanthompson.github.io/</id><updated>2015-01-12T18:42:00+08:00</updated><entry><title>Golang 里并发安全的 map 实现</title><link href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang/" rel="alternate"></link><updated>2015-01-12T18:42:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2015-01-12:posts/2015/01/concurrent-safe-map-in-golang/</id><summary type="html">&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href="http://golang.org/doc/faq#atomic_maps"&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
+&lt;h2&gt;并发安全&lt;/h2&gt;
+&lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;type&lt;/span&gt; &lt;span class="nx"&gt;syncMap&lt;/span&gt; &lt;span class="kd"&gt;struct&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;items&lt;/span&gt; &lt;span class="kd"&gt;map&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="kd"&gt;interface&lt;/span&gt;&lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="nx"&gt;sync&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;RWMutex&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 Get，Set，Delete 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
+&lt;p&gt;但是这种设计会有些性能隐患。主要是两个方面：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
+&lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;“分表”&lt;/h2&gt;
+&lt;p&gt;一种解决思路是“分表”存储，具体实现就是，基于上面的 &lt;code&gt;syncMap&lt;/code&gt; 再包装一次，用多个 &lt;code&gt;syncMap&lt;/code&gt; 来模拟实现一个 map：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;type&lt;/span&gt; &lt;span class="nx"&gt;SyncMap&lt;/span&gt; &lt;span class="kd"&gt;struct&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;shardCount&lt;/span&gt; &lt;span class="kt"&gt;uint8&lt;/span&gt;
+    &lt;span class="nx"&gt;shards&lt;/span&gt;     &lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;syncMap&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;上面这种设计用了一个 &lt;code&gt;*syncMap&lt;/code&gt; 的 slice 来保存数据，&lt;code&gt;shardCount&lt;/code&gt; 提供了分表量的可定制性。实际上 &lt;code&gt;shards&lt;/code&gt; 同样可以实现为 &lt;code&gt;map[string]*syncMap&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;在这种设计下，数据（key:value）会被分散到不同的 &lt;code&gt;syncMap&lt;/code&gt;，而每个 &lt;code&gt;syncMap&lt;/code&gt; 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。&lt;/p&gt;
+&lt;p&gt;那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash. 字符串的哈希算法有很多，byvoid 大神实现和比较了多种字符串 hash 函数（&lt;a href="https://www.byvoid.com/blog/string-hash-compare/"&gt;各种字符串Hash函数比较&lt;/a&gt;），得出结论是：“BKDRHash无论是在实际效果还是编码实现中，效果都是最突出的”。这里采用了 BKDRHash 来实现：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;seed&lt;/span&gt; &lt;span class="kt"&gt;uint32&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;131&lt;/span&gt; &lt;span class="c1"&gt;// 31 131 1313 13131 131313 etc..&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;bkdrHash&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;str&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kt"&gt;uint32&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;h&lt;/span&gt; &lt;span class="kt"&gt;uint32&lt;/span&gt;
+
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;c&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="k"&gt;range&lt;/span&gt; &lt;span class="nx"&gt;str&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;h&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;h&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;seed&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nb"&gt;uint32&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;h&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="c1"&gt;// Find the specific shard with the given key&lt;/span&gt;
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;m&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;SyncMap&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;locate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;syncMap&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;shards&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;bkdrHash&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nb"&gt;uint32&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="nx"&gt;m&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;shardCount&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;))]&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;code&gt;locate&lt;/code&gt; 方法调用 &lt;code&gt;bkdrHash&lt;/code&gt; 函数计算一个 key 的哈希值，然后用该值对分表量取模得到在 slice 的 index，之后就能定位到对应的 &lt;code&gt;syncMap&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 Get、Set、Delete等基本操作之外，迭代（range）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href="https://github.com/DeanThompson/syncmap"&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;</summary><category term="golang"></category><category term="Go"></category></entry><entry><title>Golang 的 defer 语句</title><link href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/" rel="alternate"></link><updated>2014-12-18T15:35:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-12-18:posts/2014/12/defer-in-golang/</id><summary type="html">&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://blog.golang.org/defer-panic-and-recover"&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;传递给 &lt;code&gt;defer&lt;/code&gt; 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 &lt;code&gt;0&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func a() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+    return
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;多个 &lt;code&gt;defer&lt;/code&gt; 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 &lt;code&gt;3210&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func b() {
+    for i := 0; i &amp;lt; 4; i++ {
+        defer fmt.Print(i)
+    }
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;defer&lt;/code&gt; 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 &lt;code&gt;2&lt;/code&gt; ，而不是 &lt;code&gt;1&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;func c() (i int) {
+    defer func() { i++ }()
+    return 1
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 语句配合 &lt;code&gt;panic&lt;/code&gt; 和 &lt;code&gt;recover&lt;/code&gt; 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，&lt;code&gt;defer&lt;/code&gt; 也是有些额外的开销的。&lt;/p&gt;
+&lt;p&gt;最近在看 &lt;a href="https://github.com/revel/revel"&gt;revel 框架&lt;/a&gt; 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，&lt;a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65"&gt;其中一个方法源码如下&lt;/a&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;// Add an item to the cache, replacing any existing item. If the duration is 0,
+// the cache&amp;#39;s default expiration time is used. If it is -1, the item never
+// expires.
+func (c *cache) Set(k string, x interface{}, d time.Duration) {
+    c.Lock()
+    c.set(k, x, d)
+    // TODO: Calls to mu.Unlock are currently not deferred because defer
+    // adds ~200 ns (as of go1.)
+    c.Unlock()
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这里没有用 &lt;code&gt;defer&lt;/code&gt; 来调用 &lt;code&gt;Unlock&lt;/code&gt;，而且在代码里明确注释说 &lt;code&gt;defer&lt;/code&gt; 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 &lt;code&gt;defer&lt;/code&gt;，却从没考虑过这一点。robfig 说 &lt;code&gt;defer&lt;/code&gt; 大概需要 200ns，一时兴起写了个&lt;a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1"&gt;简单的 benchmark 测试&lt;/a&gt;，来看看 Go 1.4 里究竟如何。&lt;/p&gt;
+&lt;p&gt;这是某一次测试的结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;testing: warning: no tests to run
+PASS
+BenchmarkDeferredUnlock     10000000            134 ns/op
+BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;</summary><category term="golang"></category><category term="Go"></category></entry><entry><title>不要用 fmt.Sprintf 做类型转换</title><link href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/" rel="alternate"></link><updated>2014-06-11T15:50:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-06-11:posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/</id><summary type="html">&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
+&lt;h2&gt;int to string&lt;/h2&gt;
+&lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
+&lt;p&gt;比较一下 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 和 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 的时间开销：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;package&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;strconv&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;time&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kd"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;
+
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;num&lt;/span&gt; &lt;span class="kt"&gt;int64&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;startTime&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;%d&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;num&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Since&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;startTime&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="nx"&gt;startTime&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;strconv&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;FormatInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;num&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;strconv.FormatInt taken: %v\n&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Since&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;startTime&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;fmt.Sprintf taken: 2.995178ms
+strconv.FormatInt taken: 1.057318ms
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;多次运行结果都类似，结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 的 3 倍。&lt;/p&gt;
+&lt;p&gt;同理，对于 &lt;code&gt;float64&lt;/code&gt; 类型，推荐使用 &lt;code&gt;strconv.FormatFloat&lt;/code&gt;。测试代码和上面类似，得到的结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatFloat&lt;/code&gt; 的 1.1 倍。效果没有整型明显，但依然更高效。&lt;/p&gt;
+&lt;h2&gt;hexadecimal to string&lt;/h2&gt;
+&lt;p&gt;十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 &lt;code&gt;encoding/hex&lt;/code&gt; 包提供了十六进制数的编解码函数。&lt;/p&gt;
+&lt;p&gt;下面比较一下 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 和 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的时间开销：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;package&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;crypto/md5&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;encoding/hex&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;io&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;time&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kd"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10000&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;makeMd5&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="kt"&gt;byte&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;h&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;md5&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;New&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="nx"&gt;io&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;WriteString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;h&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;h&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kc"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;s&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;123456&amp;quot;&lt;/span&gt;
+    &lt;span class="nx"&gt;hexBytes&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;makeMd5&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;s&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;s1&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;%x&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;hexBytes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;s2&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;hex&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;EncodeToString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;hexBytes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;result of fmt.Sprintf == hex.EncodeToString:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;s1&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nx"&gt;s2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;// 确保结果一致&lt;/span&gt;
+
+    &lt;span class="nx"&gt;start&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;%x&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;hexBytes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Since&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;start&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="nx"&gt;start&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;LOOP&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;hex&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;EncodeToString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;hexBytes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hex.EncodeToString taken: %v\n&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;time&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Since&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;start&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这个程序某一次的运行结果是：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;result of fmt.Sprintf == hex.EncodeToString: true
+fmt.Sprintf taken: 10.285488ms
+hex.EncodeToString taken: 2.080457ms
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
+&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;</summary><category term="golang"></category><category term="Go"></category></entry><entry><title>Golang 排序</title><link href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="alternate"></link><updated>2014-06-03T16:50:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-06-03:posts/2014/06/sort-in-golang/</id><summary type="html">&lt;h2&gt;Interface 接口&lt;/h2&gt;
+&lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;quickSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="nx"&gt;Interface&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;maxDepth&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;maxDepth&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="nx"&gt;heapSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="nx"&gt;maxDepth&lt;/span&gt;&lt;span class="o"&gt;--&lt;/span&gt;
+        &lt;span class="nx"&gt;mlo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;mhi&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;doPivot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="c1"&gt;// Avoiding recursion on the larger subproblem guarantees&lt;/span&gt;
+        &lt;span class="c1"&gt;// a stack depth of at most lg(b-a).&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;mlo&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;mhi&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="nx"&gt;quickSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;mlo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;maxDepth&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;mhi&lt;/span&gt; &lt;span class="c1"&gt;// i.e., quickSort(data, mhi, b)&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="nx"&gt;quickSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;mhi&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;maxDepth&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;b&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;mlo&lt;/span&gt; &lt;span class="c1"&gt;// i.e., quickSort(data, a, mlo)&lt;/span&gt;
+        &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;insertionSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="c1"&gt;// Sort sorts data.&lt;/span&gt;
+&lt;span class="c1"&gt;// It makes one call to data.Len to determine n, and O(n*log(n)) calls to&lt;/span&gt;
+&lt;span class="c1"&gt;// data.Less and data.Swap. The sort is not guaranteed to be stable.&lt;/span&gt;
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;Sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt; &lt;span class="nx"&gt;Interface&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.&lt;/span&gt;
+    &lt;span class="nx"&gt;n&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Len&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="nx"&gt;maxDepth&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nx"&gt;n&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;maxDepth&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="nx"&gt;maxDepth&lt;/span&gt; &lt;span class="o"&gt;*=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+    &lt;span class="nx"&gt;quickSort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;maxDepth&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。&lt;/p&gt;
+&lt;p&gt;标准库提供一个通用接口，只要实现了这个接口，就可以通过调用 &lt;code&gt;sort.Sort&lt;/code&gt; 来排序。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;type&lt;/span&gt; &lt;span class="nx"&gt;Interface&lt;/span&gt; &lt;span class="kd"&gt;interface&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;// Len is the number of elements in the collection.&lt;/span&gt;
+    &lt;span class="nx"&gt;Len&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;
+    &lt;span class="c1"&gt;// Less returns whether the element with index i should sort&lt;/span&gt;
+    &lt;span class="c1"&gt;// before the element with index j.&lt;/span&gt;
+    &lt;span class="nx"&gt;Less&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;j&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kt"&gt;bool&lt;/span&gt;
+    &lt;span class="c1"&gt;// Swap swaps the elements with indexes i and j.&lt;/span&gt;
+    &lt;span class="nx"&gt;Swap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;j&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;基本数据类型的排序&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Interface&lt;/code&gt; 接口的三个函数分别用于获取长度（&lt;code&gt;Len&lt;/code&gt;）、大小比较（&lt;code&gt;Less&lt;/code&gt;）和交换（&lt;code&gt;Swap&lt;/code&gt;）。对 &lt;code&gt;int&lt;/code&gt;、&lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，标准库已经做好了封装，直接调用即可。以 &lt;code&gt;int&lt;/code&gt; 为例简单说明：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;package&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;                                                                                                                                                                                                 
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;sort&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;29&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;76&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; 
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;     &lt;span class="c1"&gt;// [100 5 29 3 76]&lt;/span&gt;
+    &lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Ints&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;       &lt;span class="c1"&gt;// sort.Sort(IntSlice(a)) 的封装&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;     &lt;span class="c1"&gt;// [3 5 29 76 100]，默认的 Less() 实现的是升序&lt;/span&gt;
+
+    &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;29&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;76&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; 
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;     &lt;span class="c1"&gt;// [100 5 29 3 76]&lt;/span&gt;
+    &lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Reverse&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;IntSlice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;     &lt;span class="c1"&gt;// [100 76 29 5 3]&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对 &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，和上面类似。需要注意的是，默认的 &lt;code&gt;sort.Less&lt;/code&gt; 实现的是升序排列，如果想要让结果降序，可以先用 &lt;code&gt;sort.Reverse&lt;/code&gt; 包装一次。这个调用会得到一个 &lt;code&gt;reverse&lt;/code&gt; 的类型，包含一个 &lt;code&gt;Interface&lt;/code&gt; 的匿名字段，其 &lt;code&gt;Less&lt;/code&gt; 函数与 &lt;code&gt;Interface&lt;/code&gt; 里的相反，从而实现逆序。&lt;/p&gt;
+&lt;h2&gt;自定义数据类型的排序&lt;/h2&gt;
+&lt;p&gt;如果要对自定义的数据类型进行排序，需要实现 &lt;code&gt;sort.Interface&lt;/code&gt; 接口，也就是实现 &lt;code&gt;Len&lt;/code&gt;、&lt;code&gt;Less&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 三个函数。很多场景下 &lt;code&gt;Len&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 基本上和数据类型无关，所以实际上只有 &lt;code&gt;Less&lt;/code&gt; 会有差别。&lt;/p&gt;
+&lt;p&gt;例如有个游戏下载排行榜，知道游戏ID和对应的下载量，需要把数据根据下载量进行排序。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;package&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;fmt&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;math/rand&amp;quot;&lt;/span&gt;
+    &lt;span class="s"&gt;&amp;quot;sort&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="kd"&gt;type&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadItem&lt;/span&gt; &lt;span class="kd"&gt;struct&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;GameID&lt;/span&gt;        &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="c1"&gt;// 游戏ID&lt;/span&gt;
+    &lt;span class="nx"&gt;DownloadTimes&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="c1"&gt;// 下载次数&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;self&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadItem&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;String&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="kt"&gt;string&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sprintf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&amp;lt;Item(%d, %d)&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;GameID&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;self&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;DownloadTimes&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;type&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadSlice&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nx"&gt;GameDownloadItem&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;p&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadSlice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;Len&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;p&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadSlice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;Swap&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;j&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;j&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;j&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="c1"&gt;// 根据游戏下载量 降序 排列&lt;/span&gt;
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;p&lt;/span&gt; &lt;span class="nx"&gt;GameDownloadSlice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;Less&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;j&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="kt"&gt;bool&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="nx"&gt;DownloadTimes&lt;/span&gt; &lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nx"&gt;p&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;j&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="nx"&gt;DownloadTimes&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kd"&gt;func&lt;/span&gt; &lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="nx"&gt;a&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="nb"&gt;make&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;GameDownloadSlice&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;:=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nx"&gt;GameDownloadItem&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;rand&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Intn&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;)}&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[&amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(4, 59)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(7, 425)&amp;gt;]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;排序后：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[&amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(7, 425)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(4, 59)&amp;gt;]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Vs. Python&lt;/h2&gt;
+&lt;p&gt;相比之下，Python 里的排序就非常简单便捷了，直接调用 &lt;code&gt;list&lt;/code&gt; 的 &lt;code&gt;sort&lt;/code&gt; 方法（in-place）即可，还可以用 built-in 函数 &lt;code&gt;sorted&lt;/code&gt; （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 &lt;code&gt;sort&lt;/code&gt; 方法的 &lt;code&gt;key&lt;/code&gt; 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#!/usr/bin/env python                                                                                                                                                                                        &lt;/span&gt;
+&lt;span class="c"&gt;# -*- coding: utf-8 -*-&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;GameDownloadItem&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;game_id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;download_times&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;game_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;game_id&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;download_times&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;download_times&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__str__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;&amp;lt;Item(&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s"&gt;, &lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s"&gt;)&amp;gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;game_id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;download_times&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;display&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&lt;/span&gt;
+
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;__main__&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;GameDownloadItem&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;randrange&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;)]&lt;/span&gt;
+    &lt;span class="n"&gt;display&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;download_times&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;reverse&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;display&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;items&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;某一次的执行结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; 
+
+&amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; 
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="sort"></category><category term="golang"></category><category term="Go"></category><category term="python"></category></entry><entry><title>MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</title><link href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" rel="alternate"></link><updated>2014-03-02T16:16:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-03-02:posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/</id><summary type="html">&lt;p&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 和 &lt;code&gt;sync_binlog&lt;/code&gt; 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。&lt;/p&gt;
+&lt;h2&gt;1. innodb_flush_log_at_trx_commit&lt;/h2&gt;
+&lt;p&gt;简而言之，&lt;a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt;&lt;/a&gt; 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当 &lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 取值为 &lt;code&gt;0&lt;/code&gt; 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
+&lt;li&gt;当取值为 &lt;code&gt;1&lt;/code&gt; 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。&lt;/li&gt;
+&lt;li&gt;当取值为 &lt;code&gt;2&lt;/code&gt; 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 &lt;code&gt;2&lt;/code&gt; 就足够了；如果为了最高性能，可以设置为 &lt;code&gt;0&lt;/code&gt;。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;
+&lt;h2&gt;2. sync_binlog&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://dev.MySQL.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_sync_binlog"&gt;sync_binlog&lt;/a&gt; 是 MySQL 的二进制日志（binary log）同步到磁盘的频率。MySQL server 在 binary log 每写入 &lt;code&gt;sync_binlog&lt;/code&gt; 次后，刷写到磁盘。&lt;/p&gt;
+&lt;p&gt;如果 &lt;code&gt;autocommit&lt;/code&gt; 开启，每个语句都写一次 binary log，否则每次事务写一次。默认值是 &lt;code&gt;0&lt;/code&gt;，不主动同步，而依赖操作系统本身不定期把文件内容 flush 到磁盘。设为 &lt;code&gt;1&lt;/code&gt; 最安全，在每个语句或事务后同步一次 binary log，即使在崩溃时也最多丢失一个语句或事务的日志，但因此也最慢。&lt;/p&gt;
+&lt;p&gt;大多数情况下，对数据的一致性并没有很严格的要求，所以并不会把 &lt;code&gt;sync_binlog&lt;/code&gt; 配置成 &lt;code&gt;1&lt;/code&gt;. 为了追求高并发，提升性能，可以设置为 &lt;code&gt;100&lt;/code&gt; 或直接用 &lt;code&gt;0&lt;/code&gt;. 而和 &lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 一样，对于支付服务这样的应用，还是比较推荐 &lt;code&gt;sync_binlog = 1&lt;/code&gt;.&lt;/p&gt;</summary><category term="MySQL"></category><category term="innodb"></category></entry><entry><title>Flask 路由做范围限制</title><link href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/" rel="alternate"></link><updated>2014-02-26T23:15:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-02-26:posts/2014/02/range-validation-in-flask-routing/</id><summary type="html">&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
+&lt;h1&gt;1. What&lt;/h1&gt;
+&lt;p&gt;原题在这里：&lt;a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/"&gt;How to validate integer range in Flask routing (Werkzeug)?&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;简单翻译一下，大致如下：&lt;/p&gt;
+&lt;p&gt;Flask 应用里面有一个这样的路由&lt;/p&gt;
+&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;foo&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;get_foo&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/foo/&amp;lt;int:id&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo_id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;render_template&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;foo.html&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route("/foo/&amp;lt;int:id(1-300)")&lt;/code&gt;.&lt;/p&gt;
+&lt;h1&gt;2. How&lt;/h1&gt;
+&lt;p&gt;这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。&lt;/p&gt;
+&lt;p&gt;虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 &lt;a href="http://werkzeug.pocoo.org/"&gt;WSGI Utility Library: Werkzeug&lt;/a&gt; 和 &lt;a href="http://jinja.pocoo.org"&gt;模板引擎 Jinja2&lt;/a&gt;，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。&lt;/p&gt;
+&lt;h2&gt;2.1 Builtin Converters&lt;/h2&gt;
+&lt;p&gt;如前所述，Werkzeug 提供了几种 &lt;a href="http://werkzeug.pocoo.org/docs/routing/#builtin-converters"&gt;builtin converters&lt;/a&gt;，分别是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;class werkzeug.routing.UnicodeConverter(map, minlength=1, maxlength=None, length=None)&lt;/code&gt;：字符串转换器，接受除了路径类型（含有 &lt;code&gt;/&lt;/code&gt;）的所有字符串，这也是默认的转换器。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class werkzeug.routing.PathConverter(map)&lt;/code&gt;：路径类型转换器，一般用得不多吧。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class werkzeug.routing.IntegerConverter(map, fixed_digits=0, min=None, max=None)&lt;/code&gt;：整型转换器，接受并转换成 &lt;code&gt;int&lt;/code&gt; 类型，不支持负数。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class werkzeug.routing.FloatConverter(map, min=None, max=None)&lt;/code&gt;：浮点型转换器，接受并转换成 &lt;code&gt;float&lt;/code&gt; 类型，不支持负数。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class werkzeug.routing.AnyConverter(map, *items)&lt;/code&gt;：匹配任意一个给定的选项，这些选项可以是 python 标识符或字符串。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（&lt;code&gt;minlength&lt;/code&gt;）、最大长度（&lt;code&gt;maxlength&lt;/code&gt;）或者指定长度（&lt;code&gt;length&lt;/code&gt;）。IntergerConverter 和 FloatConverter 都可以指定最小值（&lt;code&gt;min&lt;/code&gt;）和最大值（&lt;code&gt;max&lt;/code&gt;）。所以看完这些，就可以解决最开始的问题了。&lt;/p&gt;
+&lt;h2&gt;2.2 Solution&lt;/h2&gt;
+&lt;p&gt;回到原题，是需要对 &lt;code&gt;id&lt;/code&gt; 做范围限制（&lt;code&gt;1～300&lt;/code&gt;），因此路由就可以这样写了（&lt;a href="http://stackoverflow.com/a/19076418/1461780"&gt;我的回答&lt;/a&gt;）：&lt;/p&gt;
+&lt;table class="highlighttable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;1
+2
+3
+4
+5&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;foo&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;get_foo&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/foo/&amp;lt;int(min=1, max=300):id&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo_id&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;render_template&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;foo.html&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;id&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;p&gt;这个路由就限定了 &lt;code&gt;id&lt;/code&gt; 的范围，对于超出范围的请求，如 &lt;code&gt;/foo/1024/&lt;/code&gt;，就会找不到对应的路由，因此会返回 &lt;code&gt;404&lt;/code&gt;。&lt;/p&gt;
+&lt;h1&gt;3. End&lt;/h1&gt;
+&lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;</summary><category term="python"></category><category term="flask"></category><category term="stackoverflow"></category></entry><entry><title>我的 2013</title><link href="http://deanthompson.github.io/posts/2014/01/my-2013/" rel="alternate"></link><updated>2014-01-01T00:01:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2014-01-01:posts/2014/01/my-2013/</id><summary type="html">&lt;p&gt;现在是 2013-12-31 22:11:24 左右，2013马上就将过去，新的一年随之来到。去年的这个时候，还在上海虎扑实习，记得那天更新版本出了问题，然后一直加班到第二天早上三四点。虽然是“加班”，其实我却在和某个人打电话，讲了100多分钟，现在都已经忘了当时的笑声和激情。&lt;/p&gt;
+&lt;p&gt;2013就这么来到。&lt;/p&gt;
+&lt;p&gt;1月份基本上都在上海度过。狭小的隔板房，冰冷的床，无聊的周末，改不完的bug，偶尔的烧烤和啤酒，公司一楼的乒乓球，中山北一路两边高大的树，对南方的思念，久违的小雪。那段日子其实挺开心，欢声笑语退去，那些生活和时间抽象成几个标签和符号，散落在记忆里，在某些时候不经意间想起。&lt;/p&gt;
+&lt;p&gt;1.23 离开上海，上海南直达井冈山。整个2月份除了过年，我都几乎想不起做过什么。对了，2月份应该回到了学校，开始“写”毕业论文。&lt;/p&gt;
+&lt;p&gt;3.10日是周日，早就想好的深圳之旅终于实现。说来可笑，在广州读了四年书，2013-03-10还是第一次到深圳。在决定去深圳玩之后，接到通知 3.11 日去快播面试。于是这次面试便成了顺便之行。“顺便”这个词很重要，因为我的目的并不在此。但是结果却是无心插柳。
+3月份买了kindle 5，开始用kindle看书。从这个时候开始，用kindle断断续续看了这些书：《看见》、《魔戒》、《悟空传》、《人面桃花》、《山河入梦》、《春尽江南》、《棋王》、《常识》、《爱你就像爱生命》、《天龙八部》、《射雕英雄传》、《神雕侠侣》、《飞狐外传》、《雪山飞狐》、《乡关何处》、《尘世挽歌》《穆斯林的葬礼》、/3本《黑客与画家》、1/3本《浪潮之巅》。算下来还是太少了，没耐心，没有好好管理时间和利用资源。&lt;/p&gt;
+&lt;p&gt;4月份的某天，听说同班六年、认识十年的同学要结婚了。“论文”成了生活的主题。讽刺的是，其实大多数时间都不知道用到哪里去了。打了很多篮球，听了很多音乐，睡了很多懒觉，写了一些代码。&lt;/p&gt;
+&lt;p&gt;5月，12日前的某一天，好像交了论文的终稿。没有认真选题，也没有好好实现，所谓的毕业论文有点像是应付了事。这些天的某一天，在微信朋友圈看到另一个同学的一条消息，具体内容忘了，只记得郁闷了几天。后来去旅游了，计划已久的毕业旅行，脱离班级大集体的毕业旅行。四个人去了阳朔，逛了西街，漂了遇龙河，骑了十里画廊（其实是从西街到银子岩），看了溶洞。吃得差且贵，啤酒鱼听到就想吐。没有去酒吧。在西街被塞了几张名片，微信附近的人收到好多打招呼，了解了价格和行情（笑）。火车去火车回，回来的时候在桂林看了一场电影，《中国合伙人》。&lt;/p&gt;
+&lt;p&gt;6.3 日入职了，以菜鸟身份开始职业生涯。熟悉环境，理解需求，看代码，读文档。一个星期学会Flask（、Sqlalchemy、Jinja2）工具链，小打小闹，不急不慢，然后在7月份完成了自己的第一个项目。从设计到实现到测试到上线，几经波折，最后其实还是挺高兴的。记得当时还傻逼兮兮的给好多同事发了邮件，表示感谢，哈哈。真有意思。&lt;/p&gt;
+&lt;p&gt;6月份的周末都没有休息，全部用在广州深圳之间来回奔波。在深圳上班，而且是毕业前入职，导致我大学最后一个月错过了很多和同学们相聚的机会。穿学士服，拍毕业照；穿民国风，拍毕业照。从图书馆到教学楼，从东校区到南校区。6月的最后一周，请了2天假参加毕业典礼，因此错过了部门组织的厦门旅游。唱校歌，和校长握手，拿毕业证书，还学士服。大学就这么结束了。在任何时刻想起自己的毕业季，都是那么单薄，寥寥数笔就能写完。但再怎么单薄，人的一生中总要很多仪式和里程碑，而大学毕业步入职场，基本上也是结婚以前最重要的一步了。&lt;/p&gt;
+&lt;p&gt;全职工作之后，生活更加简单。工作很投入，每天晚上下班很晚，有时候周六也加班。七八月份可能是加班最多的两个月了，做了一些东西，工作和业务更加熟练，也学到很多新知识。Python、Flask、Nginx、Linux、Vim、Mysql、jQuery...都开始接触或更加熟练。&lt;/p&gt;
+&lt;p&gt;9.3 日结束试用期，顺利转正。工作稍微更轻松了一些，也被安排去学习Hadoop。9.12开始在在StackOverflow答题，在一个月内积累了330个reputation，受益于公司内部的奖励政策，在10月份用这些reputation以1:20的比例兑换了6600 RMB的天虹购物卡。于是后来可耻地入手了Iphone 5S 32G。开始打羽毛球，每周一晚上和周六下午，各两个小时。&lt;/p&gt;
+&lt;p&gt;国庆的时候回了家里，哥哥恰好也回家。金秋十月，家里已经比较清凉了。生活了二十年的老房子已经拆掉了，在原来的地址建新房。新房子盖好了2层，父亲在家每天为这个事情操劳，晒黑了，变瘦了。&lt;/p&gt;
+&lt;p&gt;工作和学习似乎都没什么东西可写，真是硬伤。11.11，在天猫给父亲买了个手机，考虑和比较了很久，最后买了个新潮的魅族MX2. 2个星期才到货，到手后还折腾了很久才会用。折腾的时候还真有点后悔买这个，担心他不会用，用不习惯。现在看来应该还挺好。&lt;/p&gt;
+&lt;p&gt;今年的冬天似乎是在广东这几年感觉到最冷的一次，或者其实是我自己变得更怕冷了。前几天买了个新的、更长的被子，才没有在睡觉时不经意就把脚伸出外面的尴尬和痛苦。12.25 圣诞节，鬼使神差的做了一件事，让原本以为会平平淡淡过去的一年多了一层意义。12.27，一个同事开始休年假，而且元旦周末事假各种加在一起要离开10天，于是这几天忙得不可开交，处理各种临时需求之后都没什么时间去做自己的任务。&lt;/p&gt;
+&lt;p&gt;好吧，流水帐就写到这里。 &lt;/p&gt;
+&lt;p&gt;你好，2014. &lt;/p&gt;</summary><category term="随笔"></category></entry><entry><title>less 命令支持语法高亮和行号</title><link href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/" rel="alternate"></link><updated>2013-11-03T00:30:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2013-11-03:posts/2013/11/less-with-syntax-highlight-and-line-number/</id><summary type="html">&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;less is more&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;1. How&lt;/h1&gt;
+&lt;p&gt;less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，&lt;a href="http://www.gnu.org/software/src-highlite/"&gt;source-highlight&lt;/a&gt; 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo apt-get install &lt;span class="nb"&gt;source&lt;/span&gt;-highlight
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# less hightlight&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LESSOPEN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LESS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; -R &amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;使配置生效：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;source&lt;/span&gt; ~/.bashrc
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;
+&lt;h1&gt;2. Why&lt;/h1&gt;
+&lt;p&gt;接下来看看到底发生了什么事情，可以做到这么「神奇」的效果。&lt;/p&gt;
+&lt;h2&gt;2.1. LESSOPEN&lt;/h2&gt;
+&lt;p&gt;首先来看&lt;code&gt;source-highlight&lt;/code&gt;，这个工具可以根据给定的源文件，读取动态读取语言特性，然后输出一个语法高亮的文件，支持多种输出格式，如 HTML、XHTML、LATEX、 「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」等；默认是 HTML格式。最后一种输出格式是 ANSI 颜色转义序列，支持彩色。这种输出格式恰好可以和 less 结合使用，使其输出结果支持语法高亮。&lt;/p&gt;
+&lt;p&gt;再看 &lt;code&gt;LESSOPEN&lt;/code&gt;。查看 less 的 man 帮助手册，可以看到 less 支持一个叫 「input preprocessor」的东西，可以在 less 打开源文件之前对源文件进行一次预处理。这个「input preprocessor」 可以自己定义：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;To  set up an input preprocessor, set the LESSOPEN environment variable to a command line which will invoke your input preprocessor.  This command line should include one occurrence of the string "%s", which will be replaced by the  filename  when  the input preprocessor command is invoked.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;上面这句话说明了如何使用自己定义的预处理器，就是设置一下 &lt;code&gt;LESSOPEN&lt;/code&gt; 这个环境变量。那么 &lt;code&gt;LESSOPEN&lt;/code&gt; 到底是什么呢？ 可以在帮助手册找到定义：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Command line to invoke the (optional) input-preprocessor.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;LESSOPEN&lt;/code&gt; 指定一个「input preprocessor」，后面用 &lt;code&gt;%s&lt;/code&gt; 读取文件路径。可以看到上面的配置中，有一个前导的竖线 &lt;code&gt;|&lt;/code&gt;。熟悉 &lt;code&gt;*nix&lt;/code&gt; 命令行的人知道这是管道，这个竖线表示把「input preprocessor」的处理结果写到标准输出（standard output），然后 less 通过 input pipe 读取再显示到屏幕上。&lt;/p&gt;
+&lt;h2&gt;2.2. LESS&lt;/h2&gt;
+&lt;p&gt;另一个变量是 &lt;code&gt;LESS&lt;/code&gt;，同样查看帮助手册：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Options which are passed to less automatically.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;也就是自动传给 less 的选项，相当于缺省参数。上面设置的缺省选项是 &lt;code&gt;-R&lt;/code&gt;，看看 &lt;code&gt;-R&lt;/code&gt; 选项的意义：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;-R or --RAW-CONTROL-CHARS&lt;/p&gt;
+&lt;p&gt;Like -r, but only ANSI "color" escape sequences are output in "raw" form. ...&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这个选项的意义是，对于「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」是直接输出的，而不错其他处理。上面用 &lt;code&gt;source-highlight&lt;/code&gt; 提供的 src-hilite-lesspipe.sh 脚本用作 「input preprocessor」把源文件进行了高亮处理，并且输出「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」格式，这里设置 &lt;code&gt;-R&lt;/code&gt; 选项刚好可以把这个高亮过后的字符序列直接输出，因此就可以看到 less 下的语法高亮。&lt;/p&gt;
+&lt;h1&gt;3. More...&lt;/h1&gt;
+&lt;p&gt;在第二节里说到 &lt;code&gt;LESS&lt;/code&gt; 这个环境变量，同理，可以设置其他默认选项，比如 &lt;code&gt;-N&lt;/code&gt;。&lt;code&gt;-N&lt;/code&gt; 选项的意义相对更为显然：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;-N or --LINE-NUMBERS&lt;/p&gt;
+&lt;p&gt;Causes a line number to be displayed at the beginning of each line in the display.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;就是在每一行开头显示行号。这个非常有用啊～于是只要修改一下配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;LESS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot; -R -N &amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样一来，就可以在 less 时既能语法高亮，还能查看行号，感觉很不错的说。试着贴一张效果图看看。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="less-with-syntax-highlight-and-line-number" src="http://ww3.sinaimg.cn/large/65df5320tw1ea3o9tmdirj20ch0alq3h.jpg" /&gt;&lt;/p&gt;
+&lt;h1&gt;4. References&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;GNU Source-highlight: &lt;a href="http://www.gnu.org/software/src-highlite/"&gt;http://www.gnu.org/software/src-highlite/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Powering Less to Highlight Syntax and Display Line Numbers:  &lt;a href="http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/"&gt;http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;</summary><category term="linux"></category><category term="less"></category></entry><entry><title>【翻译】理解 python 装饰器</title><link href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators/" rel="alternate"></link><updated>2013-03-13T00:26:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2013-03-13:posts/2013/03/understand-python-decorators/</id><summary type="html">&lt;h2&gt;Note&lt;/h2&gt;
+&lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484"&gt;Understanding Python decorators&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h1&gt;1. python的函数是对象（Python's functions are objects）&lt;/h1&gt;
+&lt;p&gt;要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;shout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;capitalize&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;!&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;shout&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
+
+&lt;span class="c"&gt;# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量&lt;/span&gt;
+
+&lt;span class="n"&gt;scream&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;shout&lt;/span&gt;
+
+&lt;span class="c"&gt;# 注意我们没有用括号：我们不是在调用函数，&lt;/span&gt;
+&lt;span class="c"&gt;# 而是把函数&amp;#39;shout&amp;#39;的值绑定到&amp;#39;scream&amp;#39;这个变量上&lt;/span&gt;
+&lt;span class="c"&gt;# 这也意味着你可以通过&amp;#39;scream&amp;#39;这个变量来调用&amp;#39;shout&amp;#39;函数&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;scream&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
+
+&lt;span class="c"&gt;# 不仅如此，这也还意味着你可以把原来的名字&amp;#39;shout&amp;#39;删掉，&lt;/span&gt;
+&lt;span class="c"&gt;# 而这个函数仍然可以通过&amp;#39;scream&amp;#39;来访问&lt;/span&gt;
+&lt;span class="k"&gt;del&lt;/span&gt; &lt;span class="n"&gt;shout&lt;/span&gt;
+&lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;shout&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;NameError&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;
+    &lt;span class="c"&gt;#outputs: &amp;quot;name &amp;#39;shout&amp;#39; is not defined&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;scream&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;outputs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;Yes!&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;talk&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+
+    &lt;span class="c"&gt;# 你可以在 &amp;#39;talk&amp;#39; 里动态的(on the fly)定义一个函数...&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;whisper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;...&amp;quot;&lt;/span&gt;
+
+    &lt;span class="c"&gt;# ... 然后马上调用它！&lt;/span&gt;
+
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;whisper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c"&gt;# 每当调用&amp;#39;talk&amp;#39;，都会定义一次&amp;#39;whisper&amp;#39;，然后&amp;#39;whisper&amp;#39;在&amp;#39;talk&amp;#39;里被调用&lt;/span&gt;
+&lt;span class="n"&gt;talk&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;# outputs:&lt;/span&gt;
+&lt;span class="c"&gt;# &amp;quot;yes...&amp;quot;&lt;/span&gt;
+
+&lt;span class="c"&gt;# 但是&amp;quot;whisper&amp;quot; 在 &amp;quot;talk&amp;quot;外并不存在:&lt;/span&gt;
+
+&lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;whisper&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;NameError&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;
+    &lt;span class="c"&gt;#outputs : &amp;quot;name &amp;#39;whisper&amp;#39; is not defined&amp;quot;*&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;2. 函数引用（Functions references）&lt;/h1&gt;
+&lt;p&gt;OK，还在吧？！现在到了有趣的部分，你刚刚已经知道了，python的函数也是对象，因此：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以被赋值给变量&lt;/li&gt;
+&lt;li&gt;可以在另一个函数体内定义&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;那么，这样就意味着一个函数可以返回另一个函数 :-)，来看个例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;getTalk&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;shout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="c"&gt;# 我们先动态定义一些函数&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;shout&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;capitalize&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;!&amp;quot;&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;whisper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;word&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;...&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="c"&gt;# 然后返回其中一个&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;type&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;shout&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="c"&gt;# 注意：我们是在返回函数对象，而不是调用函数，&lt;/span&gt;
+        &lt;span class="c"&gt;# 所以不要用到括号 &amp;quot;()&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;shout&lt;/span&gt; 
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;whisper&lt;/span&gt;
+
+&lt;span class="c"&gt;# 那你改如何使用这个怪兽呢？(How do you use this strange beast?)&lt;/span&gt;
+
+&lt;span class="c"&gt;# 先把函数赋值给一个变量&lt;/span&gt;
+&lt;span class="n"&gt;talk&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;getTalk&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c"&gt;# 你可以发现 &amp;quot;talk&amp;quot; 其实是一个函数对象:&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;talk&lt;/span&gt;
+&lt;span class="c"&gt;#outputs : &amp;lt;function shout at 0xb7ea817c&amp;gt;&lt;/span&gt;
+
+&lt;span class="c"&gt;# 这个对象就是 getTalk 函数返回的:&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;talk&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs : Yes!&lt;/span&gt;
+
+&lt;span class="c"&gt;# 你甚至还可以直接这样使用(if you feel wild):&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;getTalk&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;whisper&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs : yes...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;但是等等，还有呢。既然可以返回一个函数，那么也就可以像参数一样传递：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;doSomethingBefore&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I do something before then I call the function you gave me&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;doSomethingBefore&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scream&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I do something before then I call the function you gave me&lt;/span&gt;
+&lt;span class="c"&gt;#Yes!&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;那好，你现在已经具备了理解装饰器的所有基础知识了。你看，装饰器也就是一种包装材料，&lt;strong&gt;它们可以让你在执行被装饰的函数之前或之后执行其他代码，而且不需要修改函数本身&lt;/strong&gt;。（原句比较长：You see, decorators are wrappers which means that they let you execute code before and after the function they decorate without the need to modify the function itself.）&lt;/p&gt;
+&lt;h1&gt;3. 手工制作装饰器（Handcrafted decorators）&lt;/h1&gt;
+&lt;p&gt;你可以像这样来定制：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# 一个装饰器是一个需要另一个函数作为参数的函数&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_shiny_new_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a_function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="c"&gt;# 在装饰器内部动态定义一个函数：wrapper(原意：包装纸).&lt;/span&gt;
+    &lt;span class="c"&gt;# 这个函数将被包装在原始函数的四周&lt;/span&gt;
+    &lt;span class="c"&gt;# 因此就可以在原始函数之前和之后执行一些代码.&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;the_wrapper_around_the_original_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+
+        &lt;span class="c"&gt;# 把想要在调用原始函数前运行的代码放这里&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Before the function runs&amp;quot;&lt;/span&gt;
+
+        &lt;span class="c"&gt;# 调用原始函数（需要带括号）&lt;/span&gt;
+        &lt;span class="n"&gt;a_function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+        &lt;span class="c"&gt;# 把想要在调用原始函数后运行的代码放这里&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;After the function runs&amp;quot;&lt;/span&gt;
+
+    &lt;span class="c"&gt;# 直到现在，&amp;quot;a_function_to_decorate&amp;quot;还没有执行过 (HAS NEVER BEEN EXECUTED).&lt;/span&gt;
+    &lt;span class="c"&gt;# 我们把刚刚创建的 wrapper 函数返回.&lt;/span&gt;
+    &lt;span class="c"&gt;# wrapper 函数包含了这个函数，还有一些需要提前后之后执行的代码，&lt;/span&gt;
+    &lt;span class="c"&gt;# 可以直接使用了（It&amp;#39;s ready to use!）&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;the_wrapper_around_the_original_function&lt;/span&gt;
+
+&lt;span class="c"&gt;# Now imagine you create a function you don&amp;#39;t want to ever touch again.&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;a_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am a stand alone function, don&amp;#39;t you dare modify me&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;a_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: I am a stand alone function, don&amp;#39;t you dare modify me&lt;/span&gt;
+
+&lt;span class="c"&gt;# 现在，你可以装饰一下来修改它的行为.&lt;/span&gt;
+&lt;span class="c"&gt;# 只要简单的把它传递给装饰器，后者能用任何你想要的代码动态的包装&lt;/span&gt;
+&lt;span class="c"&gt;# 而且返回一个可以直接使用的新函数:&lt;/span&gt;
+
+&lt;span class="n"&gt;a_stand_alone_function_decorated&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my_shiny_new_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;a_stand_alone_function_decorated&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#Before the function runs&lt;/span&gt;
+&lt;span class="c"&gt;#I am a stand alone function, don&amp;#39;t you dare modify me&lt;/span&gt;
+&lt;span class="c"&gt;#After the function runs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;现在你大概希望，每次调用 &lt;code&gt;a_stand_alone_function&lt;/code&gt; 时，实际调用的是 &lt;code&gt;a_stand_alone_function_decorated&lt;/code&gt; 。这很容易，只要把 &lt;code&gt;my_shiny_new_decorator&lt;/code&gt; 返回的函数覆盖 &lt;code&gt;a_stand_alone_function&lt;/code&gt; 就可以了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;a_stand_alone_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my_shiny_new_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;a_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#Before the function runs&lt;/span&gt;
+&lt;span class="c"&gt;#I am a stand alone function, don&amp;#39;t you dare modify me&lt;/span&gt;
+&lt;span class="c"&gt;#After the function runs&lt;/span&gt;
+
+&lt;span class="c"&gt;# And guess what? That&amp;#39;s EXACTLY what decorators do!&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;4. 揭秘装饰器(Decorators demystified)&lt;/h1&gt;
+&lt;p&gt;我们用装饰器的语法来重写一下前面的例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@my_shiny_new_decorator&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;another_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Leave me alone&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;another_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; 
+&lt;span class="c"&gt;#outputs: &lt;/span&gt;
+&lt;span class="c"&gt;#Before the function runs&lt;/span&gt;
+&lt;span class="c"&gt;#Leave me alone&lt;/span&gt;
+&lt;span class="c"&gt;#After the function runs&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;是的，这就完了，就这么简单。&lt;code&gt;@decorator&lt;/code&gt; 只是下面这条语句的简写(shortcut)：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;another_stand_alone_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my_shiny_new_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;another_stand_alone_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;装饰器其实就是装饰器模式的一个python化的变体（pythonic variant）。为了方便开发，python已经内置了好几种经典的设计模式，比如迭代器（iterators）。
+当然，你还可以堆积使用装饰器(you can cumulate decorators)：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;bread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;/&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;\&amp;gt;&amp;quot;&lt;/span&gt;
+        &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;\______/&amp;gt;&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;ingredients&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;#tomatoes#&amp;quot;&lt;/span&gt;
+        &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;~salad~&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;food&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;--ham--&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;food&lt;/span&gt;
+
+&lt;span class="n"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: --ham--&lt;/span&gt;
+&lt;span class="n"&gt;sandwich&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;bread&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ingredients&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="n"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;/&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;\&amp;gt;&lt;/span&gt;
+&lt;span class="c"&gt;# #tomatoes#&lt;/span&gt;
+&lt;span class="c"&gt;# --ham--&lt;/span&gt;
+&lt;span class="c"&gt;# ~salad~&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;\______/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;用python的装饰器语法表示：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@bread&lt;/span&gt;
+&lt;span class="nd"&gt;@ingredients&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;food&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;--ham--&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;food&lt;/span&gt;
+
+&lt;span class="n"&gt;sandwich&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;/&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;\&amp;gt;&lt;/span&gt;
+&lt;span class="c"&gt;# #tomatoes#&lt;/span&gt;
+&lt;span class="c"&gt;# --ham--&lt;/span&gt;
+&lt;span class="c"&gt;# ~salad~&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;\______/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;装饰器放置的顺序 &lt;strong&gt;很重要&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@ingredients&lt;/span&gt;
+&lt;span class="nd"&gt;@bread&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;strange_sandwich&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;food&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;--ham--&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;food&lt;/span&gt;
+
+&lt;span class="n"&gt;strange_sandwich&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;##tomatoes#&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;/&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;&amp;#39;\&amp;gt;&lt;/span&gt;
+&lt;span class="c"&gt;# --ham--&lt;/span&gt;
+&lt;span class="c"&gt;#&amp;lt;\______/&amp;gt;&lt;/span&gt;
+&lt;span class="c"&gt;# ~salad~&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;5. 回答题主问题，略&lt;/h1&gt;
+&lt;h1&gt;6. 给装饰器函数传参（Passing arguments to the decorated function）&lt;/h1&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# 这不是什么黑色魔法(black magic)，你只是必须让wrapper传递参数:&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;a_decorator_passing_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;a_wrapper_accepting_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I got args! Look:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;arg2&lt;/span&gt;
+        &lt;span class="n"&gt;function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;arg2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a_wrapper_accepting_arguments&lt;/span&gt;
+
+&lt;span class="c"&gt;# 当你调用装饰器返回的函数式，你就在调用wrapper，而给wrapper的&lt;/span&gt;
+&lt;span class="c"&gt;# 参数传递将会让它把参数传递给要装饰的函数&lt;/span&gt;
+
+&lt;span class="nd"&gt;@a_decorator_passing_arguments&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;print_full_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;first_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;last_name&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;My name is&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;first_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;last_name&lt;/span&gt;
+
+&lt;span class="n"&gt;print_full_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Peter&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Venkman&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;# outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I got args! Look: Peter Venkman&lt;/span&gt;
+&lt;span class="c"&gt;#My name is Peter Venkman&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;7. 装饰方法（Decorating methods）&lt;/h1&gt;
+&lt;p&gt;Python的一个伟大之处在于：方法和函数几乎是一样的(methods and functions are really the same)，除了方法的第一个参数应该是当前对象的引用(也就是 self)。这也就意味着只要记住把 self 考虑在内，你就可以用同样的方法给方法创建装饰器了：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;method_friendly_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;method_to_decorate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;lie&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="c"&gt;# very friendly, decrease age even more :-)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;method_to_decorate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Lucy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;32&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@method_friendly_decorator&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sayYourAge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt;, what did you think?&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;l&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Lucy&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;l&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sayYourAge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: I am 26, what did you think?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当然，如果你想编写一个非常通用的装饰器，可以用来装饰任意函数和方法，你就可以无视具体参数了，直接使用 &lt;code&gt;*args&lt;/code&gt;, &lt;code&gt;**kwargs&lt;/code&gt; 就行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;a_decorator_passing_arbitrary_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="c"&gt;# The wrapper accepts any arguments&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;a_wrapper_accepting_arbitrary_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Do I have args?:&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+        &lt;span class="c"&gt;# Then you unpack the arguments, here *args, **kwargs&lt;/span&gt;
+        &lt;span class="c"&gt;# If you are not familiar with unpacking, check:&lt;/span&gt;
+        &lt;span class="c"&gt;# http://www.saltycrane.com/blog/2008/01/how-to-use-args-and-kwargs-in-python/&lt;/span&gt;
+        &lt;span class="n"&gt;function_to_decorate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a_wrapper_accepting_arbitrary_arguments&lt;/span&gt;
+
+&lt;span class="nd"&gt;@a_decorator_passing_arbitrary_arguments&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;function_with_no_argument&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Python is cool, no argument here.&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;function_with_no_argument&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs&lt;/span&gt;
+&lt;span class="c"&gt;#Do I have args?:&lt;/span&gt;
+&lt;span class="c"&gt;#()&lt;/span&gt;
+&lt;span class="c"&gt;#{}&lt;/span&gt;
+&lt;span class="c"&gt;#Python is cool, no argument here.&lt;/span&gt;
+
+&lt;span class="nd"&gt;@a_decorator_passing_arbitrary_arguments&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;
+
+&lt;span class="n"&gt;function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs&lt;/span&gt;
+&lt;span class="c"&gt;#Do I have args?:&lt;/span&gt;
+&lt;span class="c"&gt;#(1, 2, 3)&lt;/span&gt;
+&lt;span class="c"&gt;#{}&lt;/span&gt;
+&lt;span class="c"&gt;#1 2 3&lt;/span&gt;
+
+&lt;span class="nd"&gt;@a_decorator_passing_arbitrary_arguments&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;function_with_named_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;platypus&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Why not ?&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Do &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt;, &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt; and &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt; like platypus? &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt;\
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;platypus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;function_with_named_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Bill&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Linus&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Steve&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;platypus&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Indeed!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs&lt;/span&gt;
+&lt;span class="c"&gt;#Do I have args ? :&lt;/span&gt;
+&lt;span class="c"&gt;#(&amp;#39;Bill&amp;#39;, &amp;#39;Linus&amp;#39;, &amp;#39;Steve&amp;#39;)&lt;/span&gt;
+&lt;span class="c"&gt;#{&amp;#39;platypus&amp;#39;: &amp;#39;Indeed!&amp;#39;}&lt;/span&gt;
+&lt;span class="c"&gt;#Do Bill, Linus and Steve like platypus? Indeed!&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Mary&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;31&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@a_decorator_passing_arbitrary_arguments&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;sayYourAge&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="o"&gt;=-&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt; &lt;span class="c"&gt;# You can now add a default value&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am &lt;/span&gt;&lt;span class="si"&gt;%s&lt;/span&gt;&lt;span class="s"&gt;, what did you think ?&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;lie&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;m&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Mary&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sayYourAge&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs&lt;/span&gt;
+&lt;span class="c"&gt;# Do I have args?:&lt;/span&gt;
+&lt;span class="c"&gt;#(&amp;lt;__main__.Mary object at 0xb7d303ac&amp;gt;,)&lt;/span&gt;
+&lt;span class="c"&gt;#{}&lt;/span&gt;
+&lt;span class="c"&gt;#I am 28, what did you think?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;8. 给装饰器传参（Passing arguments to the decorator）&lt;/h1&gt;
+&lt;p&gt;太棒了，那么现在对于给装饰器本身传参数，你有什么看法呢？好吧，这样说有点绕，因为装饰器必须接受一个函数作为参数，所以就不能把被装饰的函数的参数，直接传给装饰器（you cannot pass the decorated function arguments directly to the decorator.）&lt;/p&gt;
+&lt;p&gt;在直奔答案之前，我们先写一个小提示：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Decorators are ORDINARY functions&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am a ordinary function&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am function returned by the decorator&amp;quot;&lt;/span&gt;
+        &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="c"&gt;# Therefore, you can call it without any &amp;quot;@&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;lazy_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;zzzzzzzz&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;decorated_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;my_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;lazy_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: I am a ordinary function&lt;/span&gt;
+
+&lt;span class="c"&gt;# It outputs &amp;quot;I am a ordinary function&amp;quot;, because that&amp;#39;s just what you do:&lt;/span&gt;
+&lt;span class="c"&gt;# calling a function. Nothing magic.&lt;/span&gt;
+
+&lt;span class="nd"&gt;@my_decorator&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;lazy_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;zzzzzzzz&amp;quot;&lt;/span&gt;
+
+&lt;span class="c"&gt;#outputs: I am a ordinary function&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这完全一样，都是 &lt;code&gt;my_decorator&lt;/code&gt; 被调用。所以当你使用 &lt;code&gt;@my_decorator&lt;/code&gt; 时，你在告诉 python 去调用 “被变量 &lt;code&gt;my_decorator&lt;/code&gt; 标记的” 函数（the function 'labeled by the variable "my_decorator"'）。这很重要，因为你给的这个标签能直接指向装饰器。。。或者其他！让我们开始变得邪恶！（Let's start to be evil!）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorator_maker&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I make decorators! I am executed only once: &amp;quot;&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;\
+          &lt;span class="s"&gt;&amp;quot;when you make me create a decorator.&amp;quot;&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am a decorator! I am executed only when you decorate a function.&amp;quot;&lt;/span&gt;
+
+        &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapped&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+            &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I am the wrapper around the decorated function. &amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;I am called when you call the decorated function. &amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;As the wrapper, I return the RESULT of the decorated function.&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;As the decorator, I return the wrapped function.&amp;quot;&lt;/span&gt;
+
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapped&lt;/span&gt;
+
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;As a decorator maker, I return a decorator&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;my_decorator&lt;/span&gt;
+
+&lt;span class="c"&gt;# Let&amp;#39;s create a decorator. It&amp;#39;s just a new function after all.&lt;/span&gt;
+&lt;span class="n"&gt;new_decorator&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;decorator_maker&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;      
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I make decorators! I am executed only once: when you make me create a decorator.&lt;/span&gt;
+&lt;span class="c"&gt;#As a decorator maker, I return a decorator&lt;/span&gt;
+
+&lt;span class="c"&gt;# Then we decorate the function&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am the decorated function.&amp;quot;&lt;/span&gt;
+
+&lt;span class="n"&gt;decorated_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;new_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I am a decorator! I am executed only when you decorate a function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the decorator, I return the wrapped function&lt;/span&gt;
+
+&lt;span class="c"&gt;# Let&amp;#39;s call the function:&lt;/span&gt;
+&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I am the wrapper around the decorated function. I am called when you call the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the wrapper, I return the RESULT of the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorated function.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;不要感到惊讶，让我们做一件完全一样的事情，只不过跳过了中间变量：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am the decorated function.&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;decorated_function&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;decorator_maker&lt;/span&gt;&lt;span class="p"&gt;()(&lt;/span&gt;&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I make decorators! I am executed only once: when you make me create a decorator.&lt;/span&gt;
+&lt;span class="c"&gt;#As a decorator maker, I return a decorator&lt;/span&gt;
+&lt;span class="c"&gt;#I am a decorator! I am executed only when you decorate a function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the decorator, I return the wrapped function.&lt;/span&gt;
+
+&lt;span class="c"&gt;# Finally:&lt;/span&gt;
+&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;   
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I am the wrapper around the decorated function. I am called when you call the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the wrapper, I return the RESULT of the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorated function.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;再做一次，代码甚至更短：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@decorator_maker&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am the decorated function.&amp;quot;&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I make decorators! I am executed only once: when you make me create a decorator.&lt;/span&gt;
+&lt;span class="c"&gt;#As a decorator maker, I return a decorator&lt;/span&gt;
+&lt;span class="c"&gt;#I am a decorator! I am executed only when you decorate a function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the decorator, I return the wrapped function.&lt;/span&gt;
+
+&lt;span class="c"&gt;#Eventually:&lt;/span&gt;
+&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;   
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I am the wrapper around the decorated function. I am called when you call the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#As the wrapper, I return the RESULT of the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorated function.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;嘿，看到了吗？我们在用 &lt;code&gt;@&lt;/code&gt; 语法调用了函数 ：-）
+那么回到带参数的装饰器。如果我们能够使用一个函数动态（on the fly）的生成装饰器，那么我们就能把参数传递给那个函数，对吗？&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorator_maker_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;decorator_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I make decorators! And I accept arguments:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg2&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;my_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="c"&gt;# 在这里能传参数是一个来自闭包的馈赠.&lt;/span&gt;
+        &lt;span class="c"&gt;# 如果你对闭包感到不舒服，你可以直接忽略（you can assume it&amp;#39;s ok）,&lt;/span&gt;
+        &lt;span class="c"&gt;# 或者看看这里: http://stackoverflow.com/questions/13857/can-you-explain-closures-as-they-relate-to-python&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;I am the decorator. Somehow you passed me arguments:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg2&lt;/span&gt;
+
+        &lt;span class="c"&gt;# 不要把装饰器参数和函数参数搞混了！&lt;/span&gt;
+        &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapped&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I am the wrapper around the decorated function.&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;I can access all the variables&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="se"&gt;\t&lt;/span&gt;&lt;span class="s"&gt;- from the decorator: {0} {1}&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="se"&gt;\t&lt;/span&gt;&lt;span class="s"&gt;- from the function call: {2} {3}&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;
+                  &lt;span class="s"&gt;&amp;quot;Then I can pass them to the decorated function&amp;quot;&lt;/span&gt;
+                  &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;decorator_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;decorator_arg2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                          &lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapped&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;my_decorator&lt;/span&gt;
+
+&lt;span class="nd"&gt;@decorator_maker_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Leonard&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Sheldon&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I am the decorated function and only knows about my arguments: {0}&amp;quot;&lt;/span&gt;
+           &lt;span class="s"&gt;&amp;quot; {1}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="n"&gt;decorated_function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Rajesh&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Howard&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I make decorators! And I accept arguments: Leonard Sheldon&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorator. Somehow you passed me arguments: Leonard Sheldon&lt;/span&gt;
+&lt;span class="c"&gt;#I am the wrapper around the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#I can access all the variables&lt;/span&gt;
+&lt;span class="c"&gt;#   - from the decorator: Leonard Sheldon&lt;/span&gt;
+&lt;span class="c"&gt;#   - from the function call: Rajesh Howard&lt;/span&gt;
+&lt;span class="c"&gt;#Then I can pass them to the decorated function&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorated function and only knows about my arguments: Rajesh Howard&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这就是了，带参数的装饰器。参数也可以设置为变量：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;c1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Penny&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;c2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Leslie&amp;quot;&lt;/span&gt;
+
+&lt;span class="nd"&gt;@decorator_maker_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Leonard&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;c1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;I am the decorated function and only knows about my arguments:&amp;quot;&lt;/span&gt;
+           &lt;span class="s"&gt;&amp;quot; {0} {1}&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="n"&gt;decorated_function_with_arguments&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Howard&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#I make decorators! And I accept arguments: Leonard Penny&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorator. Somehow you passed me arguments: Leonard Penny&lt;/span&gt;
+&lt;span class="c"&gt;#I am the wrapper around the decorated function.&lt;/span&gt;
+&lt;span class="c"&gt;#I can access all the variables&lt;/span&gt;
+&lt;span class="c"&gt;#   - from the decorator: Leonard Penny&lt;/span&gt;
+&lt;span class="c"&gt;#   - from the function call: Leslie Howard&lt;/span&gt;
+&lt;span class="c"&gt;#Then I can pass them to the decorated function&lt;/span&gt;
+&lt;span class="c"&gt;#I am the decorated function and only knows about my arguments: Leslie Howard&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;如你所见，你可以给装饰器传递参数，就好像其他任意一个使用了这种把戏的函数一样（you can pass arguments to the decorator like any function using this trick. ）。如果你愿意，甚至可以使用 &lt;code&gt;*args&lt;/code&gt;, &lt;code&gt;**kwargs&lt;/code&gt;。但是，记住，装置器只调用一次，仅当python导入这个脚本时。你不能在之后动态的设置参数（You can't dynamically set the arguments afterwards.）。当你执行 &lt;code&gt;import x&lt;/code&gt; 时，这个函数已经被装饰了，因此你不能修改任何东西。&lt;/p&gt;
+&lt;h1&gt;9. 实践：装饰器装饰一个装饰器（Let's practice: a decorator to decorate a decorator）&lt;/h1&gt;
+&lt;p&gt;OK，作为一个福利，我将展示一段能用来创建能接受通用的任意参数的装饰器的代码（I'll give you a snippet to make any decorator accept generically any argument. ）。毕竟，为了能接受参数，我们用了另一个函数来创建我们的装饰器。我们包装了装饰器。在我们刚刚看到的东西里，还有用来包装函数的吗？是的，就是装饰器。让我们给装饰器写一个装饰器来玩玩：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorator_with_args&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;decorator_to_enhance&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="sd"&gt;    This function is supposed to be used as a decorator.&lt;/span&gt;
+&lt;span class="sd"&gt;    It must decorate an other function, that is intended to be used as a decorator.&lt;/span&gt;
+&lt;span class="sd"&gt;    Take a cup of coffee.&lt;/span&gt;
+&lt;span class="sd"&gt;    It will allow any decorator to accept an arbitrary number of arguments,&lt;/span&gt;
+&lt;span class="sd"&gt;    saving you the headache to remember how to do that every time.&lt;/span&gt;
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+
+    &lt;span class="c"&gt;# We use the same trick we did to pass arguments&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorator_maker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+        &lt;span class="c"&gt;# We create on the fly a decorator that accepts only a function&lt;/span&gt;
+        &lt;span class="c"&gt;# but keeps the passed arguments from the maker.&lt;/span&gt;
+        &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorator_wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+            &lt;span class="c"&gt;# We return the result of the original decorator, which, after all,&lt;/span&gt;
+            &lt;span class="c"&gt;# IS JUST AN ORDINARY FUNCTION (which returns a function).&lt;/span&gt;
+            &lt;span class="c"&gt;# Only pitfall: the decorator must have this specific signature or it won&amp;#39;t work:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;decorator_to_enhance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;decorator_wrapper&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;decorator_maker&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;它可以像这样使用：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# You create the function you will use as a decorator. And stick a decorator on it :-)&lt;/span&gt;
+&lt;span class="c"&gt;# Don&amp;#39;t forget, the signature is &amp;quot;decorator(func, *args, **kwargs)&amp;quot;&lt;/span&gt;
+&lt;span class="nd"&gt;@decorator_with_args&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Decorated with&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="c"&gt;# Then you decorate the functions you wish with your brand new decorated decorator.&lt;/span&gt;
+
+&lt;span class="nd"&gt;@decorated_decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;404&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1024&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Hello&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;function_arg2&lt;/span&gt;
+
+&lt;span class="n"&gt;decorated_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Universe and&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;everything&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#Decorated with (42, 404, 1024) {}&lt;/span&gt;
+&lt;span class="c"&gt;#Hello Universe and everything&lt;/span&gt;
+
+&lt;span class="c"&gt;# Whoooot!&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;我知道，你上一次有这种感觉，是在听一个人说“在理解递归之前，你必须先理解递归”之后。但是现在，掌握之后，你不觉得很爽吗？&lt;/p&gt;
+&lt;h1&gt;10. 装饰器最佳实践（Best practices while using decorators）&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;装饰器是在 python 2.4 之后才有的，所以先确定你的代码运行时；&lt;/li&gt;
+&lt;li&gt;记住这点：装饰器降低了函数调用效率；&lt;/li&gt;
+&lt;li&gt;你不能“解装饰”一个函数（You can not un-decorate a function. ）。有一些能用来创建可以移除的装饰器的方法（There are hacks to create decorators that can be removed），但没人用它们。所以一个函数一旦被装饰了，就结束了（不能改变了）。&lt;strong&gt;For all the code.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;装饰器包装了函数，这使得会难以调试。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Python 2.5 通过提供了一个 &lt;code&gt;functools&lt;/code&gt; 模块解决了最后一个问题。&lt;code&gt;functools.wraps&lt;/code&gt; 把任意被包装函数的函数名、模块名和 docstring 拷贝给了 &lt;code&gt;wrapper&lt;/code&gt;. 有趣的事是，&lt;code&gt;functools.wraps&lt;/code&gt; 也是一个装饰器：-）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# For debugging, the stacktrace prints you the function __name__&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: foo&lt;/span&gt;
+
+&lt;span class="c"&gt;# With a decorator, it gets messy   &lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;bar&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="nd"&gt;@bar&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;foo&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;
+&lt;span class="c"&gt;#outputs: wrapper&lt;/span&gt;
+
+&lt;span class="c"&gt;# &amp;quot;functools&amp;quot; can help for that&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="c"&gt;# We say that &amp;quot;wrapper&amp;quot;, is wrapping &amp;quot;func&amp;quot;&lt;/span&gt;
+    &lt;span class="c"&gt;# and the magic begins&lt;/span&gt;
+    &lt;span class="nd"&gt;@functools.wraps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;bar&amp;quot;&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;11. 装饰器如何才能有用（How can the decorators be useful?）&lt;/h1&gt;
+&lt;p&gt;现在问题来了：我能用装饰器来干嘛？看起来很酷也很强大，但是来一个实际例子才更好。好吧，有1000中可能性（Well, there are 1000 possibilities.）。一个典型的用途是，用来扩展一个外部导入的函数（你不能修改）的行为，或者为了调试（你不想修改这个函数，因为只是暂时的）。你也可以用装饰器实现只用一段相同的代码来扩展成几个不同的函数，而且你不需要每次都重写这段代码。这样就是常说的 DRY。比如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;benchmark&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="sd"&gt;    A decorator that prints the time a function takes&lt;/span&gt;
+&lt;span class="sd"&gt;    to execute.&lt;/span&gt;
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;res&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clock&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;t&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;res&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;logging&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="sd"&gt;    A decorator that logs the activity of the script.&lt;/span&gt;
+&lt;span class="sd"&gt;    (it actually just prints it, but it could be logging!)&lt;/span&gt;
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;res&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;kwargs&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;res&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;counter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="sd"&gt;    A decorator that counts and prints the number of times a function has been executed&lt;/span&gt;
+&lt;span class="sd"&gt;    &amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;wrapper&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;wrapper&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="n"&gt;res&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;{0} has been used: {1}x&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;res&lt;/span&gt;
+    &lt;span class="n"&gt;wrapper&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;wrapper&lt;/span&gt;
+
+&lt;span class="nd"&gt;@counter&lt;/span&gt;
+&lt;span class="nd"&gt;@benchmark&lt;/span&gt;
+&lt;span class="nd"&gt;@logging&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;reverse_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;reversed&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;reverse_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;Able was I ere I saw Elba&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;reverse_string&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;A man, a plan, a canoe, pasta, heros, rajahs, a coloratura, maps, snipe, percale, macaroni, a gag, a banana bag, a tan, a tag, a banana bag again (or a camel), a crepe, pins, Spam, a rut, a Rolo, cash, a jar, sore hats, a peon, a canal: Panama!&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#reverse_string (&amp;#39;Able was I ere I saw Elba&amp;#39;,) {}&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper 0.0&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper has been used: 1x&lt;/span&gt;
+&lt;span class="c"&gt;#ablE was I ere I saw elbA&lt;/span&gt;
+&lt;span class="c"&gt;#reverse_string (&amp;#39;A man, a plan, a canoe, pasta, heros, rajahs, a coloratura, maps, snipe, percale, macaroni, a gag, a banana bag, a tan, a tag, a banana bag again (or a camel), a crepe, pins, Spam, a rut, a Rolo, cash, a jar, sore hats, a peon, a canal: Panama!&amp;#39;,) {}&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper 0.0&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper has been used: 2x&lt;/span&gt;
+&lt;span class="c"&gt;#!amanaP :lanac a ,noep a ,stah eros ,raj a ,hsac ,oloR a ,tur a ,mapS ,snip ,eperc a ,)lemac a ro( niaga gab ananab a ,gat a ,nat a ,gab ananab a ,gag a ,inoracam ,elacrep ,epins ,spam ,arutaroloc a ,shajar ,soreh ,atsap ,eonac a ,nalp a ,nam A&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当然，装饰器的好处就是你可以几乎用来装饰所有东西，而且不要重写。也就是我说的 DRY：（Of course the good thing with decorators is that you can use them right away on almost anything without rewriting. DRY, I said:）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@counter&lt;/span&gt;
+&lt;span class="nd"&gt;@benchmark&lt;/span&gt;
+&lt;span class="nd"&gt;@logging&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_random_futurama_quote&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;httplib&lt;/span&gt;
+    &lt;span class="n"&gt;conn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;httplib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPConnection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;slashdot.org:80&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;HEAD&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;/index.html&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getresponse&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getheaders&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;x-b&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;x-f&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;No, I&amp;#39;m ... doesn&amp;#39;t!&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;get_random_furturama_quote&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;get_random_furturama_quote&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c"&gt;#outputs:&lt;/span&gt;
+&lt;span class="c"&gt;#get_random_futurama_quote () {}&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper 0.02&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper has been used: 1x&lt;/span&gt;
+&lt;span class="c"&gt;#The laws of science be a harsh mistress.&lt;/span&gt;
+&lt;span class="c"&gt;#get_random_futurama_quote () {}&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper 0.01&lt;/span&gt;
+&lt;span class="c"&gt;#wrapper has been used: 2x&lt;/span&gt;
+&lt;span class="c"&gt;#Curse you, merciful Poseidon!&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Python 语言本身也提供了一些装饰器：&lt;code&gt;property&lt;/code&gt;、&lt;code&gt;staticmethod&lt;/code&gt; 等。Django 用装饰器来管理换成和视图权限。Twisted 用来伪装 内联异步函数调用（Twisted to fake inlining asynchronous functions calls. ）。这确实是一片广阔的天地。（This really is a large playground.）&lt;/p&gt;
+&lt;hr /&gt;</summary><category term="python"></category><category term="decorator"></category></entry><entry><title>用 openpyxl 处理 xlsx 文件</title><link href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" rel="alternate"></link><updated>2013-02-25T16:39:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2013-02-25:posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/</id><summary type="html">&lt;p&gt;久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;
+&lt;h1&gt;1. 安装&lt;/h1&gt;
+&lt;p&gt;可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href="https://pypi.python.org/pypi/openpyxl"&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;2. 读&lt;/h1&gt;
+&lt;p&gt;用openpyxl读一个xlsx文件很简单：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;openpyxl&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;load_workbook&lt;/span&gt;
+
+&lt;span class="n"&gt;wb&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;load_workbook&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;r&amp;#39;existing_file.xlsx&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;sheets&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_sheet_names&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;   &lt;span class="c"&gt;# 获取所有表格(worksheet)的名字&lt;/span&gt;
+&lt;span class="n"&gt;sheet0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;sheets&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;  &lt;span class="c"&gt;# 第一个表格的名称&lt;/span&gt;
+&lt;span class="n"&gt;ws&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_sheet_by_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;sheet_name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c"&gt;# 获取特定的 worksheet&lt;/span&gt;
+
+&lt;span class="c"&gt;# 获取表格所有行和列，两者都是可迭代的&lt;/span&gt;
+&lt;span class="n"&gt;rows&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rows&lt;/span&gt;
+&lt;span class="n"&gt;columns&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;columns&lt;/span&gt;
+
+&lt;span class="c"&gt;# 行迭代&lt;/span&gt;
+&lt;span class="n"&gt;content&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;rows&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;col&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="n"&gt;content&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;line&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;# 通过坐标读取值&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;B12&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;    &lt;span class="c"&gt;# B 表示列，12 表示行&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;column&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当调用 &lt;code&gt;get_sheet_by_name('sheet_name')&lt;/code&gt; 方法获取表格时，如果名字为 &lt;code&gt;sheet_name&lt;/code&gt; 的表格不存在，不会报错或抛出异常，而只是返回 &lt;code&gt;None&lt;/code&gt;.&lt;/p&gt;
+&lt;h1&gt;3. 写&lt;/h1&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;openpyxl&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Workbook&lt;/span&gt;
+
+&lt;span class="c"&gt;# 在内存中创建一个workbook对象，而且会至少创建一个 worksheet&lt;/span&gt;
+&lt;span class="n"&gt;wb&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Workbook&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;ws&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_active_sheet&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;
+&lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;New Title&amp;#39;&lt;/span&gt;  &lt;span class="c"&gt;# 设置worksheet的标题&lt;/span&gt;
+
+&lt;span class="c"&gt;# 设置单元格的值&lt;/span&gt;
+&lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;D3&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;
+&lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;column&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;
+
+&lt;span class="n"&gt;new_ws&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;wb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_sheet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;new_sheet&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;col&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;new_ws&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;column&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;col&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;row&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;col&lt;/span&gt;
+
+&lt;span class="c"&gt;# 最后一定要保存！&lt;/span&gt;
+&lt;span class="n"&gt;wb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;save&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;new_file.xlsx&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h1&gt;4. 文档&lt;/h1&gt;
+&lt;p&gt;对于常规的小文件的操作，以上的一些介绍基本是够了。有时候需要处理大文件，就需要用到更高级一些的方法。更详细的用法、教程和API文档请参考这里：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href="http://pythonhosted.org/openpyxl/"&gt;http://pythonhosted.org/openpyxl/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1&gt;5. References&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;下载 openpyxl：&lt;a href="https://pypi.python.org/pypi/openpyxl"&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;openpyxl 文档：&lt;a href="http://pythonhosted.org/openpyxl/"&gt;http://pythonhosted.org/openpyxl/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;</summary><category term="python"></category><category term="openpyxl"></category></entry><entry><title>python字典切片</title><link href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="alternate"></link><updated>2012-12-01T15:09:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2012-12-01:posts/2012/12/python-dict-slice/</id><summary type="html">&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
+&lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;dict_slice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;keys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;dict_slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt;
+        &lt;span class="n"&gt;dict_slice&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;dict_slice&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;EDIT 2013-10-26 01:13&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;补充一个一行的版本（one-liner）:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;dict_slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;()[&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这行代码主要是用了 &lt;code&gt;lambda&lt;/code&gt; 来创建一个匿名函数，再用 built-in 函数 &lt;code&gt;dict()&lt;/code&gt; 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 &lt;code&gt;dict()&lt;/code&gt; 函数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;dict_slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;k&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;k&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;adict&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;keys&lt;/span&gt;&lt;span class="p"&gt;()[&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这个看起来和 list comprehension 就很像了。非常优雅，且节省空间 ：）&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;简单验证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fromkeys&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;d&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dict_slice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dict_slice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dict_slice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;slice&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。&lt;/p&gt;
+&lt;hr /&gt;</summary><category term="python"></category><category term="dict"></category></entry><entry><title>Python时间戳和日期相互转换</title><link href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/" rel="alternate"></link><updated>2012-10-21T18:53:00+08:00</updated><author><name>李林克斯</name></author><id>tag:deanthompson.github.io,2012-10-21:posts/2012/10/python-timestamp-to-timestr/</id><summary type="html">&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
+&lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从1970年1月1日00:00:00到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93"&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在Python里，时间戳可以通过 &lt;code&gt;time&lt;/code&gt; 模块里的 &lt;code&gt;time()&lt;/code&gt; 方法获得，比如:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="mf"&gt;1350816710.8050799&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 &lt;code&gt;time.strftime()&lt;/code&gt; 函数来达到这个目的。根据 &lt;code&gt;strftime()&lt;/code&gt; 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 &lt;code&gt;time.localtime()&lt;/code&gt; 的返回值。而那个9元组其实是 &lt;code&gt;struct_time&lt;/code&gt;，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;localtime&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;struct_time&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tm_year&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2012&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_mon&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_mday&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_hour&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;19&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_min&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_sec&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;25&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_wday&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_yday&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;295&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tm_isdst&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;9&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;st&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;localtime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;1350816710.8050799&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strftime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;%Y-%m-&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s"&gt; %H:%M:%S&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;st&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;2012-10-21 18:51:50&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;先用 &lt;code&gt;localtime()&lt;/code&gt; 把时间戳转换为 &lt;code&gt;struct_time&lt;/code&gt;， 然后传给 &lt;code&gt;strftime&lt;/code&gt; 转换为指定格式的字符串。那么反过来呢？
+同样需要先转换为 &lt;code&gt;struct_time&lt;/code&gt;，这个工作由 &lt;code&gt;time.strptime()&lt;/code&gt; 函数完成。&lt;code&gt;strptime&lt;/code&gt; 中的 &lt;code&gt;p&lt;/code&gt; 应该是 parse 的意思，原型是:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;strptime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;struct_time&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;把字符串形式的时间按照指定格式解析，转换为 &lt;code&gt;struct_time&lt;/code&gt;。然后传给&lt;code&gt;time.mktime()&lt;/code&gt; 完成最后的工作，整个过程是:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;12&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;13&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;st&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;strptime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;2012-10-21 18:51:50&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;%Y-%m-&lt;/span&gt;&lt;span class="si"&gt;%d&lt;/span&gt;&lt;span class="s"&gt; %H:%M:%S&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;In&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mktime&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;st&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Out&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;14&lt;/span&gt;&lt;span class="p"&gt;]:&lt;/span&gt; &lt;span class="mf"&gt;1350816710.0&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;最后，有两篇参考文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python中时间戳与时间字符串互相转化: &lt;a href="http://www.coder4.com/archives/2239"&gt;http://www.coder4.com/archives/2239&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python中time模块详解（很好）:&lt;a href="http://qinxuye.me/article/details-about-time-module-in-python/"&gt;http://qinxuye.me/article/details-about-time-module-in-python/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;</summary><category term="python"></category><category term="time"></category><category term="datetime"></category></entry></feed>

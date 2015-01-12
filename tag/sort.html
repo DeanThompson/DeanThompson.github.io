@@ -27,15 +27,15 @@
                 <article>
                     <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">Golang 排序</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2014-06-03T16:50:00">
-                2014-06-03
+        <abbr class="published" title="2014-06-03T16:50:00+08:00">
+                Published: 2014-06-03
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a><a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a><a href="http://deanthompson.github.io/tag/python.html">python</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a> <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> <a href="http://deanthompson.github.io/tag/python.html">python</a> </p>
 </footer><!-- /.post-info --><h2>Interface 接口</h2>
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 <div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
@@ -213,8 +213,6 @@
     Page 1 / 1
 </p>
             </aside><!-- /#featured -->
-            </ol><!-- /#posts-list -->
-            </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
@@ -261,7 +259,7 @@
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>

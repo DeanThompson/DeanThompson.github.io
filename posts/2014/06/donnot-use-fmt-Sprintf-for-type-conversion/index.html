@@ -28,20 +28,20 @@
       <h1 class="entry-title">
         <a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/" rel="bookmark"
            title="Permalink to 不要用 fmt.Sprintf 做类型转换">不要用 fmt.Sprintf 做类型转换</a></h1>
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
     </header>
 
     <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-06-11T15:50:00">
-                2014-06-11
+        <abbr class="published" title="2014-06-11T15:50:00+08:00">
+                Published: 2014-06-11
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
 </footer><!-- /.post-info -->      <p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
 <h2>int to string</h2>
 <p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
@@ -139,14 +139,16 @@ hex.EncodeToString taken: 2.080457ms
       <h2>Comments !</h2>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
-        var disqus_identifier = "posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/";
-        var disqus_url = "http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/";
+        var disqus_shortname = 'liyangliang';
+        var disqus_identifier = 'posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/';
+        var disqus_url = 'http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-Sprintf-for-type-conversion/';
         (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://liyangliang.disqus.com/embed.js';
+        dsq.src = '//liyangliang.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
       </script>
+      <noscript>Please enable JavaScript to view the comments.</noscript>
     </div>
 
   </article>
@@ -197,7 +199,7 @@ hex.EncodeToString taken: 2.080457ms
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
