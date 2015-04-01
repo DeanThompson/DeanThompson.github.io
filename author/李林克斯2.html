@@ -27,21 +27,60 @@
                     <ol id="posts-list" class="hfeed" start="4">
             <li><article class="hentry">
                 <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/" rel="bookmark"
+                           title="Permalink to Flask 路由做范围限制">Flask 路由做范围限制</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-02-26T23:15:00+08:00">
+                Published: 2014-02-26
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/flask.html">flask</a> <a href="http://deanthompson.github.io/tag/stackoverflow.html">stackoverflow</a> </p>
+</footer><!-- /.post-info -->                <p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
+<h1>1. What</h1>
+<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
+<p>简单翻译一下，大致如下：</p>
+<p>Flask 应用里面有一个这样的路由</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">get_foo</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/foo/&lt;int:id&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">get_foo</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+</pre></div>
+</td></tr></table>
+
+<p>其中 ...</p>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
                     <h1><a href="http://deanthompson.github.io/posts/2014/01/my-2013/" rel="bookmark"
                            title="Permalink to 我的 2013">我的 2013</a></h1>
                 </header>
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-01-01T00:01:00">
-                2014-01-01
+        <abbr class="published" title="2014-01-01T00:01:00+08:00">
+                Published: 2014-01-01
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Life.html">Life</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/随笔.html">随笔</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/随笔.html">随笔</a> </p>
 </footer><!-- /.post-info -->                <p>现在是 2013-12-31 22:11:24 左右，2013马上就将过去，新的一年随之来到。去年的这个时候，还在上海虎扑实习，记得那天更新版本出了问题，然后一直加班到第二天早上三四点。虽然是“加班”，其实我却在和某个人打电话，讲了100多分钟，现在都已经忘了当时的笑声和激情。</p>
 <p>2013就这么来到。</p>
 <p>1月份基本上都在上海度过。狭小的隔板房，冰冷的床，无聊的周末，改不完的bug，偶尔的烧烤和啤酒，公司一楼的乒乓球，中山北一路两边高大的树，对南方的思念，久违的小雪。那段日子其实挺开心，欢声笑语退去，那些生活和时间抽象成几个标签和符号，散落在记忆里，在某些时候不经意间想起。</p>
@@ -59,15 +98,15 @@
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2013-11-03T00:30:00">
-                2013-11-03
+        <abbr class="published" title="2013-11-03T00:30:00+08:00">
+                Published: 2013-11-03
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/linux.html">linux</a><a href="http://deanthompson.github.io/tag/less.html">less</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/linux.html">linux</a> <a href="http://deanthompson.github.io/tag/less.html">less</a> </p>
 </footer><!-- /.post-info -->                <p>首先来一句装X的话：</p>
 <blockquote>
 <p>less is more</p>
@@ -98,15 +137,15 @@
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2013-03-13T00:26:00">
-                2013-03-13
+        <abbr class="published" title="2013-03-13T00:26:00+08:00">
+                Published: 2013-03-13
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/decorator.html">decorator</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/decorator.html">decorator</a> </p>
 </footer><!-- /.post-info -->                <h2>Note</h2>
 <p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
 <blockquote>
@@ -134,62 +173,27 @@
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2013-02-25T16:39:00">
-                2013-02-25
+        <abbr class="published" title="2013-02-25T16:39:00+08:00">
+                Published: 2013-02-25
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a> </p>
 </footer><!-- /.post-info -->                <p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 ...</p>
                 <a class="readmore" href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="bookmark"
-                           title="Permalink to python字典切片">python字典切片</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2012-12-01T15:09:00">
-                2012-12-01
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/dict.html">dict</a></p>
-</footer><!-- /.post-info -->                <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="n">dict_slice</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]:</span>
-        <span class="n">dict_slice</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">dict_slice</span>
-</pre></div>
-
-
-<hr />
-<p><strong>EDIT 2013-10-26 01:13</strong></p>
-<p>补充一个一行的版本（one-liner ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
+                </ol><!-- /#posts-list -->
 <p class="paginator">
         <a href="http://deanthompson.github.io/author/李林克斯.html">&laquo;</a>
     Page 2 / 3
         <a href="http://deanthompson.github.io/author/李林克斯3.html">&raquo;</a>
 </p>
-            </section><!-- /#content -->
+                </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
@@ -236,7 +240,7 @@
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>

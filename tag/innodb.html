@@ -27,15 +27,15 @@
                 <article>
                     <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2014-03-02T16:16:00">
-                2014-03-02
+        <abbr class="published" title="2014-03-02T16:16:00+08:00">
+                Published: 2014-03-02
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a><a href="http://deanthompson.github.io/tag/innodb.html">innodb</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a> <a href="http://deanthompson.github.io/tag/innodb.html">innodb</a> </p>
 </footer><!-- /.post-info --><p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
 <h2>1. innodb_flush_log_at_trx_commit</h2>
 <p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
@@ -53,8 +53,6 @@
     Page 1 / 1
 </p>
             </aside><!-- /#featured -->
-            </ol><!-- /#posts-list -->
-            </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
@@ -101,7 +99,7 @@
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>

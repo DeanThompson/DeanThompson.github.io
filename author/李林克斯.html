@@ -25,83 +25,110 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/">Golang 的 defer 语句</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang/">Golang 里并发安全的 map 实现</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2014-12-18T15:35:00">
-                2014-12-18
+        <abbr class="published" title="2015-01-12T18:42:00+08:00">
+                Published: 2015-01-12
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
-</footer><!-- /.post-info --><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
+</footer><!-- /.post-info --><p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
+<h2>并发安全</h2>
+<p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
+<div class="highlight"><pre><span class="kd">type</span> <span class="nx">syncMap</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">items</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
+    <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 Get，Set，Delete 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
+<p>但是这种设计会有些性能隐患。主要是两个方面：</p>
+<ol>
+<li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
+<li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
+</ol>
+<h2>“分表”</h2>
+<p>一种解决思路是“分表”存储，具体实现就是，基于上面的 <code>syncMap</code> 再包装一次，用多个 <code>syncMap</code> 来模拟实现一个 map：</p>
+<div class="highlight"><pre><span class="kd">type</span> <span class="nx">SyncMap</span> <span class="kd">struct</span> <span class="p">{</span>
+    <span class="nx">shardCount</span> <span class="kt">uint8</span>
+    <span class="nx">shards</span>     <span class="p">[]</span><span class="o">*</span><span class="nx">syncMap</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>上面这种设计用了一个 <code>*syncMap</code> 的 slice 来保存数据，<code>shardCount</code> 提供了分表量的可定制性。实际上 <code>shards</code> 同样可以实现为 <code>map[string]*syncMap</code>。</p>
+<p>在这种设计下，数据（key:value）会被分散到不同的 <code>syncMap</code>，而每个 <code>syncMap</code> 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。</p>
+<p>那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash. 字符串的哈希算法有很多，byvoid 大神实现和比较了多种字符串 hash 函数（<a href="https://www.byvoid.com/blog/string-hash-compare/">各种字符串Hash函数比较</a>），得出结论是：“BKDRHash无论是在实际效果还是编码实现中，效果都是最突出的”。这里采用了 BKDRHash 来实现：</p>
+<div class="highlight"><pre><span class="kd">const</span> <span class="nx">seed</span> <span class="kt">uint32</span> <span class="p">=</span> <span class="mi">131</span> <span class="c1">// 31 131 1313 13131 131313 etc..</span>
+
+<span class="kd">func</span> <span class="nx">bkdrHash</span><span class="p">(</span><span class="nx">str</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">uint32</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">h</span> <span class="kt">uint32</span>
+
+    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">str</span> <span class="p">{</span>
+        <span class="nx">h</span> <span class="p">=</span> <span class="nx">h</span><span class="o">*</span><span class="nx">seed</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">h</span>
+<span class="p">}</span>
+
+<span class="c1">// Find the specific shard with the given key</span>
+<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">SyncMap</span><span class="p">)</span> <span class="nx">locate</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">syncMap</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="nx">shards</span><span class="p">[</span><span class="nx">bkdrHash</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span><span class="o">&amp;</span><span class="nb">uint32</span><span class="p">((</span><span class="nx">m</span><span class="p">.</span><span class="nx">shardCount</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><code>locate</code> 方法调用 <code>bkdrHash</code> 函数计算一个 key 的哈希值，然后用该值对分表量取模得到在 slice 的 index，之后就能定位到对应的 <code>syncMap</code>.</p>
+<p>这种实现足够简单，而且也有不错的性能表现。除了基本的 Get、Set、Delete等基本操作之外，迭代（range）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： <a href="https://github.com/DeanThompson/syncmap">https://github.com/DeanThompson/syncmap</a>.</p><p>There are <a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/" rel="bookmark"
+                           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-12-18T15:35:00+08:00">
+                Published: 2014-12-18
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
+</footer><!-- /.post-info -->                <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span>
-    <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="n">i</span><span class="o">++</span>
-    <span class="k">return</span>
-<span class="p">}</span>
+<div class="highlight"><pre>func a() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+    return
+}
 </pre></div>
 
 
 <ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="n">defer</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<ul>
-<li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
-</ul>
-<div class="highlight"><pre><span class="n">func</span> <span class="nf">c</span><span class="p">()</span> <span class="p">(</span><span class="n">i</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">defer</span> <span class="n">func</span><span class="p">()</span> <span class="p">{</span> <span class="n">i</span><span class="o">++</span> <span class="p">}()</span>
-    <span class="k">return</span> <span class="mi">1</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
-<p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
-<p>最近在看 <a href="https://github.com/revel/revel">revel 框架</a> 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，<a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65">其中一个方法源码如下</a>：</p>
-<div class="highlight"><pre><span class="c1">// Add an item to the cache, replacing any existing item. If the duration is 0,</span>
-<span class="c1">// the cache&#39;s default expiration time is used. If it is -1, the item never</span>
-<span class="c1">// expires.</span>
-<span class="n">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">cache</span><span class="p">)</span> <span class="n">Set</span><span class="p">(</span><span class="n">k</span> <span class="k">string</span><span class="p">,</span> <span class="n">x</span> <span class="k">interface</span><span class="p">{},</span> <span class="n">d</span> <span class="k">time</span><span class="p">.</span><span class="n">Duration</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">Lock</span><span class="p">()</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
-    <span class="c1">// TODO: Calls to mu.Unlock are currently not deferred because defer</span>
-    <span class="c1">// adds ~200 ns (as of go1.)</span>
-    <span class="n">c</span><span class="p">.</span><span class="n">Unlock</span><span class="p">()</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>这里没有用 <code>defer</code> 来调用 <code>Unlock</code>，而且在代码里明确注释说 <code>defer</code> 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 <code>defer</code>，却从没考虑过这一点。robfig 说 <code>defer</code> 大概需要 200ns，一时兴起写了个<a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1">简单的 benchmark 测试</a>，来看看 Go 1.4 里究竟如何。</p>
-<p>这是某一次测试的结果：</p>
-<div class="highlight"><pre>testing: warning: no tests to run
-PASS
-BenchmarkDeferredUnlock     10000000            134 ns/op
-BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
-</pre></div>
-
-
-<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p><p>There are <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<div class="highlight"><pre>func b ...</pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -111,15 +138,15 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-06-11T15:50:00">
-                2014-06-11
+        <abbr class="published" title="2014-06-11T15:50:00+08:00">
+                Published: 2014-06-11
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
 </footer><!-- /.post-info -->                <p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
 <h2>int to string</h2>
 <p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
@@ -142,15 +169,15 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-06-03T16:50:00">
-                2014-06-03
+        <abbr class="published" title="2014-06-03T16:50:00+08:00">
+                Published: 2014-06-03
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a><a href="http://deanthompson.github.io/tag/golang.html">golang</a><a href="http://deanthompson.github.io/tag/Go.html">Go</a><a href="http://deanthompson.github.io/tag/python.html">python</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a> <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> <a href="http://deanthompson.github.io/tag/python.html">python</a> </p>
 </footer><!-- /.post-info -->                <h2>Interface 接口</h2>
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 <div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
@@ -173,15 +200,15 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 
                 <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2014-03-02T16:16:00">
-                2014-03-02
+        <abbr class="published" title="2014-03-02T16:16:00+08:00">
+                Published: 2014-03-02
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a><a href="http://deanthompson.github.io/tag/innodb.html">innodb</a></p>
+<p>tags: <a href="http://deanthompson.github.io/tag/MySQL.html">MySQL</a> <a href="http://deanthompson.github.io/tag/innodb.html">innodb</a> </p>
 </footer><!-- /.post-info -->                <p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
 <h2>1. innodb_flush_log_at_trx_commit</h2>
 <p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
@@ -191,51 +218,12 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
                 <a class="readmore" href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/" rel="bookmark"
-                           title="Permalink to Flask 路由做范围限制">Flask 路由做范围限制</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-02-26T23:15:00">
-                2014-02-26
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a><a href="http://deanthompson.github.io/tag/flask.html">flask</a><a href="http://deanthompson.github.io/tag/stackoverflow.html">stackoverflow</a></p>
-</footer><!-- /.post-info -->                <p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
-<h1>1. What</h1>
-<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
-<p>简单翻译一下，大致如下：</p>
-<p>Flask 应用里面有一个这样的路由</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3
-4
-5</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">get_foo</span>
-
-<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/foo/&lt;int:id&gt;&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">foo_id</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&#39;foo.html&#39;</span><span class="p">,</span> <span class="n">foo</span> <span class="o">=</span> <span class="n">get_foo</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
-</pre></div>
-</td></tr></table>
-
-<p>其中 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
+                </ol><!-- /#posts-list -->
 <p class="paginator">
     Page 1 / 3
         <a href="http://deanthompson.github.io/author/李林克斯2.html">&raquo;</a>
 </p>
-            </section><!-- /#content -->
+                </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
@@ -282,7 +270,7 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
     (function () {
         var s = document.createElement('script'); s.async = true;
         s.type = 'text/javascript';
-        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
         (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
     }());
 </script>
