@@ -25,7 +25,102 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">Golang 排序</a></h1>
+                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric/">用 Fabric 来发布代码</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2015-03-20T11:00:00+08:00">
+                Published: 2015-03-20
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/tech.html">tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/fabric.html">fabric</a> <a href="http://deanthompson.github.io/tag/deploy.html">deploy</a> </p>
+</footer><!-- /.post-info --><p>写代码的时候很爽，本地开发一下子完成了，等到部署发布代码的时候就有些烦了。开发环境、测试环境、生产环境，有些配置是因环境而异的，在我们的 Python 项目里，一直保留这样的习惯：</p>
+<ol>
+<li>使用 py 文件做配置文件</li>
+<li>固定的配置，放在 settings.py 里</li>
+<li>不同环境可能要修改的，放在 site_settings.py 里，然后在 settings.py 里全部 import 进去</li>
+<li>需要使用配置的时候，只需要 <code>settings.FOO</code> 就可以</li>
+</ol>
+<p>实际上，这样的习惯在发布代码时带来了一些小麻烦。曾经用过这些方式发布 Python 代码：</p>
+<ol>
+<li>
+<p>rsync. 实际上用 rsync 发布的体验还挺好的，每次只会同步更新过的文件，而且可以配置不需要同步的文件。在使用 rsync 时，site_settings.py 是没有同步的。但是个人体验，rsync 也有不好的地方，首先就是需要依赖 rsync 服务，在远程机器和本地都要配置；二是不好做备份。</p>
+</li>
+<li>
+<p>git. 应该说，git 应该是我最喜欢的发布方式了，本地 push，远程 pull，完事；而且还很好备份和回滚。再有，如果我「作死」在服务器上修改调试代码，能方便的提交到版本库。但是，考虑到安全问题，很多 git 服务器都搭建在内网，服务器上根本就无法访问到。</p>
+</li>
+<li>
+<p>scp. 这是很 low 的一种做法，也基本上是我最后的选择。刚入职到现在这家公司，新部门，有点蛮荒时代的感觉。（非常简陋的）git 服务器在内网，所以在服务器上搞了一下 rsync，配置好后发现本地无法连接到服务器的 873 端口（不知道是不是公司配置了防火墙）。一时间就堕落到选择了 scp. 好处几乎没有，不方便的地方倒是一大堆：不方便增量更新，只能全部覆盖，考虑到 site_settings.py 的存在，这个很不方便；不方便设置要排除的文件，如果想省事把整个项目 scp 过去，就会把 .git 目录和 .pyc 文件也拷过去，无用而慢。</p>
+</li>
+</ol>
+<p>但实际上这些天我还使用了好几次 scp 来发布代码，一直在重复体力劳动。终于，想起了 <a href="http://www.fabfile.org/">fabric</a>，带我「脱离苦海」。</p>
+<p>fabric 使用起来非常简单，对我来说，只需要简单几行代码的配置，就能自动完成我之前繁复的体力劳动。</p>
+<div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="n">env</span><span class="p">,</span> <span class="n">local</span><span class="p">,</span> <span class="n">cd</span><span class="p">,</span> <span class="n">lcd</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">run</span>
+
+
+<span class="k">def</span> <span class="nf">prod</span><span class="p">():</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;123.123.123.123&quot;</span><span class="p">]</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span>
+    <span class="c"># env.password = &quot;&quot;  # 如果这里写了密码，在发布时就不用输密码了</span>
+
+
+<span class="k">def</span> <span class="nf">pyclean</span><span class="p">():</span>
+    <span class="n">local</span><span class="p">(</span><span class="s">&quot;pyclean .&quot;</span><span class="p">)</span>      <span class="c"># local 函数执行本地命令</span>
+
+
+<span class="k">def</span> <span class="nf">deploy</span><span class="p">():</span>
+    <span class="n">pyclean</span><span class="p">()</span>
+
+    <span class="n">local_app_dir</span> <span class="o">=</span> <span class="s">&quot;~/workspace/projects/&quot;</span>
+    <span class="n">remote_app_dir</span> <span class="o">=</span> <span class="s">&quot;~/projects&quot;</span>
+
+    <span class="c"># lcd 是 「local cd」，cd 是在远程服务器执行 cd</span>
+    <span class="k">with</span> <span class="n">lcd</span><span class="p">(</span><span class="n">local_app_dir</span><span class="p">),</span> <span class="n">cd</span><span class="p">(</span><span class="n">remote_app_dir</span><span class="p">):</span>
+        <span class="c"># 1. backup</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&quot;rm -rf SomeProj.bak&quot;</span><span class="p">)</span>          <span class="c"># run 是在远程服务器上执行命令</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&quot;mv SomeProj SomeProj.bak&quot;</span><span class="p">)</span>
+
+        <span class="c"># 2. transfer</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">remote_app_dir</span><span class="p">,</span> <span class="s">&quot;SomeProj&quot;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&quot;mkdir -p </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">put</span><span class="p">(</span><span class="s">&quot;SomeProj/*&quot;</span><span class="p">,</span> <span class="s">&quot;SomeProj&quot;</span><span class="p">)</span>   <span class="c"># put 把本地文件传输到远程（看了下源码，是 FTP 协议）</span>
+
+        <span class="c"># 3. replace site_settings.py</span>
+        <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;apps&quot;</span><span class="p">,</span> <span class="s">&quot;admin&quot;</span><span class="p">,</span> <span class="s">&quot;core&quot;</span><span class="p">]:</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s">&quot;SomeProj.bak/</span><span class="si">%s</span><span class="s">/configs/site_settings.py&quot;</span> <span class="o">%</span> <span class="n">subdir</span>
+            <span class="n">dest</span> <span class="o">=</span> <span class="s">&quot;SomeProj/</span><span class="si">%s</span><span class="s">/configs/site_settings.py&quot;</span> <span class="o">%</span> <span class="n">subdir</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;cp </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+            <span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</pre></div>
+
+
+<p>把上面的代码保存为 fabfile.py，要发布的时候，只需在 fabfile.py 所在的路径执行：</p>
+<div class="highlight"><pre>fab prod deploy
+</pre></div>
+
+
+<p>因为在 env 配置里没有设置密码，所以执行过程中需要手动输入一下。然后 fabric 就把所有你指定的事情都干了，一次配置，终生享福。</p>
+<p>实际上还可以配置在发布好代码后，重启应用（supervisorctl）。为了避免意外，和某些情况下需要修改 site_settings.py，所以就没有这么干，而是选择每次都手动重启。</p>
+<p>fabric，又是一个懒人必备的神器。</p><p>There are <a href="http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric/#disqus_thread">comments</a>.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/" rel="bookmark"
+                           title="Permalink to Golang 排序">Golang 排序</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2014-06-03T16:50:00+08:00">
                 Published: 2014-06-03
@@ -36,7 +131,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/sort.html">sort</a> <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> <a href="http://deanthompson.github.io/tag/python.html">python</a> </p>
-</footer><!-- /.post-info --><h2>Interface 接口</h2>
+</footer><!-- /.post-info -->                <h2>Interface 接口</h2>
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 <div class="highlight"><pre><span class="kd">func</span> <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">7</span> <span class="p">{</span>
@@ -45,175 +140,10 @@
             <span class="k">return</span>
         <span class="p">}</span>
         <span class="nx">maxDepth</span><span class="o">--</span>
-        <span class="nx">mlo</span><span class="p">,</span> <span class="nx">mhi</span> <span class="o">:=</span> <span class="nx">doPivot</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
-        <span class="c1">// Avoiding recursion on the larger subproblem guarantees</span>
-        <span class="c1">// a stack depth of at most lg(b-a).</span>
-        <span class="k">if</span> <span class="nx">mlo</span><span class="o">-</span><span class="nx">a</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="o">-</span><span class="nx">mhi</span> <span class="p">{</span>
-            <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">mlo</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
-            <span class="nx">a</span> <span class="p">=</span> <span class="nx">mhi</span> <span class="c1">// i.e., quickSort(data, mhi, b)</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">mhi</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
-            <span class="nx">b</span> <span class="p">=</span> <span class="nx">mlo</span> <span class="c1">// i.e., quickSort(data, a, mlo)</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="nx">b</span><span class="o">-</span><span class="nx">a</span> <span class="p">&gt;</span> <span class="mi">1</span> <span class="p">{</span>
-        <span class="nx">insertionSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// Sort sorts data.</span>
-<span class="c1">// It makes one call to data.Len to determine n, and O(n*log(n)) calls to</span>
-<span class="c1">// data.Less and data.Swap. The sort is not guaranteed to be stable.</span>
-<span class="kd">func</span> <span class="nx">Sort</span><span class="p">(</span><span class="nx">data</span> <span class="nx">Interface</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.</span>
-    <span class="nx">n</span> <span class="o">:=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">Len</span><span class="p">()</span>
-    <span class="nx">maxDepth</span> <span class="o">:=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span> <span class="p">{</span>
-        <span class="nx">maxDepth</span><span class="o">++</span>
-    <span class="p">}</span>
-    <span class="nx">maxDepth</span> <span class="o">*=</span> <span class="mi">2</span>
-    <span class="nx">quickSort</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">maxDepth</span><span class="p">)</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。</p>
-<p>标准库提供一个通用接口，只要实现了这个接口，就可以通过调用 <code>sort.Sort</code> 来排序。</p>
-<div class="highlight"><pre><span class="kd">type</span> <span class="nx">Interface</span> <span class="kd">interface</span> <span class="p">{</span>
-    <span class="c1">// Len is the number of elements in the collection.</span>
-    <span class="nx">Len</span><span class="p">()</span> <span class="kt">int</span>
-    <span class="c1">// Less returns whether the element with index i should sort</span>
-    <span class="c1">// before the element with index j.</span>
-    <span class="nx">Less</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span>
-    <span class="c1">// Swap swaps the elements with indexes i and j.</span>
-    <span class="nx">Swap</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<h2>基本数据类型的排序</h2>
-<p><code>Interface</code> 接口的三个函数分别用于获取长度（<code>Len</code>）、大小比较（<code>Less</code>）和交换（<code>Swap</code>）。对 <code>int</code>、<code>float64</code> 和 <code>string</code> 的排序，标准库已经做好了封装，直接调用即可。以 <code>int</code> 为例简单说明：</p>
-<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>                                                                                                                                                                                                 
-
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;fmt&quot;</span>
-    <span class="s">&quot;sort&quot;</span>
-<span class="p">)</span>
-
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">a</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">76</span><span class="p">}</span> 
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 5 29 3 76]</span>
-    <span class="nx">sort</span><span class="p">.</span><span class="nx">Ints</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>       <span class="c1">// sort.Sort(IntSlice(a)) 的封装</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [3 5 29 76 100]，默认的 Less() 实现的是升序</span>
-
-    <span class="nx">a</span> <span class="p">=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">76</span><span class="p">}</span> 
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 5 29 3 76]</span>
-    <span class="nx">sort</span><span class="p">.</span><span class="nx">Sort</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">Reverse</span><span class="p">(</span><span class="nx">sort</span><span class="p">.</span><span class="nx">IntSlice</span><span class="p">(</span><span class="nx">a</span><span class="p">)))</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>     <span class="c1">// [100 76 29 5 3]</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>对 <code>float64</code> 和 <code>string</code> 的排序，和上面类似。需要注意的是，默认的 <code>sort.Less</code> 实现的是升序排列，如果想要让结果降序，可以先用 <code>sort.Reverse</code> 包装一次。这个调用会得到一个 <code>reverse</code> 的类型，包含一个 <code>Interface</code> 的匿名字段，其 <code>Less</code> 函数与 <code>Interface</code> 里的相反，从而实现逆序。</p>
-<h2>自定义数据类型的排序</h2>
-<p>如果要对自定义的数据类型进行排序，需要实现 <code>sort.Interface</code> 接口，也就是实现 <code>Len</code>、<code>Less</code> 和 <code>Swap</code> 三个函数。很多场景下 <code>Len</code> 和 <code>Swap</code> 基本上和数据类型无关，所以实际上只有 <code>Less</code> 会有差别。</p>
-<p>例如有个游戏下载排行榜，知道游戏ID和对应的下载量，需要把数据根据下载量进行排序。</p>
-<div class="highlight"><pre><span class="kn">package</span> <span class="nx">main</span>
-
-<span class="kn">import</span> <span class="p">(</span>
-    <span class="s">&quot;fmt&quot;</span>
-    <span class="s">&quot;math/rand&quot;</span>
-    <span class="s">&quot;sort&quot;</span>
-<span class="p">)</span>
-
-<span class="kd">type</span> <span class="nx">GameDownloadItem</span> <span class="kd">struct</span> <span class="p">{</span>
-    <span class="nx">GameID</span>        <span class="kt">int</span> <span class="c1">// 游戏ID</span>
-    <span class="nx">DownloadTimes</span> <span class="kt">int</span> <span class="c1">// 下载次数</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="p">(</span><span class="nx">self</span> <span class="nx">GameDownloadItem</span><span class="p">)</span> <span class="nx">String</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;&lt;Item(%d, %d)&gt;&quot;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">GameID</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">DownloadTimes</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">type</span> <span class="nx">GameDownloadSlice</span> <span class="p">[]</span><span class="o">*</span><span class="nx">GameDownloadItem</span>
-
-<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Len</span><span class="p">()</span> <span class="kt">int</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Swap</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="p">=</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
-<span class="p">}</span>
-
-<span class="c1">// 根据游戏下载量 降序 排列</span>
-<span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">GameDownloadSlice</span><span class="p">)</span> <span class="nx">Less</span><span class="p">(</span><span class="nx">i</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">j</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">p</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">DownloadTimes</span> <span class="p">&gt;</span> <span class="nx">p</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">DownloadTimes</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">a</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="nx">GameDownloadSlice</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
-    <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
-        <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">=</span> <span class="o">&amp;</span><span class="nx">GameDownloadItem</span><span class="p">{</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">rand</span><span class="p">.</span><span class="nx">Intn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)}</span>
-    <span class="p">}</span>
-
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-    <span class="nx">sort</span><span class="p">.</span><span class="nx">Sort</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-    <span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
-<span class="p">}</span>
-</pre></div>
-
-
-<p>第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：</p>
-<div class="highlight"><pre>[&lt;Item(1, 81)&gt; &lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(4, 59)&gt; &lt;Item(5, 81)&gt; &lt;Item(6, 318)&gt; &lt;Item(7, 425)&gt;]
-</pre></div>
-
-
-<p>排序后：</p>
-<div class="highlight"><pre>[&lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(7, 425)&gt; &lt;Item(6, 318)&gt; &lt;Item(1, 81)&gt; &lt;Item(5, 81)&gt; &lt;Item(4, 59)&gt;]
-</pre></div>
-
-
-<h2>Vs. Python</h2>
-<p>相比之下，Python 里的排序就非常简单便捷了，直接调用 <code>list</code> 的 <code>sort</code> 方法（in-place）即可，还可以用 built-in 函数 <code>sorted</code> （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 <code>sort</code> 方法的 <code>key</code> 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：</p>
-<div class="highlight"><pre><span class="c">#!/usr/bin/env python                                                                                                                                                                                        </span>
-<span class="c"># -*- coding: utf-8 -*-</span>
-
-<span class="kn">import</span> <span class="nn">random</span>
-
-<span class="k">class</span> <span class="nc">GameDownloadItem</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">,</span> <span class="n">download_times</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">game_id</span> <span class="o">=</span> <span class="n">game_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">download_times</span> <span class="o">=</span> <span class="n">download_times</span>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&#39;&lt;Item(</span><span class="si">%d</span><span class="s">, </span><span class="si">%d</span><span class="s">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_times</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">item</span><span class="p">,</span>
-    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
-
-
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">GameDownloadItem</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-
-    <span class="n">items</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">download_times</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-</pre></div>
-
-
-<p>某一次的执行结果：</p>
-<div class="highlight"><pre>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; 
-
-&lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt; 
-</pre></div><p>There are <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+        <span class="nx">mlo</span><span class="p">,</span> <span class="nx">mhi</span> <span class="o">:=</span> <span class="nx">doPivot</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">a ...</span></pre></div>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -311,41 +241,6 @@
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 ...</p>
                 <a class="readmore" href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="bookmark"
-                           title="Permalink to python字典切片">python字典切片</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2012-12-01T15:09:00+08:00">
-                Published: 2012-12-01
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/dict.html">dict</a> </p>
-</footer><!-- /.post-info -->                <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-    <span class="n">dict_slice</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]:</span>
-        <span class="n">dict_slice</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">dict_slice</span>
-</pre></div>
-
-
-<hr />
-<p><strong>EDIT 2013-10-26 01:13</strong></p>
-<p>补充一个一行的版本（one-liner ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->
 <p class="paginator">

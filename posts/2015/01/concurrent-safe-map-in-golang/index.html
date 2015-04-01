@@ -33,7 +33,7 @@
 
     <div class="entry-content">
 <footer class="post-info">
-        <abbr class="published" title="2015-01-12T18:42:00+08:00">
+        <abbr class="published" title="2015-01-12T20:00:00+08:00">
                 Published: 2015-01-12
         </abbr>
 
@@ -45,10 +45,10 @@
 </footer><!-- /.post-info -->      <p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
 <h2>并发安全</h2>
 <p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
-<div class="highlight"><pre><span class="kd">type</span> <span class="nx">syncMap</span> <span class="kd">struct</span> <span class="p">{</span>
-    <span class="nx">items</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span>
-    <span class="nx">sync</span><span class="p">.</span><span class="nx">RWMutex</span>
-<span class="p">}</span>
+<div class="highlight"><pre>type syncMap struct {
+    items map[string]interface{}
+    sync.RWMutex
+}
 </pre></div>
 
 
@@ -58,34 +58,34 @@
 <li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
-<h2>“分表”</h2>
+<h2>「分表」</h2>
 <p>一种解决思路是“分表”存储，具体实现就是，基于上面的 <code>syncMap</code> 再包装一次，用多个 <code>syncMap</code> 来模拟实现一个 map：</p>
-<div class="highlight"><pre><span class="kd">type</span> <span class="nx">SyncMap</span> <span class="kd">struct</span> <span class="p">{</span>
-    <span class="nx">shardCount</span> <span class="kt">uint8</span>
-    <span class="nx">shards</span>     <span class="p">[]</span><span class="o">*</span><span class="nx">syncMap</span>
-<span class="p">}</span>
+<div class="highlight"><pre>type SyncMap struct {
+    shardCount uint8
+    shards     []*syncMap
+}
 </pre></div>
 
 
 <p>上面这种设计用了一个 <code>*syncMap</code> 的 slice 来保存数据，<code>shardCount</code> 提供了分表量的可定制性。实际上 <code>shards</code> 同样可以实现为 <code>map[string]*syncMap</code>。</p>
 <p>在这种设计下，数据（key:value）会被分散到不同的 <code>syncMap</code>，而每个 <code>syncMap</code> 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。</p>
 <p>那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash. 字符串的哈希算法有很多，byvoid 大神实现和比较了多种字符串 hash 函数（<a href="https://www.byvoid.com/blog/string-hash-compare/">各种字符串Hash函数比较</a>），得出结论是：“BKDRHash无论是在实际效果还是编码实现中，效果都是最突出的”。这里采用了 BKDRHash 来实现：</p>
-<div class="highlight"><pre><span class="kd">const</span> <span class="nx">seed</span> <span class="kt">uint32</span> <span class="p">=</span> <span class="mi">131</span> <span class="c1">// 31 131 1313 13131 131313 etc..</span>
+<div class="highlight"><pre>const seed uint32 = 131 // 31 131 1313 13131 131313 etc..
 
-<span class="kd">func</span> <span class="nx">bkdrHash</span><span class="p">(</span><span class="nx">str</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">uint32</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">h</span> <span class="kt">uint32</span>
+func bkdrHash(str string) uint32 {
+    var h uint32
 
-    <span class="k">for</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">c</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">str</span> <span class="p">{</span>
-        <span class="nx">h</span> <span class="p">=</span> <span class="nx">h</span><span class="o">*</span><span class="nx">seed</span> <span class="o">+</span> <span class="nb">uint32</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span>
-    <span class="p">}</span>
+    for _, c := range str {
+        h = h*seed + uint32(c)
+    }
 
-    <span class="k">return</span> <span class="nx">h</span>
-<span class="p">}</span>
+    return h
+}
 
-<span class="c1">// Find the specific shard with the given key</span>
-<span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="o">*</span><span class="nx">SyncMap</span><span class="p">)</span> <span class="nx">locate</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">syncMap</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="nx">shards</span><span class="p">[</span><span class="nx">bkdrHash</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span><span class="o">&amp;</span><span class="nb">uint32</span><span class="p">((</span><span class="nx">m</span><span class="p">.</span><span class="nx">shardCount</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span>
-<span class="p">}</span>
+// Find the specific shard with the given key
+func (m *SyncMap) locate(key string) *syncMap {
+    return m.shards[bkdrHash(key)&amp;uint32((m.shardCount-1))]
+}
 </pre></div>
 
 

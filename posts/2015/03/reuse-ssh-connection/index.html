@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
         <meta charset="utf-8" />
-        <title>李林克斯 - linux</title>
+        <title>重用 SSH 连接</title>
         <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
 
         <!--[if IE]>
@@ -19,13 +19,19 @@
                 <nav><ul>
                     <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
                     <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
+                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection/" rel="bookmark"
+           title="Permalink to 重用 SSH 连接">重用 SSH 连接</a></h1>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection/">重用 SSH 连接</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2015-03-15T13:30:00+08:00">
                 Published: 2015-03-15
@@ -36,7 +42,7 @@
         </address>
 <p>In <a href="http://deanthompson.github.io/category/tech.html">tech</a>. </p>
 <p>tags: <a href="http://deanthompson.github.io/tag/Linux.html">Linux</a> <a href="http://deanthompson.github.io/tag/SSH.html">SSH</a> </p>
-</footer><!-- /.post-info --><p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
+</footer><!-- /.post-info -->      <p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
 <p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
 <p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
 <div class="highlight"><pre>Host *
@@ -51,56 +57,26 @@
 <p><code>ControlMaster auto</code> 这个选项告诉 SSH 客户端尝试重用现有的连接（master connection）。</p>
 <p><code>ControlPath</code> 指定了这个连接的 socket 保存的路径，这里配置的是在 /tmp 目录，实际上可以在任何有读写权限的路径下。<code>/tmp/ssh_mux_%h_%p_%r</code> 配置了 socket 文件名，<code>%h</code> 表示远程主机名（host），<code>%p</code> 表示远程 SSH 服务器的端口（port），<code>%r</code> 表示登录的远程用户名（remote user name）。这些 socket 可以随时删掉（<code>rm</code>），删除后首次会话又会创建新的 master 连接。曾经遇到过这种情况，本地断网了，打开的几个远程终端都卡死，网络恢复后也一直这样，甚至打开新的终端也登录不上。这个时候只需要把之前的 socket 文件都删掉，重新登录就可以了。</p>
 <p><code>ControlPersist</code> 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。</p>
-<p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p><p>There are <a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection/#disqus_thread">comments</a>.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p>
+    </div><!-- /.entry-content -->
+    <div class="comments">
+      <h2>Comments !</h2>
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'liyangliang';
+        var disqus_identifier = 'posts/2015/03/reuse-ssh-connection/';
+        var disqus_url = 'http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection/';
+        (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//liyangliang.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the comments.</noscript>
+    </div>
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/" rel="bookmark"
-                           title="Permalink to less 命令支持语法高亮和行号">less 命令支持语法高亮和行号</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-11-03T00:30:00+08:00">
-                Published: 2013-11-03
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/linux.html">linux</a> <a href="http://deanthompson.github.io/tag/less.html">less</a> </p>
-</footer><!-- /.post-info -->                <p>首先来一句装X的话：</p>
-<blockquote>
-<p>less is more</p>
-</blockquote>
-<h1>1. How</h1>
-<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-<div class="highlight"><pre>sudo apt-get install <span class="nb">source</span>-highlight
-</pre></div>
-
-
-<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-<div class="highlight"><pre><span class="c"># less hightlight</span>
-<span class="nb">export </span><span class="nv">LESSOPEN</span><span class="o">=</span><span class="s2">&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;</span>
-<span class="nb">export </span><span class="nv">LESS</span><span class="o">=</span><span class="s2">&quot; -R &quot;</span>
-</pre></div>
-
-
-<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径 ...</p>
-                <a class="readmore" href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/">read more</a>
-<p>There are <a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
-            </article></li>
-                </ol><!-- /#posts-list -->
-<p class="paginator">
-    Page 1 / 1
-</p>
-                </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>

@@ -27,6 +27,64 @@
                     <ol id="posts-list" class="hfeed" start="4">
             <li><article class="hentry">
                 <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" rel="bookmark"
+                           title="Permalink to 用 openpyxl 处理 xlsx 文件">用 openpyxl 处理 xlsx 文件</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-02-25T16:39:00+08:00">
+                Published: 2013-02-25
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a> </p>
+</footer><!-- /.post-info -->                <p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
+<p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 ...</p>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/" rel="bookmark"
+                           title="Permalink to python字典切片">python字典切片</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2012-12-01T15:09:00+08:00">
+                Published: 2012-12-01
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
+        </address>
+<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
+<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/dict.html">dict</a> </p>
+</footer><!-- /.post-info -->                <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
+<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">dict_slice</span><span class="p">(</span><span class="n">adict</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">adict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">dict_slice</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]:</span>
+        <span class="n">dict_slice</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">adict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dict_slice</span>
+</pre></div>
+
+
+<hr />
+<p><strong>EDIT 2013-10-26 01:13</strong></p>
+<p>补充一个一行的版本（one-liner ...</p>
+                <a class="readmore" href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/">read more</a>
+<p>There are <a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
                     <h1><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/" rel="bookmark"
                            title="Permalink to Python时间戳和日期相互转换">Python时间戳和日期相互转换</a></h1>
                 </header>
@@ -59,10 +117,12 @@
                 <a class="readmore" href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/">read more</a>
 <p>There are <a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">comments</a>.</p>                </div><!-- /.entry-content -->
             </article></li>
+                </ol><!-- /#posts-list -->
 <p class="paginator">
         <a href="http://deanthompson.github.io/category/Tech2.html">&laquo;</a>
     Page 3 / 3
 </p>
+                </section><!-- /#content -->
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>
