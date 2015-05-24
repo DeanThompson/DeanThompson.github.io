@@ -1,87 +1,161 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-        <meta charset="utf-8" />
-        <title>Golang 的 defer 语句</title>
-        <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
+<!DOCTYPE HTML>
 
-        <!--[if IE]>
-            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>Golang 的 defer 语句 - 李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2014/12/defer-in-golang">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
 </head>
 
-<body id="index" class="home">
-<a href="https://github.com/DeanThompson">
-<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
-</a>
-        <header id="banner" class="body">
-                <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
-                <nav><ul>
-                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
-<section id="content" class="body">
-  <article>
-    <header>
-      <h1 class="entry-title">
-        <a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang/" rel="bookmark"
-           title="Permalink to Golang 的 defer 语句">Golang 的 defer 语句</a></h1>
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-    </header>
 
-    <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2014-12-18T15:35:00+08:00">
-                Published: 2014-12-18
-        </abbr>
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
-</footer><!-- /.post-info -->      <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些“收尾”操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">Golang 的 defer 语句</h1>
+	<div class="entry-content" itemprop="articleBody"><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
+
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
 </ul>
-<div class="highlight"><pre>func a() {
+
+<pre><code class="language-golang">func a() {
     i := 0
     defer fmt.Println(i)
     i++
     return
 }
-</pre></div>
-
+</code></pre>
 
 <ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-<div class="highlight"><pre>func b() {
+
+<pre><code class="language-golang">func b() {
     for i := 0; i &lt; 4; i++ {
         defer fmt.Print(i)
     }
 }
-</pre></div>
-
+</code></pre>
 
 <ul>
 <li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
 </ul>
-<div class="highlight"><pre>func c() (i int) {
+
+<pre><code class="language-golang">func c() (i int) {
     defer func() { i++ }()
     return 1
 }
-</pre></div>
-
+</code></pre>
 
 <p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
+
 <p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
+
 <p>最近在看 <a href="https://github.com/revel/revel">revel 框架</a> 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，<a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65">其中一个方法源码如下</a>：</p>
-<div class="highlight"><pre>// Add an item to the cache, replacing any existing item. If the duration is 0,
-// the cache&#39;s default expiration time is used. If it is -1, the item never
+
+<pre><code class="language-golang">// Add an item to the cache, replacing any existing item. If the duration is 0,
+// the cache's default expiration time is used. If it is -1, the item never
 // expires.
 func (c *cache) Set(k string, x interface{}, d time.Duration) {
     c.Lock()
@@ -90,87 +164,64 @@ func (c *cache) Set(k string, x interface{}, d time.Duration) {
     // adds ~200 ns (as of go1.)
     c.Unlock()
 }
-</pre></div>
-
+</code></pre>
 
 <p>这里没有用 <code>defer</code> 来调用 <code>Unlock</code>，而且在代码里明确注释说 <code>defer</code> 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 <code>defer</code>，却从没考虑过这一点。robfig 说 <code>defer</code> 大概需要 200ns，一时兴起写了个<a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1">简单的 benchmark 测试</a>，来看看 Go 1.4 里究竟如何。</p>
+
 <p>这是某一次测试的结果：</p>
-<div class="highlight"><pre>testing: warning: no tests to run
+
+<pre><code class="language-text">testing: warning: no tests to run
 PASS
 BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
-</pre></div>
-
+</code></pre>
 
 <p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p>
-    </div><!-- /.entry-content -->
-    <div class="comments">
-      <h2>Comments !</h2>
-      <div id="disqus_thread"></div>
-      <script type="text/javascript">
-        var disqus_shortname = 'liyangliang';
-        var disqus_identifier = 'posts/2014/12/defer-in-golang/';
-        var disqus_url = 'http://deanthompson.github.io/posts/2014/12/defer-in-golang/';
-        (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//liyangliang.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the comments.</noscript>
-    </div>
-
-  </article>
-</section>
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>blogroll</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="http://flask.pocoo.org/">Flask</a></li>
-                            <li><a href="http://golang.org">Golang</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
-
-                            <li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
-                            <li><a href="https://github.com/DeanThompson">Github</a></li>
-                            <li><a href="http://www.douban.com/people/Touchthesky/">豆瓣</a></li>
-                            <li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
-
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
-
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-45384257-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
-<script type="text/javascript">
-    var disqus_shortname = 'liyangliang';
-    (function () {
-        var s = document.createElement('script'); s.async = true;
-        s.type = 'text/javascript';
-        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-    }());
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
 </script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
 </body>
 </html>

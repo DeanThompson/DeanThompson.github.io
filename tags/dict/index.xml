@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Dict on 李林克斯 </title>
+      <generator uri="https://gohugo.io">Hugo</generator>
+    <link>http://deanthompson.github.io/tags/dict/</link>
+    <language>zh-CN</language>
+    <author>Yangliang Li</author>
+    
+    <updated>Sat, 01 Dec 2012 15:09:08 CST</updated>
+    
+    <item>
+      <title>Python字典切片</title>
+      <link>http://deanthompson.github.io/posts/2012/12/python-dict-slice</link>
+      <pubDate>Sat, 01 Dec 2012 15:09:08 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2012/12/python-dict-slice</guid>
+      <description>&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
+
+&lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def dict_slice(adict, start, end):
+    keys = adict.keys()
+    dict_slice = {}
+    for k in keys[start:end]:
+        dict_slice[k] = adict[k]
+    return dict_slice
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;EDIT 2013-10-26 01:13&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;补充一个一行的版本（one-liner）:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;dict_slice = lambda adict, start, end: dict((k, adict[k]) for k in adict.keys()[start:end])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这行代码主要是用了 &lt;code&gt;lambda&lt;/code&gt; 来创建一个匿名函数，再用 built-in 函数 &lt;code&gt;dict()&lt;/code&gt; 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 &lt;code&gt;dict()&lt;/code&gt; 函数：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;dict_slice = lambda adict, start, end: { k:adict[k] for k in adict.keys()[start:end] }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个看起来和 list comprehension 就很像了。非常优雅，且节省空间 ：）&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;简单验证：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;&amp;gt;&amp;gt;&amp;gt; d = {}.fromkeys(range(10), 5)
+&amp;gt;&amp;gt;&amp;gt; d
+{0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 5, 7: 5, 8: 5, 9: 5}
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; slice = dict_slice(d, 3, 5)
+&amp;gt;&amp;gt;&amp;gt; slice
+{3: 5, 4: 5}
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; slice = dict_slice(d, 4, 8)
+&amp;gt;&amp;gt;&amp;gt; slice
+{4: 5, 5: 5, 6: 5, 7: 5}
+&amp;gt;&amp;gt;&amp;gt;
+&amp;gt;&amp;gt;&amp;gt; slice = dict_slice(d, 5, -1)
+&amp;gt;&amp;gt;&amp;gt; slice
+{5: 5, 6: 5, 7: 5, 8: 5}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

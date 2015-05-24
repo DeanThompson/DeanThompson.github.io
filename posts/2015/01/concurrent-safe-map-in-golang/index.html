@@ -1,76 +1,156 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-        <meta charset="utf-8" />
-        <title>Golang 里并发安全的 map 实现</title>
-        <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
+<!DOCTYPE HTML>
 
-        <!--[if IE]>
-            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>Golang 并发安全的 map 实现 - 李林克斯</title>
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
 </head>
 
-<body id="index" class="home">
-<a href="https://github.com/DeanThompson">
-<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
-</a>
-        <header id="banner" class="body">
-                <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
-                <nav><ul>
-                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
-<section id="content" class="body">
-  <article>
-    <header>
-      <h1 class="entry-title">
-        <a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang/" rel="bookmark"
-           title="Permalink to Golang 里并发安全的 map 实现">Golang 里并发安全的 map 实现</a></h1>
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-    </header>
 
-    <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2015-01-12T20:00:00+08:00">
-                Published: 2015-01-12
-        </abbr>
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/golang.html">golang</a> <a href="http://deanthompson.github.io/tag/Go.html">Go</a> </p>
-</footer><!-- /.post-info -->      <p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
-<h2>并发安全</h2>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">Golang 并发安全的 map 实现</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
+
+<h2 id="并发安全:743dbbe92226f1ed32f110ba88fc33fe">并发安全</h2>
+
 <p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
-<div class="highlight"><pre>type syncMap struct {
+
+<pre><code class="language-go">type syncMap struct {
     items map[string]interface{}
     sync.RWMutex
 }
-</pre></div>
+</code></pre>
 
+<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
 
-<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 Get，Set，Delete 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
 <p>但是这种设计会有些性能隐患。主要是两个方面：</p>
+
 <ol>
 <li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
-<h2>「分表」</h2>
+
+<h2 id="分表:743dbbe92226f1ed32f110ba88fc33fe">「分表」</h2>
+
 <p>一种解决思路是“分表”存储，具体实现就是，基于上面的 <code>syncMap</code> 再包装一次，用多个 <code>syncMap</code> 来模拟实现一个 map：</p>
-<div class="highlight"><pre>type SyncMap struct {
+
+<pre><code class="language-go">type SyncMap struct {
     shardCount uint8
     shards     []*syncMap
 }
-</pre></div>
-
+</code></pre>
 
 <p>上面这种设计用了一个 <code>*syncMap</code> 的 slice 来保存数据，<code>shardCount</code> 提供了分表量的可定制性。实际上 <code>shards</code> 同样可以实现为 <code>map[string]*syncMap</code>。</p>
+
 <p>在这种设计下，数据（key:value）会被分散到不同的 <code>syncMap</code>，而每个 <code>syncMap</code> 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。</p>
+
 <p>那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash. 字符串的哈希算法有很多，byvoid 大神实现和比较了多种字符串 hash 函数（<a href="https://www.byvoid.com/blog/string-hash-compare/">各种字符串Hash函数比较</a>），得出结论是：“BKDRHash无论是在实际效果还是编码实现中，效果都是最突出的”。这里采用了 BKDRHash 来实现：</p>
-<div class="highlight"><pre>const seed uint32 = 131 // 31 131 1313 13131 131313 etc..
+
+<pre><code class="language-golang">const seed uint32 = 131 // 31 131 1313 13131 131313 etc..
 
 func bkdrHash(str string) uint32 {
     var h uint32
@@ -86,79 +166,56 @@ func bkdrHash(str string) uint32 {
 func (m *SyncMap) locate(key string) *syncMap {
     return m.shards[bkdrHash(key)&amp;uint32((m.shardCount-1))]
 }
-</pre></div>
+</code></pre>
 
+<p><code>locate</code> 方法调用 <code>bkdrHash</code> 函数计算一个 <code>key</code> 的哈希值，然后用该值对分表量取模得到在 slice 的 <code>index</code>，之后就能定位到对应的 <code>syncMap</code>.</p>
 
-<p><code>locate</code> 方法调用 <code>bkdrHash</code> 函数计算一个 key 的哈希值，然后用该值对分表量取模得到在 slice 的 index，之后就能定位到对应的 <code>syncMap</code>.</p>
-<p>这种实现足够简单，而且也有不错的性能表现。除了基本的 Get、Set、Delete等基本操作之外，迭代（range）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： <a href="https://github.com/DeanThompson/syncmap">https://github.com/DeanThompson/syncmap</a>.</p>
-    </div><!-- /.entry-content -->
-    <div class="comments">
-      <h2>Comments !</h2>
-      <div id="disqus_thread"></div>
-      <script type="text/javascript">
-        var disqus_shortname = 'liyangliang';
-        var disqus_identifier = 'posts/2015/01/concurrent-safe-map-in-golang/';
-        var disqus_url = 'http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang/';
-        (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//liyangliang.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the comments.</noscript>
-    </div>
-
-  </article>
-</section>
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>blogroll</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="http://flask.pocoo.org/">Flask</a></li>
-                            <li><a href="http://golang.org">Golang</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
-
-                            <li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
-                            <li><a href="https://github.com/DeanThompson">Github</a></li>
-                            <li><a href="http://www.douban.com/people/Touchthesky/">豆瓣</a></li>
-                            <li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
-
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
-
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-45384257-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
-<script type="text/javascript">
-    var disqus_shortname = 'liyangliang';
-    (function () {
-        var s = document.createElement('script'); s.async = true;
-        s.type = 'text/javascript';
-        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-    }());
+<p>这种实现足够简单，而且也有不错的性能表现。除了基本的 <code>Get</code>、<code>Set</code>、<code>Delete</code> 等基本操作之外，迭代（<code>range</code>）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： <a href="https://github.com/DeanThompson/syncmap">https://github.com/DeanThompson/syncmap</a>.</p>
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
 </script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
 </body>
 </html>

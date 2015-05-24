@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					
+					<div itemscope itemtype="http://schema.org/Blog">
+					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Mon, Feb 25, 2013' data-updated="true" itemprop="datePublished">Mon, Feb 25, 2013</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。 openpyxl 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。openpyxl 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 .xlsx/.xlsm 格式的表格文件。顺便提一下，xls 和 xlsx 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。xlsx 中最后一个 x 的意义就在于此。 1. 安装 可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1. https://pypi.python.org/pypi/openpyxl 2. 读 用openpyxl读一个xlsx文件很简单： from openpyxl import load_workbook wb = load_workbook(filename=r'existing_file.xlsx') sheets = wb.get_sheet_names() # 获取所有表格(worksheet)的名字 sheet0 = sheets[0] # 第一个表格的名称 ws = wb.get_sheet_by_name('sheet_name') # 获取特定的 worksheet # 获取表格所有行和列，两者都是可迭代的 rows = ws.rows columns = ws.columns # 行迭代 content = [] for row in rows: line = [col.value for col in row] content.append(line) # 通过坐标读取值 print ws.cell('B12').value # B 表示列，12 表示行 print ws.cell(row=12, column=2).value 当调用 get_sheet_by_name('sheet_name') 方法获取表格时，如果名字为 sheet_name 的表格不存在，不会报错或抛出异常，而只是返回 None.
+		<a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Dec 1, 2012' data-updated="true" itemprop="datePublished">Sat, Dec 1, 2012</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" itemprop="url">Python字典切片</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		python 的 list, string, tuple 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 dict 没有提供类似的切片操作，所以就得要自己实现。 其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码： def dict_slice(adict, start, end): keys = adict.keys() dict_slice = {} for k in keys[start:end]: dict_slice[k] = adict[k] return dict_slice EDIT 2013-10-26 01:13 补充一个一行的版本（one-liner）: dict_slice = lambda adict, start, end: dict((k, adict[k]) for k in adict.keys()[start:end]) 这行代码主要是用了 lambda 来创建一个匿名函数，再用 built-in 函数 dict() 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 dict() 函数： dict_slice = lambda adict, start, end:
+		<a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Oct 21, 2012' data-updated="true" itemprop="datePublished">Sun, Oct 21, 2012</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr" itemprop="url">Python 时间戳和日期相互转换</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。 首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍： 为什么计算机时间要从1970年1月1日开始算起？ 在Python里，时间戳可以通过 time 模块里的 time() 方法获得，比如: In [1]: import time In [2]: time.time() Out[2]: 1350816710.8050799 这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 time.strftime() 函数来达到这个目的。根据 strftime() 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 time.localtime() 的返回值。而那个9元组其实是 struct_time，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如 In [5]: import time In [6]: time.localtime() Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min=4, tm_sec=25, tm_wday=6, tm_yday=295, tm_isdst=0) 具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码 In [8]: import time In [9]: st = time.localtime(1350816710.8050799) In [10]: time.strftime('%Y-%m-%d %H:%M:%S',
+		<a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				    </div>
+				    <nav id="pagenavi">
+					    
+					        <a href="/" class="prev">Prev</a>
+					    
+					    
+					    <div class="center"><a href="http://deanthompson.github.io/post/">Blog Archives</a></div>
+					</nav>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>

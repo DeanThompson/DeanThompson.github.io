@@ -1,184 +1,242 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-        <meta charset="utf-8" />
-        <title>用 openpyxl 处理 xlsx 文件</title>
-        <link rel="stylesheet" href="http://deanthompson.github.io/theme/css/main.css" />
+<!DOCTYPE HTML>
 
-        <!--[if IE]>
-            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>用 openpyxl 处理 xlsx 文件 - 李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
 </head>
 
-<body id="index" class="home">
-<a href="https://github.com/DeanThompson">
-<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub" />
-</a>
-        <header id="banner" class="body">
-                <h1><a href="http://deanthompson.github.io/">李林克斯 </a></h1>
-                <nav><ul>
-                    <li><a href="http://deanthompson.github.io/pages/about.html">About</a></li>
-                    <li><a href="http://deanthompson.github.io/category/Life.html">Life</a></li>
-                    <li class="active"><a href="http://deanthompson.github.io/category/Tech.html">Tech</a></li>
-                </ul></nav>
-        </header><!-- /#banner -->
-<section id="content" class="body">
-  <article>
-    <header>
-      <h1 class="entry-title">
-        <a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" rel="bookmark"
-           title="Permalink to 用 openpyxl 处理 xlsx 文件">用 openpyxl 处理 xlsx 文件</a></h1>
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="compiletheory">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
-    </header>
 
-    <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-02-25T16:39:00+08:00">
-                Published: 2013-02-25
-        </abbr>
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
 
-        <address class="vcard author">
-                By                         <a class="url fn" href="http://deanthompson.github.io/author/李林克斯.html">李林克斯</a>
-        </address>
-<p>In <a href="http://deanthompson.github.io/category/Tech.html">Tech</a>. </p>
-<p>tags: <a href="http://deanthompson.github.io/tag/python.html">python</a> <a href="http://deanthompson.github.io/tag/openpyxl.html">openpyxl</a> </p>
-</footer><!-- /.post-info -->      <p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">用 openpyxl 处理 xlsx 文件</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
+
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
-<h1>1. 安装</h1>
+
+<h1 id="1-安装:aebfe74b7cb46f66dc1d78cd9abadd46">1. 安装</h1>
+
 <p>可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1.</p>
+
 <blockquote>
 <p><a href="https://pypi.python.org/pypi/openpyxl">https://pypi.python.org/pypi/openpyxl</a></p>
 </blockquote>
-<h1>2. 读</h1>
+
+<h1 id="2-读:aebfe74b7cb46f66dc1d78cd9abadd46">2. 读</h1>
+
 <p>用openpyxl读一个xlsx文件很简单：</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">load_workbook</span>
 
-<span class="n">wb</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">r&#39;existing_file.xlsx&#39;</span><span class="p">)</span>
-
-<span class="n">sheets</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_names</span><span class="p">()</span>   <span class="c"># 获取所有表格(worksheet)的名字</span>
-<span class="n">sheet0</span> <span class="o">=</span> <span class="n">sheets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c"># 第一个表格的名称</span>
-<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_sheet_by_name</span><span class="p">(</span><span class="s">&#39;sheet_name&#39;</span><span class="p">)</span> <span class="c"># 获取特定的 worksheet</span>
-
-<span class="c"># 获取表格所有行和列，两者都是可迭代的</span>
-<span class="n">rows</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">rows</span>
-<span class="n">columns</span> <span class="o">=</span> <span class="n">ws</span><span class="o">.</span><span class="n">columns</span>
-
-<span class="c"># 行迭代</span>
-<span class="n">content</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-    <span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
-    <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-
-<span class="c"># 通过坐标读取值</span>
-<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="s">&#39;B12&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>    <span class="c"># B 表示列，12 表示行</span>
-<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-</pre></div>
-
+<pre><code class="language-python">from openpyxl import load_workbook
+ 
+wb = load_workbook(filename=r'existing_file.xlsx')
+ 
+sheets = wb.get_sheet_names()   # 获取所有表格(worksheet)的名字
+sheet0 = sheets[0]  # 第一个表格的名称
+ws = wb.get_sheet_by_name('sheet_name') # 获取特定的 worksheet
+ 
+# 获取表格所有行和列，两者都是可迭代的
+rows = ws.rows
+columns = ws.columns
+ 
+# 行迭代
+content = []
+for row in rows:
+    line = [col.value for col in row]
+    content.append(line)
+ 
+# 通过坐标读取值
+print ws.cell('B12').value    # B 表示列，12 表示行
+print ws.cell(row=12, column=2).value
+</code></pre>
 
 <p>当调用 <code>get_sheet_by_name('sheet_name')</code> 方法获取表格时，如果名字为 <code>sheet_name</code> 的表格不存在，不会报错或抛出异常，而只是返回 <code>None</code>.</p>
-<h1>3. 写</h1>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="n">Workbook</span>
 
-<span class="c"># 在内存中创建一个workbook对象，而且会至少创建一个 worksheet</span>
-<span class="n">wb</span> <span class="o">=</span> <span class="n">Workbook</span><span class="p">()</span>
+<h1 id="3-写:aebfe74b7cb46f66dc1d78cd9abadd46">3. 写</h1>
 
-<span class="n">ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">get_active_sheet</span><span class="p">()</span>
-<span class="k">print</span> <span class="n">ws</span><span class="o">.</span><span class="n">title</span>
-<span class="n">ws</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">&#39;New Title&#39;</span>  <span class="c"># 设置worksheet的标题</span>
+<pre><code class="language-python">from openpyxl import Workbook
+ 
+# 在内存中创建一个workbook对象，而且会至少创建一个 worksheet
+wb = Workbook()
+ 
+ws = wb.get_active_sheet()
+print ws.title
+ws.title = 'New Title'  # 设置worksheet的标题
+ 
+# 设置单元格的值
+ws.cell('D3').value = 4
+ws.cell(row=3, column=1).value = 6
+ 
+new_ws = wb.create_sheet(title='new_sheet')
+for row in range(100):
+    for col in range(10):
+        new_ws.cell(row=row, column=col).value = row+col
+ 
+# 最后一定要保存！
+wb.save(filename='new_file.xlsx')
+</code></pre>
 
-<span class="c"># 设置单元格的值</span>
-<span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="s">&#39;D3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">6</span>
+<h1 id="4-文档:aebfe74b7cb46f66dc1d78cd9abadd46">4. 文档</h1>
 
-<span class="n">new_ws</span> <span class="o">=</span> <span class="n">wb</span><span class="o">.</span><span class="n">create_sheet</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;new_sheet&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-        <span class="n">new_ws</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">row</span><span class="o">+</span><span class="n">col</span>
-
-<span class="c"># 最后一定要保存！</span>
-<span class="n">wb</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;new_file.xlsx&#39;</span><span class="p">)</span>
-</pre></div>
-
-
-<h1>4. 文档</h1>
 <p>对于常规的小文件的操作，以上的一些介绍基本是够了。有时候需要处理大文件，就需要用到更高级一些的方法。更详细的用法、教程和API文档请参考这里：</p>
+
 <blockquote>
 <p><a href="http://pythonhosted.org/openpyxl/">http://pythonhosted.org/openpyxl/</a></p>
 </blockquote>
-<h1>5. References</h1>
+
+<h1 id="5-references:aebfe74b7cb46f66dc1d78cd9abadd46">5. References</h1>
+
 <ul>
 <li>下载 openpyxl：<a href="https://pypi.python.org/pypi/openpyxl">https://pypi.python.org/pypi/openpyxl</a></li>
 <li>openpyxl 文档：<a href="http://pythonhosted.org/openpyxl/">http://pythonhosted.org/openpyxl/</a></li>
 </ul>
-<hr />
-    </div><!-- /.entry-content -->
-    <div class="comments">
-      <h2>Comments !</h2>
-      <div id="disqus_thread"></div>
-      <script type="text/javascript">
-        var disqus_shortname = 'liyangliang';
-        var disqus_identifier = 'posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/';
-        var disqus_url = 'http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/';
-        (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//liyangliang.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the comments.</noscript>
-    </div>
-
-  </article>
-</section>
-        <section id="extras" class="body">
-                <div class="blogroll">
-                        <h2>blogroll</h2>
-                        <ul>
-                            <li><a href="http://getpelican.com/">Pelican</a></li>
-                            <li><a href="http://python.org/">Python.org</a></li>
-                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="http://flask.pocoo.org/">Flask</a></li>
-                            <li><a href="http://golang.org">Golang</a></li>
-                        </ul>
-                </div><!-- /.blogroll -->
-                <div class="social">
-                        <h2>social</h2>
-                        <ul>
-
-                            <li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
-                            <li><a href="https://github.com/DeanThompson">Github</a></li>
-                            <li><a href="http://www.douban.com/people/Touchthesky/">豆瓣</a></li>
-                            <li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
-                        </ul>
-                </div><!-- /.social -->
-        </section><!-- /#extras -->
-
-        <footer id="contentinfo" class="body">
-                <address id="about" class="vcard body">
-                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
-                </address><!-- /#about -->
-
-                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
-        </footer><!-- /#contentinfo -->
-
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-45384257-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
-<script type="text/javascript">
-    var disqus_shortname = 'liyangliang';
-    (function () {
-        var s = document.createElement('script'); s.async = true;
-        s.type = 'text/javascript';
-        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-    }());
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
 </script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
 </body>
 </html>

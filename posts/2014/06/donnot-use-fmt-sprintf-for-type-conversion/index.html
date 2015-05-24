@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>不要用 fmt.Sprintf 做类型转换 - 李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">不要用 fmt.Sprintf 做类型转换</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
+
+<h2 id="int-to-string:fa92a5344b4f2c93ba7190e9f429e269">int to string</h2>
+
+<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
+
+<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;strconv&quot;
+    &quot;time&quot;
+)
+
+const LOOP = 10000
+
+var num int64 = 10000
+
+func main() {
+    startTime := time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        fmt.Sprintf(&quot;%d&quot;, num)
+    }
+    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime))
+
+    startTime = time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        strconv.FormatInt(num, 10)
+    }
+    fmt.Printf(&quot;strconv.FormatInt taken: %v\n&quot;, time.Since(startTime))
+}
+</code></pre>
+
+<p>其中某一次运行结果：</p>
+
+<pre><code class="language-text">fmt.Sprintf taken: 2.995178ms
+strconv.FormatInt taken: 1.057318ms
+</code></pre>
+
+<p>多次运行结果都类似，结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatInt</code> 的 3 倍。</p>
+
+<p>同理，对于 <code>float64</code> 类型，推荐使用 <code>strconv.FormatFloat</code>。测试代码和上面类似，得到的结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatFloat</code> 的 1.1 倍。效果没有整型明显，但依然更高效。</p>
+
+<h2 id="hexadecimal-to-string:fa92a5344b4f2c93ba7190e9f429e269">hexadecimal to string</h2>
+
+<p>十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 <code>encoding/hex</code> 包提供了十六进制数的编解码函数。</p>
+
+<p>下面比较一下 <code>fmt.Sprintf</code> 和 <code>hex.EncodeToString</code> 的时间开销：</p>
+
+<pre><code class="language-go">package main
+
+import (
+    &quot;crypto/md5&quot;
+    &quot;encoding/hex&quot;
+    &quot;fmt&quot;
+    &quot;io&quot;
+    &quot;time&quot;
+)
+
+const LOOP = 10000
+
+func makeMd5(data string) []byte {
+    h := md5.New()
+    io.WriteString(h, data)
+    return h.Sum(nil)
+}
+
+func main() {
+    s := &quot;123456&quot;
+    hexBytes := makeMd5(s)
+    s1 := fmt.Sprintf(&quot;%x&quot;, hexBytes)
+    s2 := hex.EncodeToString(hexBytes)
+    fmt.Println(&quot;result of fmt.Sprintf == hex.EncodeToString:&quot;, s1 == s2) // 确保结果一致
+
+    start := time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        fmt.Sprintf(&quot;%x&quot;, hexBytes)
+    }
+    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(start))
+
+    start = time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        hex.EncodeToString(hexBytes)
+    }
+    fmt.Printf(&quot;hex.EncodeToString taken: %v\n&quot;, time.Since(start))
+}
+</code></pre>
+
+<p>这个程序某一次的运行结果是：</p>
+
+<pre><code class="language-text">result of fmt.Sprintf == hex.EncodeToString: true
+fmt.Sprintf taken: 10.285488ms
+hex.EncodeToString taken: 2.080457ms
+</code></pre>
+
+<p>多次运行结果都类似，可以得到一个结论：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>hex.EncodeToString</code> 的 5 倍。</p>
+
+<p>这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 <code>fmt.Sprintf</code>。</p>
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>

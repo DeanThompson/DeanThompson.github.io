@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Defer on 李林克斯 </title>
+      <generator uri="https://gohugo.io">Hugo</generator>
+    <link>http://deanthompson.github.io/tags/defer/</link>
+    <language>zh-CN</language>
+    <author>Yangliang Li</author>
+    
+    <updated>Thu, 18 Dec 2014 15:35:38 CST</updated>
+    
+    <item>
+      <title>Golang 的 defer 语句</title>
+      <link>http://deanthompson.github.io/posts/2014/12/defer-in-golang</link>
+      <pubDate>Thu, 18 Dec 2014 15:35:38 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2014/12/defer-in-golang</guid>
+      <description>&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://blog.golang.org/defer-panic-and-recover&#34;&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;传递给 &lt;code&gt;defer&lt;/code&gt; 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 &lt;code&gt;0&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func a() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+    return
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;多个 &lt;code&gt;defer&lt;/code&gt; 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 &lt;code&gt;3210&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func b() {
+    for i := 0; i &amp;lt; 4; i++ {
+        defer fmt.Print(i)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;defer&lt;/code&gt; 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 &lt;code&gt;2&lt;/code&gt; ，而不是 &lt;code&gt;1&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func c() (i int) {
+    defer func() { i++ }()
+    return 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 语句配合 &lt;code&gt;panic&lt;/code&gt; 和 &lt;code&gt;recover&lt;/code&gt; 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，&lt;code&gt;defer&lt;/code&gt; 也是有些额外的开销的。&lt;/p&gt;
+
+&lt;p&gt;最近在看 &lt;a href=&#34;https://github.com/revel/revel&#34;&gt;revel 框架&lt;/a&gt; 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，&lt;a href=&#34;https://github.com/robfig/go-cache/blob/master/cache.go#L65&#34;&gt;其中一个方法源码如下&lt;/a&gt;：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// Add an item to the cache, replacing any existing item. If the duration is 0,
+// the cache&#39;s default expiration time is used. If it is -1, the item never
+// expires.
+func (c *cache) Set(k string, x interface{}, d time.Duration) {
+    c.Lock()
+    c.set(k, x, d)
+    // TODO: Calls to mu.Unlock are currently not deferred because defer
+    // adds ~200 ns (as of go1.)
+    c.Unlock()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里没有用 &lt;code&gt;defer&lt;/code&gt; 来调用 &lt;code&gt;Unlock&lt;/code&gt;，而且在代码里明确注释说 &lt;code&gt;defer&lt;/code&gt; 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 &lt;code&gt;defer&lt;/code&gt;，却从没考虑过这一点。robfig 说 &lt;code&gt;defer&lt;/code&gt; 大概需要 200ns，一时兴起写了个&lt;a href=&#34;https://gist.github.com/DeanThompson/48365dc9472e0a64dba1&#34;&gt;简单的 benchmark 测试&lt;/a&gt;，来看看 Go 1.4 里究竟如何。&lt;/p&gt;
+
+&lt;p&gt;这是某一次测试的结果：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;testing: warning: no tests to run
+PASS
+BenchmarkDeferredUnlock     10000000            134 ns/op
+BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
