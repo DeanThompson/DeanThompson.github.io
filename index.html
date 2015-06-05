@@ -136,7 +136,22 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		缘起 GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。 我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 fqrouter，然而都不是很稳定和一劳永逸的解决方案。 有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有： 很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了） 出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了） 想自己折腾 所以就选择了国外 VPS + Shadowsocks 的解决方案。 购买 VPS 比较熟悉的是 Linode 和 DigitalOcean，两家的最低配置基本上差不多，但是 Linode 的价格（$10 每月）是后者的两倍。本来是想选择 DigitalOcean 的，但是在家折腾的时候，始终打不开 DigialOcean 的网站。。。于是就选择了 Linode 的 VPS。 注册过程略去不表，选择机房的时候还是需要测试一下的。网上大家都推荐东京的机房，但是我购买的时候没有这个选项，不过亚洲有新加坡的机房。不管怎样，在这个页面 上做一些测速就知道怎么选了。我测试后发现新加坡的速度最好（物理优势），所以就选择了新加坡的机房；不过也不用担心，如果以后想换到别的机房，也是可以迁移的。 选好机房就可以安装系统了，我选择的是最熟悉方便的 Ubuntu 系统，安装过程非常简单，也很快。启动机器后，可以 SSH 连接上去。 购买的是最低的配置（https://www.linode.com/pricing），不过对于个人应用，尤其是目前只有搭建 VPN 的需求来说，还是很奢侈的了。 安装 Shadowsocks 我用的是 Python 实现的版本，安装过程非常简单，文档上也有教程。 在 VPS 和本机都安装 shadowsocks： pip install shadowsocks 编写配置文件 shadowsocks.json（把 server 和 password 替换成自己的服务器 IP 和 shadowsocks 服务器的密码）： { &quot;server&quot;:&quot;my_server_ip&quot;, &quot;server_port&quot;:8388, &quot;local_address&quot;: &quot;127.0.0.1&quot;, &quot;local_port&quot;:1080, &quot;password&quot;:&quot;mypassword&quot;, &quot;timeout&quot;:300, &quot;method&quot;:&quot;aes-256-cfb&quot;, &quot;fast_open&quot;: false } 这份配置文件是客户端和服务端通用的，local_address 和 local_port 是客户端用的。 在 VPS 上启动 shadowsocks 服务器： ssserver -c /path/to/shadowsocks.json 在本机启动 shadowsocks 客户端： sslocal -c /path/to/shadowsocks.json 最终使用的时候，VPN 配置的是本机的 shadowsocks，即 127.0.0.1:1080，而不是直接连接服务端版本。 Chrome 使用 socks 代理 Linux 系统可以配置全局的网络代理，Chrome 可以设置使用系统默认的代理配置，也可以使用 SwitchySharp 做更灵活的配置。 使用过 GoAgent 的人应该都知道 SwitchySharp 这个 Chrome 插件。SwitchySharp 搭配使用 Shadowsocks 也很简单，只需要几步配置就可以实现： 打开 SwitchySharp 的配置界面，新建一个情景模式，命名为 Shadowsocks 详细配置页面，SOCKS 代理一栏，填写 IP 127.0.0.1 和 端口 1080，选择 &ldquo;SOCKS v5&rdquo;，然后保存 切换规则页面，把所有规则的情景模式从 GoAgent 改为 Shadowsocks，然后保存 更新在线规则列表，情景模式选择 Shadowsocks；也可以手动添加规则 OK，完成。此后访问规则列表里的网站，都会走 Shadowsocks 的代理。如果使用过 SwitchySharp + GoAgent，即使没有截图，上面的配置很容易理解。 命令行使用 socks 代理 浏览器可以自由翻墙了，终端却仍然还在墙内，使用 curl，wget 和 go get 访问墙外资源时依然失败。 Shadowsocks 的 wiki 上提供了命令行工具使用代理的教程，不过我没有配置成功。后来找了另一个工具：Privoxy.
+		<h2 id="缘起:4855d9d6e5f234c654404b26568913d6">缘起</h2>
+
+<p>GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。</p>
+
+<p>我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 <a href="http://fqrouter.com/">fqrouter</a>，然而都不是很稳定和一劳永逸的解决方案。</p>
+
+<p>有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：</p>
+
+<ol>
+<li>很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）</li>
+<li>出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）</li>
+<li>想自己折腾</li>
+</ol>
+
+<p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
+
 		<a href="http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -162,7 +177,25 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric" itemprop="url">用 Fabric 来发布代码</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		写代码的时候很爽，本地开发一下子完成了，等到部署发布代码的时候就有些烦了。开发环境、测试环境、生产环境，有些配置是因环境而异的，在我们的 Python 项目里，一直保留这样的习惯： 使用 py 文件做配置文件 固定的配置，放在 settings.py 里 不同环境可能要修改的，放在 site_settings.py 里，然后在 settings.py 里全部 import 进去 需要使用配置的时候，只需要 settings.FOO 就可以 实际上，这样的习惯在发布代码时带来了一些小麻烦。曾经用过这些方式发布 Python 代码： rsync. 实际上用 rsync 发布的体验还挺好的，每次只会同步更新过的文件，而且可以配置不需要同步的文件。在使用 rsync 时，site_settings.py 是没有同步的。但是个人体验，rsync 也有不好的地方，首先就是需要依赖 rsync 服务，在远程机器和本地都要配置；二是不好做备份。 git. 应该说，git 应该是我最喜欢的发布方式了，本地 push，远程 pull，完事；而且还很好备份和回滚。再有，如果我「作死」在服务器上修改调试代码，能方便的提交到版本库。但是，考虑到安全问题，很多 git 服务器都搭建在内网，服务器上根本就无法访问到。 scp. 这是很 low 的一种做法，也基本上是我最后的选择。刚入职到现在这家公司，新部门，有点蛮荒时代的感觉。（非常简陋的）git 服务器在内网，所以在服务器上搞了一下 rsync，配置好后发现本地无法连接到服务器的 873 端口（不知道是不是公司配置了防火墙）。一时间就堕落到选择了 scp. 好处几乎没有，不方便的地方倒是一大堆：不方便增量更新，只能全部覆盖，考虑到 site_settings.py 的存在，这个很不方便；不方便设置要排除的文件，如果想省事把整个项目 scp 过去，就会把 .git 目录和 .pyc 文件也拷过去，无用而慢。 但实际上这些天我还使用了好几次 scp 来发布代码，一直在重复体力劳动。终于，想起了 fabric，带我「脱离苦海」。 fabric 使用起来非常简单，对我来说，只需要简单几行代码的配置，就能自动完成我之前繁复的体力劳动。 # -*- coding: utf-8 -*- import os from fabric.api import env, local, cd, lcd, put, run def prod(): env.hosts = [&quot;123.123.123.123&quot;] env.user = &quot;test&quot; # env.password = &quot;&quot; # 如果这里写了密码，在发布时就不用输密码了 def pyclean(): local(&quot;pyclean .&quot;) # local 函数执行本地命令 def deploy(): pyclean() local_app_dir = &quot;~/workspace/projects/&quot; remote_app_dir = &quot;~/projects&quot; # lcd 是 「local cd」，cd 是在远程服务器执行 cd with lcd(local_app_dir), cd(remote_app_dir): # 1.
+		<p>写代码的时候很爽，本地开发一下子完成了，等到部署发布代码的时候就有些烦了。开发环境、测试环境、生产环境，有些配置是因环境而异的，在我们的 Python 项目里，一直保留这样的习惯：</p>
+
+<ol>
+<li>使用 py 文件做配置文件</li>
+<li>固定的配置，放在 settings.py 里</li>
+<li>不同环境可能要修改的，放在 site_settings.py 里，然后在 settings.py 里全部 import 进去</li>
+<li>需要使用配置的时候，只需要 <code>settings.FOO</code> 就可以</li>
+</ol>
+
+<p>实际上，这样的习惯在发布代码时带来了一些小麻烦。曾经用过这些方式发布 Python 代码：</p>
+
+<ol>
+<li><p>rsync. 实际上用 rsync 发布的体验还挺好的，每次只会同步更新过的文件，而且可以配置不需要同步的文件。在使用 rsync 时，site_settings.py 是没有同步的。但是个人体验，rsync 也有不好的地方，首先就是需要依赖 rsync 服务，在远程机器和本地都要配置；二是不好做备份。</p></li>
+
+<li><p>git. 应该说，git 应该是我最喜欢的发布方式了，本地 push，远程 pull，完事；而且还很好备份和回滚。再有，如果我「作死」在服务器上修改调试代码，能方便的提交到版本库。但是，考虑到安全问题，很多 git 服务器都搭建在内网，服务器上根本就无法访问到。</p></li>
+
+<li><p>scp. 这是很 low 的一种做法，也基本上是我最后的选择。刚入职到现在这家公司，新部门，有点蛮荒时代的感觉。（非常简陋的）git 服务器在内网，所以在服务器上搞了一下 rsync，配置好后发现本地无法连接到服务器的 873 端口（不知道是不是公司配置了防火墙）。一时间就堕落到选择了 scp. 好处几乎没有，不方便的地方倒是一大堆：不方便增量更新，只能全部覆盖，考虑到 site_settings.py 的存在，这个很不方便；不方便设置要排除的文件，如果想省事把整个项目 scp 过去，就会把 .git 目录和 .pyc 文件也拷过去，无用而慢。</p></li>
+</ol>
+
 		<a href="http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -188,7 +221,18 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" itemprop="url">重用 SSH 连接</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 git pull 和 git push，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。 实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。 修改 ~/.ssh/config 文件，添加如下配置： Host * ControlMaster auto ControlPath /tmp/ssh_mux_%h_%p_%r ControlPersist 600 意思也很好理解： Host * 这一行表示下面这些配置和规则影响到的 host，* 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 Host *.example.com 的配置。 ControlMaster auto 这个选项告诉 SSH 客户端尝试重用现有的连接（master connection）。 ControlPath 指定了这个连接的 socket 保存的路径，这里配置的是在 /tmp 目录，实际上可以在任何有读写权限的路径下。/tmp/ssh_mux_%h_%p_%r 配置了 socket 文件名，%h 表示远程主机名（host），%p 表示远程 SSH 服务器的端口（port），%r 表示登录的远程用户名（remote user name）。这些 socket 可以随时删掉（rm），删除后首次会话又会创建新的 master 连接。曾经遇到过这种情况，本地断网了，打开的几个远程终端都卡死，网络恢复后也一直这样，甚至打开新的终端也登录不上。这个时候只需要把之前的 socket 文件都删掉，重新登录就可以了。 ControlPersist 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用
+		<p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
+
+<p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
+
+<p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
+
+<pre><code class="language-sshconfig">Host *
+    ControlMaster auto
+    ControlPath /tmp/ssh_mux_%h_%p_%r
+    ControlPersist 600
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -214,7 +258,27 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang" itemprop="url">Golang 并发安全的 map 实现</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：Why are map operations not defined to be atomic?. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。 并发安全 实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 sync.RWMutex 保护一下就是很好的选择： type syncMap struct { items map[string]interface{} sync.RWMutex } 上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 Get，Set，Delete 等方法，这个设计是能够工作的，而且大多数时候能表现不错。 但是这种设计会有些性能隐患。主要是两个方面： 读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。 如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。 「分表」 一种解决思路是“分表”存储，具体实现就是，基于上面的 syncMap 再包装一次，用多个 syncMap 来模拟实现一个 map： type SyncMap struct { shardCount uint8 shards []*syncMap } 上面这种设计用了一个 *syncMap 的 slice 来保存数据，shardCount 提供了分表量的可定制性。实际上 shards 同样可以实现为 map[string]*syncMap。 在这种设计下，数据（key:value）会被分散到不同的 syncMap，而每个 syncMap 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。 那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash.
+		<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
+
+<h2 id="并发安全:743dbbe92226f1ed32f110ba88fc33fe">并发安全</h2>
+
+<p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
+
+<pre><code class="language-go">type syncMap struct {
+    items map[string]interface{}
+    sync.RWMutex
+}
+</code></pre>
+
+<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
+
+<p>但是这种设计会有些性能隐患。主要是两个方面：</p>
+
+<ol>
+<li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
+<li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
+</ol>
+
 		<a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -240,7 +304,43 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang" itemprop="url">Golang 的 defer 语句</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		Golang 的 defer 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。 这篇 Go Blog 用例子讲解了 defer 的用途和使用规则。总结一下主要就是三点： 传递给 defer 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 0. func a() { i := 0 defer fmt.Println(i) i++ return } 多个 defer 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 3210. func b() { for i := 0; i &lt; 4; i++ { defer fmt.Print(i) } } defer 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 2 ，而不是 1. func c() (i int) { defer func() { i++ }() return 1 } defer 语句配合 panic 和 recover 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。 defer 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，defer 也是有些额外的开销的。 最近在看 revel 框架 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，其中一个方法源码如下： // Add an item to the cache, replacing any existing item.
+		<p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+
+<p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
+
+<ul>
+<li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
+</ul>
+
+<pre><code class="language-golang">func a() {
+    i := 0
+    defer fmt.Println(i)
+    i++
+    return
+}
+</code></pre>
+
+<ul>
+<li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
+</ul>
+
+<pre><code class="language-golang">func b() {
+    for i := 0; i &lt; 4; i++ {
+        defer fmt.Print(i)
+    }
+}
+</code></pre>
+
+<ul>
+<li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
+</ul>
+
+<pre><code class="language-golang">func c() (i int) {
+    defer func() { i++ }()
+    return 1
+}
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -266,7 +366,47 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		严格的讲，应该是在把 int，float等类型转换为字符串时，不要用 fmt.Sprintf，更好的做法是用标准库函数。fmt.Sprintf 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，fmt.Sprintf 需要更大的开销。大多数类型转换的函数都可以在 strconv 包里找到。 int to string 整数类型转换为字符串，推荐使用 strconv.FormatInt（int64），对于 int 类型，strconv.Itoa 对前者做了一个封装。 比较一下 strconv.FormatInt 和 fmt.Sprintf 的时间开销： package main import ( &quot;fmt&quot; &quot;strconv&quot; &quot;time&quot; ) const LOOP = 10000 var num int64 = 10000 func main() { startTime := time.Now() for i := 0; i &lt; LOOP; i++ { fmt.Sprintf(&quot;%d&quot;, num) } fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime)) startTime = time.Now() for i := 0; i &lt; LOOP;
+		<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
+
+<h2 id="int-to-string:fa92a5344b4f2c93ba7190e9f429e269">int to string</h2>
+
+<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
+
+<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;strconv&quot;
+    &quot;time&quot;
+)
+
+const LOOP = 10000
+
+var num int64 = 10000
+
+func main() {
+    startTime := time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        fmt.Sprintf(&quot;%d&quot;, num)
+    }
+    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime))
+
+    startTime = time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        strconv.FormatInt(num, 10)
+    }
+    fmt.Printf(&quot;strconv.FormatInt taken: %v\n&quot;, time.Since(startTime))
+}
+</code></pre>
+
+<p>其中某一次运行结果：</p>
+
+<pre><code class="language-text">fmt.Sprintf taken: 2.995178ms
+strconv.FormatInt taken: 1.057318ms
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -292,7 +432,48 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" itemprop="url">Golang 排序</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		Interface 接口 Go 语言标准库提供了排序的package sort，也实现了对 int， float64 和 string 三种基础类型的排序接口。所有排序调用 sort.Sort，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go： func quickSort(data Interface, a, b, maxDepth int) { for b-a &gt; 7 { if maxDepth == 0 { heapSort(data, a, b) return } maxDepth-- mlo, mhi := doPivot(data, a, b) // Avoiding recursion on the larger subproblem guarantees // a stack depth of at most lg(b-a). if mlo-a &lt; b-mhi { quickSort(data, a, mlo, maxDepth) a = mhi // i.e., quickSort(data, mhi, b) } else { quickSort(data, mhi, b, maxDepth) b = mlo // i.e., quickSort(data, a, mlo) } } if b-a &gt; 1 { insertionSort(data, a, b) } } // Sort sorts data.
+		<h2 id="interface-接口:a0aceb8e02a4cd06e9365f18ce315aea">Interface 接口</h2>
+
+<p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
+
+<pre><code class="language-go">func quickSort(data Interface, a, b, maxDepth int) {
+    for b-a &gt; 7 {
+        if maxDepth == 0 {
+            heapSort(data, a, b)
+            return
+        }
+        maxDepth--
+        mlo, mhi := doPivot(data, a, b)
+        // Avoiding recursion on the larger subproblem guarantees
+        // a stack depth of at most lg(b-a).
+        if mlo-a &lt; b-mhi {
+            quickSort(data, a, mlo, maxDepth)
+            a = mhi // i.e., quickSort(data, mhi, b)
+        } else {
+            quickSort(data, mhi, b, maxDepth)
+            b = mlo // i.e., quickSort(data, a, mlo)
+        }
+    }
+    if b-a &gt; 1 {
+        insertionSort(data, a, b)
+    }
+}
+
+// Sort sorts data.
+// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+// data.Less and data.Swap. The sort is not guaranteed to be stable.
+func Sort(data Interface) {
+    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+    n := data.Len()
+    maxDepth := 0
+    for i := n; i &gt; 0; i &gt;&gt;= 1 {
+        maxDepth++
+    }
+    maxDepth *= 2
+    quickSort(data, 0, n, maxDepth)
+}
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -318,7 +499,20 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		innodb_flush_log_at_trx_commit 和 sync_binlog 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。 1. innodb_flush_log_at_trx_commit 简而言之，innodb_flush_log_at_trx_commit 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。 当 innodb_flush_log_at_trx_commit 取值为 0 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。 当取值为 1 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。 当取值为 2 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。 上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 2 就足够了；如果为了最高性能，可以设置为 0。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 1. 2. sync_binlog sync_binlog 是 MySQL 的二进制日志（binary log）同步到磁盘的频率。MySQL server 在 binary log 每写入 sync_binlog 次后，刷写到磁盘。 如果 autocommit 开启，每个语句都写一次 binary log，否则每次事务写一次。默认值是 0，不主动同步，而依赖操作系统本身不定期把文件内容 flush 到磁盘。设为 1 最安全，在每个语句或事务后同步一次 binary log，即使在崩溃时也最多丢失一个语句或事务的日志，但因此也最慢。 大多数情况下，对数据的一致性并没有很严格的要求，所以并不会把 sync_binlog 配置成 1.
+		<p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
+
+<h2 id="1-innodb-flush-log-at-trx-commit:59ae80d39a9fc958db330bc7cfc3b146">1. innodb_flush_log_at_trx_commit</h2>
+
+<p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
+
+<ol>
+<li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
+<li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
+<li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
+</ol>
+
+<p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
+
 		<a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -344,7 +538,25 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" itemprop="url">Flask 路由做范围限制</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。 1. What 原题在这里：How to validate integer range in Flask routing (Werkzeug)? 简单翻译一下，大致如下： Flask 应用里面有一个这样的路由 from foo import get_foo @app.route(&quot;/foo/&lt;int:id&gt;&quot;) def foo_id(id): return render_template('foo.html', foo = get_foo(id)) 其中 id 的取值是 1～300，如何在路由层级做这个验证？也就是一个类似于这样的东西 @app.route(&quot;/foo/&lt;int:id(1-300)&quot;). 2. How 这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。 虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 WSGI Utility Library: Werkzeug 和 模板引擎 Jinja2，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。 2.1 Builtin Converters 如前所述，Werkzeug 提供了几种 builtin converters，分别是： class werkzeug.routing.UnicodeConverter(map, minlength=1, maxlength=None, length=None)：字符串转换器，接受除了路径类型（含有 /）的所有字符串，这也是默认的转换器。 class werkzeug.routing.PathConverter(map)：路径类型转换器，一般用得不多吧。 class werkzeug.routing.IntegerConverter(map, fixed_digits=0, min=None, max=None)：整型转换器，接受并转换成 int 类型，不支持负数。 class werkzeug.routing.FloatConverter(map, min=None, max=None)：浮点型转换器，接受并转换成 float 类型，不支持负数。 class werkzeug.routing.AnyConverter(map, *items)：匹配任意一个给定的选项，这些选项可以是 python 标识符或字符串。 从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（minlength）、最大长度（maxlength）或者指定长度（length）。IntergerConverter 和 FloatConverter 都可以指定最小值（min）和最大值（max）。所以看完这些，就可以解决最开始的问题了。 2.2 Solution 回到原题，是需要对 id 做范围限制（1～300），因此路由就可以这样写了（我的回答）： from foo import get_foo @app.route(&quot;/foo/&lt;int(min=1, max=300):id&gt;&quot;) def foo_id(id): return render_template('foo.html', foo = get_foo(id)) 这个路由就限定了 id 的范围，对于超出范围的请求，如 /foo/1024/，就会找不到对应的路由，因此会返回 404。 3.
+		<p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
+
+<h1 id="1-what:6e1d883f88cf13596243023295e5bb32">1. What</h1>
+
+<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
+
+<p>简单翻译一下，大致如下：</p>
+
+<p>Flask 应用里面有一个这样的路由</p>
+
+<pre><code class="language-python">from foo import get_foo
+
+@app.route(&quot;/foo/&lt;int:id&gt;&quot;)
+def foo_id(id):
+    return render_template('foo.html', foo = get_foo(id))
+</code></pre>
+
+<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
+
 		<a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -370,7 +582,35 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" itemprop="url">less 命令支持语法高亮和行号</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		首先来一句装X的话： less is more 1. How less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，source-highlight 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便： sudo apt-get install source-highlight 安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项： # less hightlight export LESSOPEN=&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot; export LESS=&quot; -R &quot; 要注意的是 /usr/share/source-highlight/src-hilite-lesspipe.sh 是 src-hilite-lesspipe.sh 脚本的路径，不同的系统可能不一样，可以查找一下（find / -name src-hilite-lesspipe.sh）。 使配置生效： source ~/.bashrc 这样就可以在之后使用 less filename 查看文件内容时，支持语法高亮。 2. Why 接下来看看到底发生了什么事情，可以做到这么「神奇」的效果。 2.1. LESSOPEN 首先来看source-highlight，这个工具可以根据给定的源文件，读取动态读取语言特性，然后输出一个语法高亮的文件，支持多种输出格式，如 HTML、XHTML、LATEX、 「ANSI color escape sequences 」等；默认是 HTML格式。最后一种输出格式是 ANSI 颜色转义序列，支持彩色。这种输出格式恰好可以和 less 结合使用，使其输出结果支持语法高亮。 再看 LESSOPEN。查看 less 的 man 帮助手册，可以看到 less 支持一个叫 「input preprocessor」的东西，可以在 less 打开源文件之前对源文件进行一次预处理。这个「input preprocessor」 可以自己定义： To set up an input preprocessor, set the LESSOPEN environment variable to a command line which will invoke your input preprocessor.
+		<p>首先来一句装X的话：</p>
+
+<blockquote>
+<p>less is more</p>
+</blockquote>
+
+<h1 id="1-how:bea817191773b780e7e12130f8d11db2">1. How</h1>
+
+<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
+
+<pre><code class="language-bash">sudo apt-get install source-highlight
+</code></pre>
+
+<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
+
+<pre><code class="language-bash"># less hightlight
+export LESSOPEN=&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;
+export LESS=&quot; -R &quot;
+</code></pre>
+
+<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
+
+<p>使配置生效：</p>
+
+<pre><code class="language-bash">source ~/.bashrc
+</code></pre>
+
+<p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
+
 		<a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" class="more-link">Read on →</a>
 	</div>
 </article>

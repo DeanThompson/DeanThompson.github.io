@@ -135,8 +135,7 @@ export LESS=&amp;quot; -R &amp;quot;
 
 &lt;p&gt;这样一来，就可以在 less 时既能语法高亮，还能查看行号，感觉很不错的说。试着贴一张效果图看看。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://ww3.sinaimg.cn/large/65df5320tw1ea3o9tmdirj20ch0alq3h.jpg&#34; alt=&#34;less-with-syntax-highlight-and-line-number&#34; /&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://ww3.sinaimg.cn/large/65df5320tw1ea3o9tmdirj20ch0alq3h.jpg&#34; alt=&#34;less-with-syntax-highlight-and-line-number&#34; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;4-references:bea817191773b780e7e12130f8d11db2&#34;&gt;4. References&lt;/h1&gt;
 

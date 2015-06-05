@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -131,7 +131,76 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		Note 前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址： Understanding Python decorators 1. python的函数是对象（Python&rsquo;s functions are objects） 要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。 def shout(word=&quot;yes&quot;): return word.capitalize()+&quot;!&quot; print shout() # outputs : 'Yes!' # 作为一个对象，你可以像其他对象一样把函数赋值给其他变量 scream = shout # 注意我们没有用括号：我们不是在调用函数， # 而是把函数'shout'的值绑定到'scream'这个变量上 # 这也意味着你可以通过'scream'这个变量来调用'shout'函数 print scream() # outputs : 'Yes!' # 不仅如此，这也还意味着你可以把原来的名字'shout'删掉， # 而这个函数仍然可以通过'scream'来访问 del shout try: print shout() except NameError, e: print e #outputs: &quot;name 'shout' is not defined&quot; print scream() outputs: 'Yes!' OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。 def talk(): # 你可以在 'talk' 里动态的(on the fly)定义一个函数...
+		<h2 id="note:5cd98240460e7b5c77708168d0565250">Note</h2>
+
+<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
+
+<blockquote>
+<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
+</blockquote>
+
+<hr />
+
+<h1 id="1-python的函数是对象-python-s-functions-are-objects:5cd98240460e7b5c77708168d0565250">1. python的函数是对象（Python&rsquo;s functions are objects）</h1>
+
+<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
+
+<pre><code class="language-python">def shout(word=&quot;yes&quot;):
+    return word.capitalize()+&quot;!&quot;
+ 
+print shout()
+# outputs : 'Yes!'
+ 
+# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量
+ 
+scream = shout
+ 
+# 注意我们没有用括号：我们不是在调用函数，
+# 而是把函数'shout'的值绑定到'scream'这个变量上
+# 这也意味着你可以通过'scream'这个变量来调用'shout'函数
+ 
+print scream()
+# outputs : 'Yes!'
+ 
+# 不仅如此，这也还意味着你可以把原来的名字'shout'删掉，
+# 而这个函数仍然可以通过'scream'来访问
+del shout
+try:
+    print shout()
+except NameError, e:
+    print e
+    #outputs: &quot;name 'shout' is not defined&quot;
+ 
+print scream()
+outputs: 'Yes!'
+</code></pre>
+
+<p>OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。</p>
+
+<pre><code class="language-python">def talk():
+ 
+    # 你可以在 'talk' 里动态的(on the fly)定义一个函数...
+    def whisper(word=&quot;yes&quot;):
+        return word.lower()+&quot;...&quot;
+ 
+    # ... 然后马上调用它！
+ 
+    print whisper()
+ 
+# 每当调用'talk'，都会定义一次'whisper'，然后'whisper'在'talk'里被调用
+talk()
+# outputs:
+# &quot;yes...&quot;
+ 
+# 但是&quot;whisper&quot; 在 &quot;talk&quot;外并不存在:
+ 
+try:
+    print whisper()
+except NameError, e:
+    print e
+    #outputs : &quot;name 'whisper' is not defined&quot;*
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -157,7 +226,10 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。 openpyxl 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。openpyxl 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 .xlsx/.xlsm 格式的表格文件。顺便提一下，xls 和 xlsx 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。xlsx 中最后一个 x 的意义就在于此。 1. 安装 可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1. https://pypi.python.org/pypi/openpyxl 2. 读 用openpyxl读一个xlsx文件很简单： from openpyxl import load_workbook wb = load_workbook(filename=r'existing_file.xlsx') sheets = wb.get_sheet_names() # 获取所有表格(worksheet)的名字 sheet0 = sheets[0] # 第一个表格的名称 ws = wb.get_sheet_by_name('sheet_name') # 获取特定的 worksheet # 获取表格所有行和列，两者都是可迭代的 rows = ws.rows columns = ws.columns # 行迭代 content = [] for row in rows: line = [col.value for col in row] content.append(line) # 通过坐标读取值 print ws.cell('B12').value # B 表示列，12 表示行 print ws.cell(row=12, column=2).value 当调用 get_sheet_by_name('sheet_name') 方法获取表格时，如果名字为 sheet_name 的表格不存在，不会报错或抛出异常，而只是返回 None.
+		<p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
+
+<p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
+
 		<a href="http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -183,7 +255,18 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" itemprop="url">Python字典切片</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		python 的 list, string, tuple 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 dict 没有提供类似的切片操作，所以就得要自己实现。 其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码： def dict_slice(adict, start, end): keys = adict.keys() dict_slice = {} for k in keys[start:end]: dict_slice[k] = adict[k] return dict_slice EDIT 2013-10-26 01:13 补充一个一行的版本（one-liner）: dict_slice = lambda adict, start, end: dict((k, adict[k]) for k in adict.keys()[start:end]) 这行代码主要是用了 lambda 来创建一个匿名函数，再用 built-in 函数 dict() 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 dict() 函数： dict_slice = lambda adict, start, end:
+		<p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
+
+<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
+
+<pre><code class="language-python">def dict_slice(adict, start, end):
+    keys = adict.keys()
+    dict_slice = {}
+    for k in keys[start:end]:
+        dict_slice[k] = adict[k]
+    return dict_slice
+</code></pre>
+
 		<a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -209,7 +292,14 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr" itemprop="url">Python 时间戳和日期相互转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。 首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍： 为什么计算机时间要从1970年1月1日开始算起？ 在Python里，时间戳可以通过 time 模块里的 time() 方法获得，比如: In [1]: import time In [2]: time.time() Out[2]: 1350816710.8050799 这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 time.strftime() 函数来达到这个目的。根据 strftime() 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 time.localtime() 的返回值。而那个9元组其实是 struct_time，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如 In [5]: import time In [6]: time.localtime() Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min=4, tm_sec=25, tm_wday=6, tm_yday=295, tm_isdst=0) 具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码 In [8]: import time In [9]: st = time.localtime(1350816710.8050799) In [10]: time.strftime('%Y-%m-%d %H:%M:%S',
+		<p>在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
+
+<p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
+
+<blockquote>
+<p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
+</blockquote>
+
 		<a href="http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr" class="more-link">Read on →</a>
 	</div>
 </article>
