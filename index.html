@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -111,6 +111,52 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Tue, Jun 9, 2015' data-updated="true" itemprop="datePublished">Tue, Jun 9, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/development"> development </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/tools"> tools </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/06/using-supervisor#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/06/using-supervisor" itemprop="url">使用 supervisor 管理进程</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Supervisor <a href="http://supervisord.org">http://supervisord.org</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+
+<h2 id="安装:0374c09b00e8eddcfa304907db4e0a23">安装</h2>
+
+<p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :</p>
+
+<pre><code class="language-bash">sudo pip install supervisor
+</code></pre>
+
+<p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
+
+		<a href="http://deanthompson.github.io/posts/2015/06/using-supervisor" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, May 24, 2015' data-updated="true" itemprop="datePublished">Sun, May 24, 2015</time>
@@ -558,60 +604,6 @@ def foo_id(id):
 <p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
 
 		<a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, Nov 3, 2013' data-updated="true" itemprop="datePublished">Sun, Nov 3, 2013</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/linux"> linux </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" itemprop="url">less 命令支持语法高亮和行号</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>首先来一句装X的话：</p>
-
-<blockquote>
-<p>less is more</p>
-</blockquote>
-
-<h1 id="1-how:bea817191773b780e7e12130f8d11db2">1. How</h1>
-
-<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-
-<pre><code class="language-bash">sudo apt-get install source-highlight
-</code></pre>
-
-<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-
-<pre><code class="language-bash"># less hightlight
-export LESSOPEN=&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;
-export LESS=&quot; -R &quot;
-</code></pre>
-
-<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
-
-<p>使配置生效：</p>
-
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-
-<p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
-
-		<a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" class="more-link">Read on →</a>
 	</div>
 </article>
 
