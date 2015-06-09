@@ -113,7 +113,7 @@
     <h1 class="title" itemprop="name">使用 supervisor 管理进程</h1>
 	<div class="entry-content" itemprop="articleBody">
 
-<p>Supervisor <a href="http://supervisord.org">http://supervisord.org</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
 
 <h2 id="安装:0374c09b00e8eddcfa304907db4e0a23">安装</h2>
 
@@ -190,7 +190,7 @@ files = relative/directory/*.ini    ; 可以是 *.conf 或 *.ini
 files = /etc/supervisor/*.conf
 </code></pre>
 
-<p>假设有个用 Python 和 Flask 框架编写的用户中心系统，取名 usercenter，用 gunicorn <a href="http://gunicorn.org/">http://gunicorn.org/</a> 做 web 服务器。项目代码位于 <code>/home/leon/projects/usercenter</code>，gunicorn 配置文件为 <code>gunicorn.py</code>，WSGI callable 是 wsgi.py 里的 app 属性。所以直接在命令行启动的方式可能是这样的：</p>
+<p>假设有个用 Python 和 Flask 框架编写的用户中心系统，取名 usercenter，用 gunicorn (<a href="http://gunicorn.org/">http://gunicorn.org/</a>) 做 web 服务器。项目代码位于 <code>/home/leon/projects/usercenter</code>，gunicorn 配置文件为 <code>gunicorn.py</code>，WSGI callable 是 wsgi.py 里的 app 属性。所以直接在命令行启动的方式可能是这样的：</p>
 
 <pre><code class="language-bash">cd /home/leon/projects/usercenter
 gunicorn -c gunicorn.py wsgi:app
