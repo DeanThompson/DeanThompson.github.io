@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Fabric on 李林克斯 </title>
+      <title>Deployment on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/fabric/</link>
+    <link>http://deanthompson.github.io/tags/deployment/</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     

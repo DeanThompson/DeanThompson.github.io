@@ -7,91 +7,187 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Fri, 20 Mar 2015 11:00:13 CST</updated>
+    <updated>Fri, 12 Jun 2015 14:00:13 CST</updated>
     
     <item>
-      <title>用 Fabric 来发布代码</title>
-      <link>http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric</link>
-      <pubDate>Fri, 20 Mar 2015 11:00:13 CST</pubDate>
+      <title>用 Fabric 实现自动化部署</title>
+      <link>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</link>
+      <pubDate>Fri, 12 Jun 2015 14:00:13 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/03/deploy-applications-using-fabric</guid>
-      <description>&lt;p&gt;写代码的时候很爽，本地开发一下子完成了，等到部署发布代码的时候就有些烦了。开发环境、测试环境、生产环境，有些配置是因环境而异的，在我们的 Python 项目里，一直保留这样的习惯：&lt;/p&gt;
+      <guid>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</guid>
+      <description>
 
-&lt;ol&gt;
-&lt;li&gt;使用 py 文件做配置文件&lt;/li&gt;
-&lt;li&gt;固定的配置，放在 settings.py 里&lt;/li&gt;
-&lt;li&gt;不同环境可能要修改的，放在 site_settings.py 里，然后在 settings.py 里全部 import 进去&lt;/li&gt;
-&lt;li&gt;需要使用配置的时候，只需要 &lt;code&gt;settings.FOO&lt;/code&gt; 就可以&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
 
-&lt;p&gt;实际上，这样的习惯在发布代码时带来了一些小麻烦。曾经用过这些方式发布 Python 代码：&lt;/p&gt;
+&lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;rsync. 实际上用 rsync 发布的体验还挺好的，每次只会同步更新过的文件，而且可以配置不需要同步的文件。在使用 rsync 时，site_settings.py 是没有同步的。但是个人体验，rsync 也有不好的地方，首先就是需要依赖 rsync 服务，在远程机器和本地都要配置；二是不好做备份。&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：&lt;/p&gt;
 
-&lt;li&gt;&lt;p&gt;git. 应该说，git 应该是我最喜欢的发布方式了，本地 push，远程 pull，完事；而且还很好备份和回滚。再有，如果我「作死」在服务器上修改调试代码，能方便的提交到版本库。但是，考虑到安全问题，很多 git 服务器都搭建在内网，服务器上根本就无法访问到。&lt;/p&gt;&lt;/li&gt;
+&lt;ul&gt;
+&lt;li&gt;rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
 
-&lt;li&gt;&lt;p&gt;scp. 这是很 low 的一种做法，也基本上是我最后的选择。刚入职到现在这家公司，新部门，有点蛮荒时代的感觉。（非常简陋的）git 服务器在内网，所以在服务器上搞了一下 rsync，配置好后发现本地无法连接到服务器的 873 端口（不知道是不是公司配置了防火墙）。一时间就堕落到选择了 scp. 好处几乎没有，不方便的地方倒是一大堆：不方便增量更新，只能全部覆盖，考虑到 site_settings.py 的存在，这个很不方便；不方便设置要排除的文件，如果想省事把整个项目 scp 过去，就会把 .git 目录和 .pyc 文件也拷过去，无用而慢。&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;配置复杂，命令行参数多&lt;/li&gt;
+&lt;li&gt;需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
 
-&lt;p&gt;但实际上这些天我还使用了好几次 scp 来发布代码，一直在重复体力劳动。终于，想起了 &lt;a href=&#34;http://www.fabfile.org/&#34;&gt;fabric&lt;/a&gt;，带我「脱离苦海」。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不能增量更新，每次都是全部传输&lt;/li&gt;
+&lt;li&gt;不能配置忽略文件（.git 怎么办？）&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;fabric 使用起来非常简单，对我来说，只需要简单几行代码的配置，就能自动完成我之前繁复的体力劳动。&lt;/p&gt;
+&lt;p&gt;很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;
+
+&lt;h2 id=&#34;安装:be4f35f0576547f0cd881725d8efc31a&#34;&gt;安装&lt;/h2&gt;
+
+&lt;p&gt;Fabric 是 Python 编写的工具，所以可以用 pip 来安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo pip install fabric
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果是 Ubuntu 系统，还可以用 apt-get 安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install fabric
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;安装完成后，会生成一个 &lt;code&gt;fab&lt;/code&gt; 命令，这个命令会读取当前路径在的 fabfile.py 并执行相应的任务。&lt;/p&gt;
+
+&lt;h2 id=&#34;hello-world:be4f35f0576547f0cd881725d8efc31a&#34;&gt;Hello, world!&lt;/h2&gt;
+
+&lt;p&gt;先来看一个简单的例子，用 &lt;code&gt;fab&lt;/code&gt; 命令执行一个输出 &lt;code&gt;Hello, world!&lt;/code&gt; 的任务。&lt;/p&gt;
+
+&lt;p&gt;新建一个文件，fabfile.py:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def hello():
+	print &#39;Hello, world!&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在 fabfile.py 所在的路径执行：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;fab hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到有这样的输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;Hello, world!
+
+Done.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以给任务传递参数，修改 fabfile.py:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def hello(name=&amp;quot;world&amp;quot;):
+    print &amp;quot;Hello, %s!&amp;quot; % name
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用 &lt;code&gt;fab&lt;/code&gt; 命令执行：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ fab hello
+
+Hello, world!
+
+Done.
+
+$ fab hello:name=leon
+
+Hello, leon!
+
+Done.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个例子除了展示 fab 运行任务和传递参数之外，没有什么实际意义，接下来用一个接近真实的场景来展示如何用 Fabric 部署。&lt;/p&gt;
+
+&lt;h2 id=&#34;部署应用:be4f35f0576547f0cd881725d8efc31a&#34;&gt;部署应用&lt;/h2&gt;
+
+&lt;p&gt;假设这样一个场景，有个 Python 项目取名 usercenter，用 git 做版本控制，用 supervisor 做进程管理。一次完整的部署过程可能包括这些流程：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 本地
+$ cd /path/to/userenter
+$ git pull
+$ git add -A
+$ git commit -m &amp;quot;commit message&amp;quot;
+$ git push
+
+# 远程
+$ cd /path/to/usercenter
+$ workon usercenter		# virtualenv
+$ git pull				# 更新代码
+$ pip install -r requirements.txt		# 安装依赖
+$ python manage.py db migrate			# 数据库迁移
+$ supervisorctl restart usercenter	# 重启服务
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们现在用 Fabric 来一次性完成上面所有操作（假设第一次部署是手工执行的，现在只处理更新／升级的任务）。在 usercenter 项目的根目录下新建 fabfile.py 文件：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# -*- coding: utf-8 -*-
 
-import os
-
-from fabric.api import env, local, cd, lcd, put, run
-
-
-def prod():
-    env.hosts = [&amp;quot;123.123.123.123&amp;quot;]
-    env.user = &amp;quot;test&amp;quot;
-    # env.password = &amp;quot;&amp;quot;  # 用密码登录
-    # env.key_filename = &amp;quot;/path/to/keyfile&amp;quot;     # 用 key file 登录（更安全）
+from fabric.api import env, local, cd, run
+from fabric.context_managers import prefix
 
 
-def pyclean():
-    local(&amp;quot;pyclean .&amp;quot;)      # local 函数执行本地命令
+def production():
+	&amp;quot;&amp;quot;&amp;quot; 设置 production 环境 &amp;quot;&amp;quot;&amp;quot;
+	env.hosts = [&amp;quot;production@123.123.123.123:22&amp;quot;]
+	env.key_filename = &amp;quot;/path/to/key_file&amp;quot;
+	# env.password = &amp;quot;123456&amp;quot;	# password 和 keyfile 两者只需要一个就可以
 
+
+def staging():
+	&amp;quot;&amp;quot;&amp;quot; 设置 staging 环境 &amp;quot;&amp;quot;&amp;quot;
+	env.hosts = [&amp;quot;staging@111.111.111.111:22&amp;quot;]
+	env.password = &amp;quot;123456&amp;quot;		# 如果不写密码，会在 fab 执行时有交互提示输入密码
+
+
+def prepare():
+    &amp;quot;&amp;quot;&amp;quot; 本地提交代码，准备部署 &amp;quot;&amp;quot;&amp;quot;
+	local(&amp;quot;git pull&amp;quot;)	# local 用于执行本地命令
+	local(&amp;quot;pip freeze &amp;gt; requirements.txt&amp;quot;)
+	local(&amp;quot;git add -p &amp;amp;&amp;amp; git commit&amp;quot;)	＃ 会有交互输入 commit message
+	local(&amp;quot;git push&amp;quot;)
+
+
+def update():
+	&amp;quot;&amp;quot;&amp;quot; 服务器上更新代码、依赖和迁移 &amp;quot;&amp;quot;&amp;quot;
+	# cd 用于在服务器上执行 cd 命令，本地环境对应的 api 是 lcd (local cd)
+	with cd(&amp;quot;/path/to/usercenter&amp;quot;), prefix(&amp;quot;workon usercenter&amp;quot;):
+		run(&amp;quot;git pull&amp;quot;)			# run 用于服务器上执行命令
+		run(&amp;quot;pip install -r requirements.txt&amp;quot;)
+		run(&amp;quot;python manage.py db migrate&amp;quot;)
+		run(&amp;quot;supervisorctl restart usercenter&amp;quot;)
 
 def deploy():
-    pyclean()
-
-    local_app_dir = &amp;quot;~/workspace/projects/&amp;quot;
-    remote_app_dir = &amp;quot;~/projects&amp;quot;
-
-    # lcd 是 「local cd」，cd 是在远程服务器执行 cd
-    with lcd(local_app_dir), cd(remote_app_dir):
-        # 1. backup
-        run(&amp;quot;rm -rf SomeProj.bak&amp;quot;)          # run 是在远程服务器上执行命令
-        run(&amp;quot;mv SomeProj SomeProj.bak&amp;quot;)
-
-        # 2. transfer
-        d = os.path.join(remote_app_dir, &amp;quot;SomeProj&amp;quot;)
-        run(&amp;quot;mkdir -p %s&amp;quot; % d)
-        # put 把本地文件传输到远程（ SFTP (SSH File Transfer Protocol) 协议）
-        put(&amp;quot;SomeProj/*&amp;quot;, &amp;quot;SomeProj&amp;quot;)
-
-        # 3. replace site_settings.py
-        for subdir in [&amp;quot;apps&amp;quot;, &amp;quot;admin&amp;quot;, &amp;quot;core&amp;quot;]:
-            src = &amp;quot;SomeProj.bak/%s/configs/site_settings.py&amp;quot; % subdir
-            dest = &amp;quot;SomeProj/%s/configs/site_settings.py&amp;quot; % subdir
-            cmd = &amp;quot;cp %s %s&amp;quot; % (src, dest)
-            run(cmd)
+	prepare()
+	update()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;把上面的代码保存为 fabfile.py，要发布的时候，只需在 fabfile.py 所在的路径执行：&lt;/p&gt;
+&lt;p&gt;OK, 完成。具体的意义代码里面都有注释，不赘述。需要注意的是 &lt;code&gt;production&lt;/code&gt; 和 &lt;code&gt;staging&lt;/code&gt; 分别设置了两种不同的环境。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;fab prod deploy
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 部署到 production 环境
+$ fab production deploy
+
+# 部署到 staging 环境
+$ fab staging deploy
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;因为在 env 配置里没有设置密码，所以执行过程中需要手动输入一下。然后 fabric 就把所有你指定的事情都干了，一次配置，终生享福。&lt;/p&gt;
+&lt;p&gt;执行过程中可能会有些交互，按提示输入相应信息，然后等着执行完成就好了。如果一切顺利（应该是这样），就完成了 usercenter 的部署了，整个过程只需要敲一行命令，是不是非常方便？&lt;/p&gt;
 
-&lt;p&gt;实际上还可以配置在发布好代码后，重启应用（supervisorctl）。为了避免意外，和某些情况下需要修改 site_settings.py，所以就没有这么干，而是选择每次都手动重启。&lt;/p&gt;
+&lt;h2 id=&#34;more:be4f35f0576547f0cd881725d8efc31a&#34;&gt;More&amp;hellip;&lt;/h2&gt;
 
-&lt;p&gt;fabric，又是一个懒人必备的神器。&lt;/p&gt;
+&lt;p&gt;上面的例子基本上是可以在实际环境中使用的，不过还是有很多内容没有覆盖到，比如错误处理，多服务器部署，并行等。Fabric 默认是串行执行的，如果有多个远程服务器，是一个一个顺序执行。执行过程中如果发生异常，任务会直接中断，所以可能需要有错误处理。&lt;/p&gt;
+
+&lt;p&gt;上面这些（还有很多）内容都可以在 Fabric 的文档上（非常详细）找到相应的内容，下面给出一些参考链接，结合文档和自己的实际情况，多用几次就能定制出能满足自己需求的 Fabric 任务：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fabric 官网: &lt;a href=&#34;http://www.fabfile.org/&#34;&gt;http://www.fabfile.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Overview and Tutorial: &lt;a href=&#34;Overview and Tutorial&#34;&gt;http://docs.fabfile.org/en/1.10/tutorial.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Fabric 文档: &lt;a href=&#34;http://docs.fabfile.org/en/1.10/index.html&#34;&gt;http://docs.fabfile.org/en/1.10/index.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Python fabric实现远程操作和部署（By wklken）: &lt;a href=&#34;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&#34;&gt;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
