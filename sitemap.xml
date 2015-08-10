@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2015-06-12T14:00:13+08:00</lastmod>
+    <lastmod>2015-08-10T22:36:42+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</loc>
+    <lastmod>2015-08-10T22:36:42+08:00</lastmod>
   </url>
   
   <url>

@@ -7,7 +7,337 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Fri, 12 Jun 2015 14:00:13 CST</updated>
+    <updated>Mon, 10 Aug 2015 22:36:42 CST</updated>
+    
+    <item>
+      <title>Python 编码规范</title>
+      <link>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</link>
+      <pubDate>Mon, 10 Aug 2015 22:36:42 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</guid>
+      <description>
+
+&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
+
+&lt;p&gt;网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.python.org/dev/peps/pep-0008/&#34;&gt;PEP 0008 &amp;ndash; Style Guide for Python Code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/&#34;&gt;Google 的 Python 风格指南&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.python-guide.org/en/latest/writing/style/&#34;&gt;Python Guide - Code Style&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://flask.pocoo.org/docs/0.10/styleguide/&#34;&gt;Pocoo Styleguide&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;除了在编码时主动遵循规范，还有很多有用的工具：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;IntelliJ IDEA 和 PyCharm 的格式化代码功能&lt;/li&gt;
+&lt;li&gt;Google 开源的 Python 文件格式化工具：&lt;a href=&#34;https://github.com/google/yapf&#34;&gt;github.com/google/yapf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;pyflakes, pylint 等工具及各种编辑器的插件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;
+
+&lt;h2 id=&#34;缩进:ff97f3d358883b516471cd3d03b40704&#34;&gt;缩进&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不要使用 tab 缩进&lt;/li&gt;
+&lt;li&gt;使用任何编辑器写 Python，请把一个 tab 展开为 4 个空格&lt;/li&gt;
+&lt;li&gt;绝对不要混用 tab 和空格，否则容易出现 &lt;code&gt;IndentationError&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;空格:ff97f3d358883b516471cd3d03b40704&#34;&gt;空格&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;在 list, dict, tuple, set, 参数列表的 &lt;code&gt;,&lt;/code&gt; 后面加一个空格&lt;/li&gt;
+&lt;li&gt;在 dict 的 &lt;code&gt;:&lt;/code&gt; 后面加一个空格&lt;/li&gt;
+&lt;li&gt;在注释符号 &lt;code&gt;#&lt;/code&gt; 后面加一个空格，但是 &lt;code&gt;#!/usr/bin/python&lt;/code&gt; 的 &lt;code&gt;#&lt;/code&gt; 后不能有空格&lt;/li&gt;
+&lt;li&gt;操作符两端加一个空格，如 &lt;code&gt;+&lt;/code&gt;, &lt;code&gt;-&lt;/code&gt;, &lt;code&gt;*&lt;/code&gt;, &lt;code&gt;/&lt;/code&gt;, &lt;code&gt;|&lt;/code&gt;, &lt;code&gt;&amp;amp;&lt;/code&gt;, &lt;code&gt;=&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;接上一条，在参数列表里的 &lt;code&gt;=&lt;/code&gt; 两端不需要空格&lt;/li&gt;
+&lt;li&gt;括号（&lt;code&gt;()&lt;/code&gt;, &lt;code&gt;{}&lt;/code&gt;, &lt;code&gt;[]&lt;/code&gt;）内的两端不需要空格&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;空行:ff97f3d358883b516471cd3d03b40704&#34;&gt;空行&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;function 和 class 顶上两个空行&lt;/li&gt;
+&lt;li&gt;class 的 method 之间一个空行&lt;/li&gt;
+&lt;li&gt;函数内逻辑无关的段落之间空一行，不要过度使用空行&lt;/li&gt;
+&lt;li&gt;不要把多个语句写在一行，然后用 &lt;code&gt;;&lt;/code&gt; 隔开&lt;/li&gt;
+&lt;li&gt;if/for/while 语句中，即使执行语句只有一句，也要另起一行&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;换行:ff97f3d358883b516471cd3d03b40704&#34;&gt;换行&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;每一行代码控制在 80 字符以内&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使用 &lt;code&gt;\&lt;/code&gt; 或 &lt;code&gt;()&lt;/code&gt; 控制换行，举例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def foo(first, second, third, fourth, fifth,
+        sixth, and_some_other_very_long_param):
+    user = User.objects.filter_by(first=first, second=second, third=third) \
+        .skip(100).limit(100) \
+        .all()
+
+
+text = (&#39;Long strings can be made up &#39;
+        &#39;of several shorter strings.&#39;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;命名:ff97f3d358883b516471cd3d03b40704&#34;&gt;命名&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用有意义的，英文单词或词组，绝对不要使用汉语拼音&lt;/li&gt;
+&lt;li&gt;package/module 名中不要出现 &lt;code&gt;-&lt;/code&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;各种类型的命名规范：&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Type&lt;/th&gt;
+&lt;th&gt;Public&lt;/th&gt;
+&lt;th&gt;Internal&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Modules&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Packages&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Classes&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;CapWords&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_CapWords&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Exceptions&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;CapWords&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Functions&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_lower_with_under()&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Global/Class Constants&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;CAPS_WITH_UNDER&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_CAPS_WITH_UNDER&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Global/Class Variables&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Instance Variables&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt; (protected) or &lt;code&gt;__lower_with_under&lt;/code&gt; (private)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Method Names&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_lower_with_under()&lt;/code&gt; (protected) or &lt;code&gt;__lower_with_under()&lt;/code&gt; (private)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Function/Method Parameters&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Local Variables&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;import:ff97f3d358883b516471cd3d03b40704&#34;&gt;import&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面&lt;/li&gt;
+&lt;li&gt;不要使用 &lt;code&gt;from foo imort *&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;import 需要分组，每组之间一个空行，每个分组内的顺序尽量采用字典序，分组顺序是：
+
+&lt;ol&gt;
+&lt;li&gt;标准库&lt;/li&gt;
+&lt;li&gt;第三方库&lt;/li&gt;
+&lt;li&gt;本项目的 package 和 module&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;不要使用隐式的相对导入（implicit relative imports），可是使用显示的相对导入（explicit relative imports），如 &lt;code&gt;from ..utils import validator&lt;/code&gt;，最好使用全路径导入（absolute imports）&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;对于不同的 package，一个 import 单独一行，同一个 package/module 下的内容可以写一起：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
+import sys, os, time
+
+# good
+import os
+import sys
+import time
+
+# ok
+from flask import Flask, render_template, jsonify
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;为了避免可能出现的命名冲突，可以使用 &lt;code&gt;as&lt;/code&gt; 或导入上一级命名空间&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不要出现循环导入(cyclic import)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;注释:ff97f3d358883b516471cd3d03b40704&#34;&gt;注释&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文档字符串 &lt;code&gt;docstring&lt;/code&gt;, 是 package, module, class, method, function 级别的注释，可以通过 &lt;code&gt;__doc__&lt;/code&gt; 成员访问到，注释内容在一对 &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; 符号之间&lt;/li&gt;
+&lt;li&gt;function, method 的文档字符串应当描述其功能、输入参数、返回值，如果有复杂的算法和实现，也需要写清楚&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;不要写错误的注释，不要无谓的注释&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad 无谓的注释
+x = x + 1       # increase x by 1
+
+# bad 错误的注释
+x = x - 1       # increase x by 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;优先使用英文写注释，英文不好全部写中文，否则更加看不懂&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;异常:ff97f3d358883b516471cd3d03b40704&#34;&gt;异常&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;不要轻易使用 &lt;code&gt;try/except&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;except&lt;/code&gt; 后面需要指定捕捉的异常，裸露的 &lt;code&gt;except&lt;/code&gt; 会捕捉所有异常，意味着会隐藏潜在的问题&lt;/li&gt;
+&lt;li&gt;可以有多个 &lt;code&gt;except&lt;/code&gt; 语句，捕捉多种异常，分别做异常处理&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;finally&lt;/code&gt; 子句来处理一些收尾操作&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;try/except&lt;/code&gt; 里的内容不要太多，只在可能抛出异常的地方使用，如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
+try:
+    user = User()
+    user.name = &amp;quot;leon&amp;quot;
+    user.age = int(age) # 可能抛出异常
+    user.created_at = datetime.datetime.utcnow()
+
+
+    db.session.add(user)
+    db.session.commit() # 可能抛出异常
+except:
+    db.session.rollback()
+
+# better
+try:
+    age = int(age)
+except (TypeError, ValueError):
+    return # 或别的操作
+
+
+user = User()
+user.name = &amp;quot;leon&amp;quot;
+user.age = age
+user.created_at = datetime.datetime.utcnow()
+db.session.add(user)
+
+
+try:
+    db.session.commit()
+except sqlalchemy.exc.SQLAlchemyError: # 或者更具体的异常
+    db.session.rollback()
+finally:
+    db.session.close()
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;从 &lt;code&gt;Exception&lt;/code&gt; 而不是 &lt;code&gt;BaseException&lt;/code&gt; 继承自定义的异常类&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;class-类:ff97f3d358883b516471cd3d03b40704&#34;&gt;Class（类）&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;显示的写明父类，如果不是继承自别的类，就继承自 &lt;code&gt;object&lt;/code&gt; 类&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;super&lt;/code&gt; 调用父类的方法&lt;/li&gt;
+&lt;li&gt;支持多继承，即同时有多个父类，建议使用 Mixin&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;编码建议:ff97f3d358883b516471cd3d03b40704&#34;&gt;编码建议&lt;/h2&gt;
+
+&lt;h3 id=&#34;字符串:ff97f3d358883b516471cd3d03b40704&#34;&gt;字符串&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用字符串的 &lt;code&gt;join&lt;/code&gt; 方法拼接字符串&lt;/li&gt;
+&lt;li&gt;使用字符串类型的方法，而不是 &lt;code&gt;string&lt;/code&gt; 模块的方法&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;startswith&lt;/code&gt; 和 &lt;code&gt;endswith&lt;/code&gt; 方法比较前缀和后缀&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;format&lt;/code&gt; 方法格式化字符串&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;比较:ff97f3d358883b516471cd3d03b40704&#34;&gt;比较&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;空的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;str&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, &lt;code&gt;dict&lt;/code&gt; 和 &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;0.0&lt;/code&gt;, &lt;code&gt;None&lt;/code&gt; 都是 &lt;code&gt;False&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;if some_list&lt;/code&gt; 而不是 &lt;code&gt;if len(some_list)&lt;/code&gt; 判断某个 &lt;code&gt;list&lt;/code&gt; 是否为空，其他类型同理&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;is&lt;/code&gt; 和 &lt;code&gt;is not&lt;/code&gt; 与单例（如 &lt;code&gt;None&lt;/code&gt;）进行比较，而不是用 &lt;code&gt;==&lt;/code&gt; 和 &lt;code&gt;!=&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;if a is not None&lt;/code&gt; 而不是 &lt;code&gt;if not a is None&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;用 &lt;code&gt;isinstance&lt;/code&gt; 而不是 &lt;code&gt;type&lt;/code&gt; 判断类型&lt;/li&gt;
+&lt;li&gt;不要用 &lt;code&gt;==&lt;/code&gt; 和 &lt;code&gt;!=&lt;/code&gt; 与 &lt;code&gt;True&lt;/code&gt; 和 &lt;code&gt;False&lt;/code&gt; 比较（除非有特殊情况，如在 sqlalchemy 中可能用到）&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;使用 &lt;code&gt;in&lt;/code&gt; 操作：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;用 &lt;code&gt;key in dict&lt;/code&gt; 而不是 &lt;code&gt;dict.has_key()&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
+if d.has_key(k):
+    do_something()
+
+# good
+if k in d:
+    do_something()
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;用 &lt;code&gt;set&lt;/code&gt; 加速 “存在性” 检查，&lt;code&gt;list&lt;/code&gt; 的查找是线性的，复杂度 O(n)，&lt;code&gt;set&lt;/code&gt; 底层是 hash table, 复杂度 O(1)，但用 &lt;code&gt;set&lt;/code&gt; 需要比 &lt;code&gt;list&lt;/code&gt; 更多内存空间&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;其他:ff97f3d358883b516471cd3d03b40704&#34;&gt;其他&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用列表表达式（&lt;a href=&#34;https://www.python.org/dev/peps/pep-0202/&#34;&gt;list comprehension&lt;/a&gt;），字典表达式(&lt;a href=&#34;https://www.python.org/dev/peps/pep-0274/&#34;&gt;dict comprehension&lt;/a&gt;, Python 2.7+) 和生成器(generator)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dict&lt;/code&gt; 的 &lt;code&gt;get&lt;/code&gt; 方法可以指定默认值，但有些时候应该用 &lt;code&gt;[]&lt;/code&gt; 操作，使得可以抛出 &lt;code&gt;KeyError&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;for item in list&lt;/code&gt; 迭代 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;for index, item in enumerate(list)&lt;/code&gt; 迭代 &lt;code&gt;list&lt;/code&gt; 并获取下标&lt;/li&gt;
+&lt;li&gt;使用内建函数 &lt;code&gt;sorted&lt;/code&gt; 和 &lt;code&gt;list.sort&lt;/code&gt; 进行排序&lt;/li&gt;
+&lt;li&gt;适量使用 &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;reduce&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt; 和 &lt;code&gt;lambda&lt;/code&gt;，使用内建的 &lt;code&gt;all&lt;/code&gt;, &lt;code&gt;any&lt;/code&gt; 处理多个条件的判断&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;defaultdict&lt;/code&gt; (Python 2.5+), &lt;code&gt;Counter&lt;/code&gt;(Python 2.7+) 等 “冷门” 但好用的标准库算法和数据结构&lt;/li&gt;
+&lt;li&gt;使用装饰器(decorator)&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;with&lt;/code&gt; 语句处理上下文&lt;/li&gt;
+&lt;li&gt;有些时候不要对类型做太过严格的限制，利用 Python 的鸭子类型（Duck Type）特性&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;logging&lt;/code&gt; 记录日志，配置好格式和级别&lt;/li&gt;
+&lt;li&gt;了解 Python 的 Magic Method：&lt;a href=&#34;http://www.rafekettler.com/magicmethods.html&#34;&gt;A Guide to Python&amp;rsquo;s Magic Methods&lt;/a&gt;, &lt;a href=&#34;http://pycoders-weekly-chinese.readthedocs.org/en/latest/issue6/a-guide-to-pythons-magic-methods.html&#34;&gt;Python 魔术方法指南&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;阅读优秀的开源代码，如 &lt;a href=&#34;https://github.com/mitsuhiko/flask&#34;&gt;Flask 框架&lt;/a&gt;, &lt;a href=&#34;https://github.com/kennethreitz/requests&#34;&gt;Requests for Humans&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;不要重复造轮子，查看标准库、PyPi、Github、Google 等使用现有的优秀的解决方案&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>用 Fabric 实现自动化部署</title>

@@ -1,0 +1,482 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>Python 编码规范 - 李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">Python 编码规范</h1>
+	<div class="entry-content" itemprop="articleBody">
+
+<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
+
+<p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
+
+<ul>
+<li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
+<li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
+<li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
+<li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
+</ul>
+
+<p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
+
+<ul>
+<li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
+<li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
+<li>pyflakes, pylint 等工具及各种编辑器的插件</li>
+</ul>
+
+<p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
+
+<h2 id="缩进:ff97f3d358883b516471cd3d03b40704">缩进</h2>
+
+<ul>
+<li>不要使用 tab 缩进</li>
+<li>使用任何编辑器写 Python，请把一个 tab 展开为 4 个空格</li>
+<li>绝对不要混用 tab 和空格，否则容易出现 <code>IndentationError</code></li>
+</ul>
+
+<h2 id="空格:ff97f3d358883b516471cd3d03b40704">空格</h2>
+
+<ul>
+<li>在 list, dict, tuple, set, 参数列表的 <code>,</code> 后面加一个空格</li>
+<li>在 dict 的 <code>:</code> 后面加一个空格</li>
+<li>在注释符号 <code>#</code> 后面加一个空格，但是 <code>#!/usr/bin/python</code> 的 <code>#</code> 后不能有空格</li>
+<li>操作符两端加一个空格，如 <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>|</code>, <code>&amp;</code>, <code>=</code></li>
+<li>接上一条，在参数列表里的 <code>=</code> 两端不需要空格</li>
+<li>括号（<code>()</code>, <code>{}</code>, <code>[]</code>）内的两端不需要空格</li>
+</ul>
+
+<h2 id="空行:ff97f3d358883b516471cd3d03b40704">空行</h2>
+
+<ul>
+<li>function 和 class 顶上两个空行</li>
+<li>class 的 method 之间一个空行</li>
+<li>函数内逻辑无关的段落之间空一行，不要过度使用空行</li>
+<li>不要把多个语句写在一行，然后用 <code>;</code> 隔开</li>
+<li>if/for/while 语句中，即使执行语句只有一句，也要另起一行</li>
+</ul>
+
+<h2 id="换行:ff97f3d358883b516471cd3d03b40704">换行</h2>
+
+<ul>
+<li>每一行代码控制在 80 字符以内</li>
+
+<li><p>使用 <code>\</code> 或 <code>()</code> 控制换行，举例：</p>
+
+<pre><code class="language-python">def foo(first, second, third, fourth, fifth,
+        sixth, and_some_other_very_long_param):
+    user = User.objects.filter_by(first=first, second=second, third=third) \
+        .skip(100).limit(100) \
+        .all()
+
+
+text = ('Long strings can be made up '
+        'of several shorter strings.')
+</code></pre></li>
+</ul>
+
+<h2 id="命名:ff97f3d358883b516471cd3d03b40704">命名</h2>
+
+<ul>
+<li>使用有意义的，英文单词或词组，绝对不要使用汉语拼音</li>
+<li>package/module 名中不要出现 <code>-</code></li>
+
+<li><p>各种类型的命名规范：</p>
+
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Public</th>
+<th>Internal</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Modules</td>
+<td><code>lower_with_under</code></td>
+<td><code>_lower_with_under</code></td>
+</tr>
+
+<tr>
+<td>Packages</td>
+<td><code>lower_with_under</code></td>
+<td></td>
+</tr>
+
+<tr>
+<td>Classes</td>
+<td><code>CapWords</code></td>
+<td><code>_CapWords</code></td>
+</tr>
+
+<tr>
+<td>Exceptions</td>
+<td><code>CapWords</code></td>
+<td></td>
+</tr>
+
+<tr>
+<td>Functions</td>
+<td><code>lower_with_under()</code></td>
+<td><code>_lower_with_under()</code></td>
+</tr>
+
+<tr>
+<td>Global/Class Constants</td>
+<td><code>CAPS_WITH_UNDER</code></td>
+<td><code>_CAPS_WITH_UNDER</code></td>
+</tr>
+
+<tr>
+<td>Global/Class Variables</td>
+<td><code>lower_with_under</code></td>
+<td><code>_lower_with_under</code></td>
+</tr>
+
+<tr>
+<td>Instance Variables</td>
+<td><code>lower_with_under</code></td>
+<td><code>_lower_with_under</code> (protected) or <code>__lower_with_under</code> (private)</td>
+</tr>
+
+<tr>
+<td>Method Names</td>
+<td><code>lower_with_under()</code></td>
+<td><code>_lower_with_under()</code> (protected) or <code>__lower_with_under()</code> (private)</td>
+</tr>
+
+<tr>
+<td>Function/Method Parameters</td>
+<td><code>lower_with_under</code></td>
+<td></td>
+</tr>
+
+<tr>
+<td>Local Variables</td>
+<td><code>lower_with_under</code></td>
+<td></td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+
+<h2 id="import:ff97f3d358883b516471cd3d03b40704">import</h2>
+
+<ul>
+<li>所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面</li>
+<li>不要使用 <code>from foo imort *</code></li>
+<li>import 需要分组，每组之间一个空行，每个分组内的顺序尽量采用字典序，分组顺序是：
+
+<ol>
+<li>标准库</li>
+<li>第三方库</li>
+<li>本项目的 package 和 module</li>
+</ol></li>
+<li>不要使用隐式的相对导入（implicit relative imports），可是使用显示的相对导入（explicit relative imports），如 <code>from ..utils import validator</code>，最好使用全路径导入（absolute imports）</li>
+
+<li><p>对于不同的 package，一个 import 单独一行，同一个 package/module 下的内容可以写一起：</p>
+
+<pre><code class="language-python"># bad
+import sys, os, time
+
+# good
+import os
+import sys
+import time
+
+# ok
+from flask import Flask, render_template, jsonify
+</code></pre></li>
+
+<li><p>为了避免可能出现的命名冲突，可以使用 <code>as</code> 或导入上一级命名空间</p></li>
+
+<li><p>不要出现循环导入(cyclic import)</p></li>
+</ul>
+
+<h2 id="注释:ff97f3d358883b516471cd3d03b40704">注释</h2>
+
+<ul>
+<li>文档字符串 <code>docstring</code>, 是 package, module, class, method, function 级别的注释，可以通过 <code>__doc__</code> 成员访问到，注释内容在一对 <code>&quot;&quot;&quot;</code> 符号之间</li>
+<li>function, method 的文档字符串应当描述其功能、输入参数、返回值，如果有复杂的算法和实现，也需要写清楚</li>
+
+<li><p>不要写错误的注释，不要无谓的注释</p>
+
+<pre><code class="language-python"># bad 无谓的注释
+x = x + 1       # increase x by 1
+
+# bad 错误的注释
+x = x - 1       # increase x by 1
+</code></pre></li>
+
+<li><p>优先使用英文写注释，英文不好全部写中文，否则更加看不懂</p></li>
+</ul>
+
+<h2 id="异常:ff97f3d358883b516471cd3d03b40704">异常</h2>
+
+<ul>
+<li>不要轻易使用 <code>try/except</code></li>
+<li><code>except</code> 后面需要指定捕捉的异常，裸露的 <code>except</code> 会捕捉所有异常，意味着会隐藏潜在的问题</li>
+<li>可以有多个 <code>except</code> 语句，捕捉多种异常，分别做异常处理</li>
+<li>使用 <code>finally</code> 子句来处理一些收尾操作</li>
+
+<li><p><code>try/except</code> 里的内容不要太多，只在可能抛出异常的地方使用，如：</p>
+
+<pre><code class="language-python"># bad
+try:
+    user = User()
+    user.name = &quot;leon&quot;
+    user.age = int(age) # 可能抛出异常
+    user.created_at = datetime.datetime.utcnow()
+
+
+    db.session.add(user)
+    db.session.commit() # 可能抛出异常
+except:
+    db.session.rollback()
+
+# better
+try:
+    age = int(age)
+except (TypeError, ValueError):
+    return # 或别的操作
+
+
+user = User()
+user.name = &quot;leon&quot;
+user.age = age
+user.created_at = datetime.datetime.utcnow()
+db.session.add(user)
+
+
+try:
+    db.session.commit()
+except sqlalchemy.exc.SQLAlchemyError: # 或者更具体的异常
+    db.session.rollback()
+finally:
+    db.session.close()
+</code></pre></li>
+
+<li><p>从 <code>Exception</code> 而不是 <code>BaseException</code> 继承自定义的异常类</p></li>
+</ul>
+
+<h2 id="class-类:ff97f3d358883b516471cd3d03b40704">Class（类）</h2>
+
+<ul>
+<li>显示的写明父类，如果不是继承自别的类，就继承自 <code>object</code> 类</li>
+<li>使用 <code>super</code> 调用父类的方法</li>
+<li>支持多继承，即同时有多个父类，建议使用 Mixin</li>
+</ul>
+
+<h2 id="编码建议:ff97f3d358883b516471cd3d03b40704">编码建议</h2>
+
+<h3 id="字符串:ff97f3d358883b516471cd3d03b40704">字符串</h3>
+
+<ul>
+<li>使用字符串的 <code>join</code> 方法拼接字符串</li>
+<li>使用字符串类型的方法，而不是 <code>string</code> 模块的方法</li>
+<li>使用 <code>startswith</code> 和 <code>endswith</code> 方法比较前缀和后缀</li>
+<li>使用 <code>format</code> 方法格式化字符串</li>
+</ul>
+
+<h3 id="比较:ff97f3d358883b516471cd3d03b40704">比较</h3>
+
+<ul>
+<li>空的 <code>list</code>, <code>str</code>, <code>tuple</code>, <code>set</code>, <code>dict</code> 和 <code>0</code>, <code>0.0</code>, <code>None</code> 都是 <code>False</code></li>
+<li>使用 <code>if some_list</code> 而不是 <code>if len(some_list)</code> 判断某个 <code>list</code> 是否为空，其他类型同理</li>
+<li>使用 <code>is</code> 和 <code>is not</code> 与单例（如 <code>None</code>）进行比较，而不是用 <code>==</code> 和 <code>!=</code></li>
+<li>使用 <code>if a is not None</code> 而不是 <code>if not a is None</code></li>
+<li>用 <code>isinstance</code> 而不是 <code>type</code> 判断类型</li>
+<li>不要用 <code>==</code> 和 <code>!=</code> 与 <code>True</code> 和 <code>False</code> 比较（除非有特殊情况，如在 sqlalchemy 中可能用到）</li>
+
+<li><p>使用 <code>in</code> 操作：</p>
+
+<ol>
+<li><p>用 <code>key in dict</code> 而不是 <code>dict.has_key()</code></p>
+
+<pre><code class="language-python"># bad
+if d.has_key(k):
+    do_something()
+
+# good
+if k in d:
+    do_something()
+</code></pre></li>
+
+<li><p>用 <code>set</code> 加速 “存在性” 检查，<code>list</code> 的查找是线性的，复杂度 O(n)，<code>set</code> 底层是 hash table, 复杂度 O(1)，但用 <code>set</code> 需要比 <code>list</code> 更多内存空间</p></li>
+</ol></li>
+</ul>
+
+<h3 id="其他:ff97f3d358883b516471cd3d03b40704">其他</h3>
+
+<ul>
+<li>使用列表表达式（<a href="https://www.python.org/dev/peps/pep-0202/">list comprehension</a>），字典表达式(<a href="https://www.python.org/dev/peps/pep-0274/">dict comprehension</a>, Python 2.7+) 和生成器(generator)</li>
+<li><code>dict</code> 的 <code>get</code> 方法可以指定默认值，但有些时候应该用 <code>[]</code> 操作，使得可以抛出 <code>KeyError</code></li>
+<li>使用 <code>for item in list</code> 迭代 <code>list</code>, <code>for index, item in enumerate(list)</code> 迭代 <code>list</code> 并获取下标</li>
+<li>使用内建函数 <code>sorted</code> 和 <code>list.sort</code> 进行排序</li>
+<li>适量使用 <code>map</code>, <code>reduce</code>, <code>filter</code> 和 <code>lambda</code>，使用内建的 <code>all</code>, <code>any</code> 处理多个条件的判断</li>
+<li>使用 <code>defaultdict</code> (Python 2.5+), <code>Counter</code>(Python 2.7+) 等 “冷门” 但好用的标准库算法和数据结构</li>
+<li>使用装饰器(decorator)</li>
+<li>使用 <code>with</code> 语句处理上下文</li>
+<li>有些时候不要对类型做太过严格的限制，利用 Python 的鸭子类型（Duck Type）特性</li>
+<li>使用 <code>logging</code> 记录日志，配置好格式和级别</li>
+<li>了解 Python 的 Magic Method：<a href="http://www.rafekettler.com/magicmethods.html">A Guide to Python&rsquo;s Magic Methods</a>, <a href="http://pycoders-weekly-chinese.readthedocs.org/en/latest/issue6/a-guide-to-pythons-magic-methods.html">Python 魔术方法指南</a></li>
+<li>阅读优秀的开源代码，如 <a href="https://github.com/mitsuhiko/flask">Flask 框架</a>, <a href="https://github.com/kennethreitz/requests">Requests for Humans</a></li>
+<li>不要重复造轮子，查看标准库、PyPi、Github、Google 等使用现有的优秀的解决方案</li>
+</ul>
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>

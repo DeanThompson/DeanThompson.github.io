@@ -113,6 +113,52 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide" itemprop="url">Python 编码规范</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
+
+<p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
+
+<ul>
+<li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
+<li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
+<li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
+<li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
+</ul>
+
+<p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
+
+<ul>
+<li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
+<li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
+<li>pyflakes, pylint 等工具及各种编辑器的插件</li>
+</ul>
+
+<p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
+
+		<a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Fri, Jun 12, 2015' data-updated="true" itemprop="datePublished">Fri, Jun 12, 2015</time>
 </div>
 		<div class="tags">
@@ -572,50 +618,6 @@ func Sort(data Interface) {
 <p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
 
 		<a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, Feb 26, 2014' data-updated="true" itemprop="datePublished">Wed, Feb 26, 2014</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" itemprop="url">Flask 路由做范围限制</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
-
-<h1 id="1-what:6e1d883f88cf13596243023295e5bb32">1. What</h1>
-
-<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
-
-<p>简单翻译一下，大致如下：</p>
-
-<p>Flask 应用里面有一个这样的路由</p>
-
-<pre><code class="language-python">from foo import get_foo
-
-@app.route(&quot;/foo/&lt;int:id&gt;&quot;)
-def foo_id(id):
-    return render_template('foo.html', foo = get_foo(id))
-</code></pre>
-
-<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
-
-		<a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
 	</div>
 </article>
 
