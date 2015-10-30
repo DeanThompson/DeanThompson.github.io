@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>用 WTForms 和装饰器做表单校验 - 李林克斯</title>
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
+<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+  
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">用 WTForms 和装饰器做表单校验</h1>
+	<div class="entry-content" itemprop="articleBody"><p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
+
+<p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
+
+<p>以一个注册的应用场景为例，用户输入用户名、邮箱、密码、确认密码，服务程序先检查参数然后处理登录逻辑。这几个字段都是必填的，此外还有一些额外的限制：</p>
+
+<ul>
+<li>用户名：长度在 3-20 之间</li>
+<li>邮箱：合法的邮箱格式，比如 &ldquo;abc&rdquo; 就不合法</li>
+<li>密码：长度在 8-20 之间，必须同时包含大小写字母</li>
+<li>确认密码：必须与密码一致</li>
+</ul>
+
+<p>如果参数不合法，返回 400；登录逻辑略去不表。</p>
+
+<p>最原始的做法，就是直接在注册的接口里取出每个参数，逐个手动校验。这种做法可能的代码是：</p>
+
+<pre><code class="language-python">@app.route('/user/signup/', methods=['POST'])
+def register():
+    username = request.form.get('username')
+    if not username or not (3 &lt;= len(username) &lt;= 20):
+        abort(400)
+    
+    email = request.form.get('email')
+    if not email or not re.match(EMAIL_REGEX, email):
+        abort(400)
+    
+    password = request.form.get('password')
+    if not password:
+        abort(400)
+    if password == password.lower() or password == password.upper():
+        abort(400)
+    
+    confirm_password = request.form.get('confirm_password')
+    if not confirm_password or confirm_password != password:
+        abort(400)
+    
+    # 处理注册的逻辑
+</code></pre>
+
+<p>有可能是我的写法不太对，但是这样检查参数的合法性，实在不够优雅。检查参数的代码行数甚至超出了注册的逻辑，也有些喧宾夺主的感觉。可以把这些代码移出来，使得业务逻辑代码更加清晰一点。下面先用 WTForms 来改造一下。</p>
+
+<pre><code class="language-python">from wtforms import Form
+from wtforms.fields import StringField, PasswordField
+from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+
+
+class SignupForm(Form):
+    username = StringField(validators=[DataRequired(), Length(3, 20)])
+    email = StringField(validators=[DataRequired(), Email()])
+    password = PasswordField(validators=[DataRequired()])
+    confirm_password = PasswordField(validators=[DataRequired(), EqualTo('password')])
+    
+    def validate_password(self, field):
+        password = field.data
+        if password == password.lower() or password == passowrd.upper():
+            raise ValidationError(u'必须同时包含大小写字母')
+
+
+@app.route('/user/signup/', methods=['POST'])
+def register():
+    form = SignupForm(formdata=request.form)
+    if not form.validate():
+        abort(400)
+    
+    # 处理注册逻辑，参数从 form 对象获取，比如
+    username = form.username.data
+</code></pre>
+
+<p>这个版本带来的好处很明显：</p>
+
+<ol>
+<li>参数更加结构化了，所有字段名和类型一目了然</li>
+<li>有内置的，语义清晰的校验方法，可以组合使用</li>
+<li>还能自定义额外的校验方法，方法签名是 <code>def validate_xx(self, field)</code>，其中 <code>xx</code> 是字段名，通过 <code>field.data</code> 来获取输入的值</li>
+<li>还有没体现出来的，就是丰富的错误提示信息，既有内置的，也可以自定义</li>
+</ol>
+
+<p>再看原来的 <code>register</code> 方法，代码变得更加简洁和清晰，整体的编码质量也得到了提升。</p>
+
+<p>那么再考虑一下更复杂的场景，在一个返回 JSON 的 API 应用里，有很多 API，有不同的参数提交方式（GET 方法通过 query string，POST 方法可能有 form 和 JSON），一样的校验错误处理方式（abort(400) 或其他）。我们依然可以像上面那样处理，但如果再借助装饰器改进一下，又能少写几行“重复”的代码。</p>
+
+<p>需要注意的是，WTForms 的 formdata 支持的是类似 Werkzeug/Django/WebOb 中的 <code>MultiDict</code> 的数据结构。Flask 中的 <code>request.json</code> 是一个 <code>dict</code> 类型，所以需要先包装一下。</p>
+
+<p>继续改造注册的例子：</p>
+
+<pre><code class="language-python">import functools
+
+from werkzeug.datastructures import MultiDict
+
+
+def validate_form(form_class):
+    def decorator(view_func):
+        @functools.wraps(view_func)
+        def inner(*args, **kwargs):
+            if request.method == 'GET':
+                formdata = request.args
+            else:
+                if request.json:
+                    formdata = MultiDict(request.json)
+                else:
+                    formdata = request.form
+                    
+            form = form_class(formdata=formdata)
+            if not form.validate():
+                return jsonify(code=400, message=form.errors), 400
+
+            g.form = form
+            return view_func(*args, **kwargs)
+
+        return inner
+
+    return decorator
+
+
+@app.route('/user/signup/', methods=['POST'])
+@validate_form(form_class=SignupForm)
+def register():
+    form = g.form   # 运行到这里，说明表单是合法的
+
+    # 处理注册逻辑，参数从 form 对象获取，比如
+    username = form.username.data
+</code></pre>
+
+<p>实现了一个叫 <code>validate_form</code> 的装饰器，指定一个 Form 类，处理统一的参数获取、校验和错误处理，如果一切正确，再把 Form 对象保存到全局变量 <code>g</code> 里面，这样就可以在 view 函数里取出来用了。现在的 <code>register</code> 方法变得更加简洁，甚至都看不到检查参数的那些代码，只需要关心具体的和注册相关的逻辑本身就好。</p>
+
+<p>这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 <code>g</code> 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.</p>
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2015
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>
