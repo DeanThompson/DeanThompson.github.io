@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2015-10-31T01:46:10+08:00</lastmod>
+    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</loc>
+    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
   </url>
   
   <url>

@@ -27,8 +27,9 @@
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	
-    <link rel="stylesheet" href="https://yandex.st/highlightjs/8.0/styles/default.min.css">
-<script src="https://yandex.st/highlightjs/8.0/highlight.min.js"></script>
+    <script src="//cdn.bootcss.com/highlight.js/8.9.1/highlight.min.js"></script>
+
+<link href="//cdn.bootcss.com/highlight.js/8.9.1/styles/github.min.css" rel="stylesheet">
 <script>hljs.initHighlightingOnLoad();</script>
 
   
@@ -111,6 +112,73 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Tue, Jun 3, 2014' data-updated="true" itemprop="datePublished">Tue, Jun 3, 2014</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/golang"> golang </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" itemprop="url">Golang 排序</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="interface-接口:a0aceb8e02a4cd06e9365f18ce315aea">Interface 接口</h2>
+
+<p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
+
+<pre><code class="language-go">func quickSort(data Interface, a, b, maxDepth int) {
+    for b-a &gt; 7 {
+        if maxDepth == 0 {
+            heapSort(data, a, b)
+            return
+        }
+        maxDepth--
+        mlo, mhi := doPivot(data, a, b)
+        // Avoiding recursion on the larger subproblem guarantees
+        // a stack depth of at most lg(b-a).
+        if mlo-a &lt; b-mhi {
+            quickSort(data, a, mlo, maxDepth)
+            a = mhi // i.e., quickSort(data, mhi, b)
+        } else {
+            quickSort(data, mhi, b, maxDepth)
+            b = mlo // i.e., quickSort(data, a, mlo)
+        }
+    }
+    if b-a &gt; 1 {
+        insertionSort(data, a, b)
+    }
+}
+
+// Sort sorts data.
+// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+// data.Less and data.Swap. The sort is not guaranteed to be stable.
+func Sort(data Interface) {
+    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+    n := data.Len()
+    maxDepth := 0
+    for i := n; i &gt; 0; i &gt;&gt;= 1 {
+        maxDepth++
+    }
+    maxDepth *= 2
+    quickSort(data, 0, n, maxDepth)
+}
+</code></pre>
+
+		<a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Mar 2, 2014' data-updated="true" itemprop="datePublished">Sun, Mar 2, 2014</time>
