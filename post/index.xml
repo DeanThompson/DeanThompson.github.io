@@ -7,7 +7,219 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 14 Nov 2015 16:44:34 CST</updated>
+    <updated>Sat, 14 Nov 2015 16:57:03 CST</updated>
+    
+    <item>
+      <title>在 Flask 项目中使用 Celery</title>
+      <link>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</link>
+      <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+
+&lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;minimum-example:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Minimum Example&lt;/h2&gt;
+
+&lt;p&gt;Celery 的一些设计和概念，与 Flask 很像，在 Flask 项目中集成 Celery 也很简单，不像 Django 或其他框架需要扩展插件。首先来看个最简单的例子 example.py：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import uuid
+
+from flask import Flask, request, jsonify
+from celery import Celery
+
+app = Flask(__name__)
+app.config[&#39;CELERY_BROKER_URL&#39;] = &#39;redis://localhost:6379/0&#39;
+app.config[&#39;CELERY_RESULT_BACKEND&#39;] = &#39;redis://localhost:6379/0&#39;
+
+celery = Celery(app.name, broker=app.config[&#39;CELERY_BROKER_URL&#39;])
+celery.conf.update(app.config)
+
+
+@celery.task
+def send_email(to, subject, content):
+    return do_send_email(to, subject, content)
+
+
+@app.route(&#39;/password/forgot/&#39;, methods=[&#39;POST&#39;])
+def reset_password():
+    email = request.form[&#39;email&#39;]
+    token = str(uuid.uuid4())
+    content = u&#39;请点击链接重置密码：http://example.com/password/reset/?token=%s&#39; % token
+    send_email.delay(email, content)
+    return jsonify(code=0, message=u&#39;发送成功&#39;)
+
+
+if __name__ == &#39;__main__&#39;:
+    app.run()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;启动 Celery worker:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A example.celery -l INFO
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;启动 Web server:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ python example.py
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当然，实际应用在生产环境下，不能直接用 Flask 自带的 server，需要使用 Gunicorn 这样的 WSGI 容器，或 uWSGI. 而且 Celery worker 进程和 Web server 进程应该用 supervisord 管理起来。&lt;/p&gt;
+
+&lt;h2 id=&#34;becoming-bigger:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Becoming Bigger&lt;/h2&gt;
+
+&lt;p&gt;这是个最简单的例子，实际应用会比这个复杂很多：有很多模块，更复杂的配置，更多的 task 等。在这种情况下，Flask 推荐使用 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Application Factory Pattern&lt;/a&gt;，也就是定义一个 function，在这里创建 Flask app 对象，并且处理注册路由（blueprints）、配置 logging 等一系列初始化操作。&lt;/p&gt;
+
+&lt;p&gt;下面我们看看在更大的 Flask 项目里，应该如何使用 Celery.&lt;/p&gt;
+
+&lt;h3 id=&#34;项目结构:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;项目结构&lt;/h3&gt;
+
+&lt;p&gt;首先来看一下整个项目的结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;.
+├── README.md
+├── app
+│   ├── __init__.py
+│   ├── config.py
+│   ├── forms
+│   ├── models
+│   ├── tasks
+│   │   ├── __init__.py
+│   │   └── email.py
+│   └── views
+│   │   ├── __init__.py
+│   │   └── account.py
+├── celery_worker.py
+├── manage.py
+└── wsgi.py
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个图里省略了很多细节，简单解释一下：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;项目的根目录下，有个 &lt;code&gt;celery_worker.py&lt;/code&gt; 的文件，这个文件的作用类似于 &lt;code&gt;wsgi.py&lt;/code&gt;，是启动 Celery worker 的入口。&lt;/li&gt;
+&lt;li&gt;app 包里是主要业务代码，其中 tasks 里定义里一系列的 task，提供给其他模块调用。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;主要代码:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;主要代码。&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;app/config.py&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;class BaseConfig(object):
+    CELERY_BROKER_URL = &#39;redis://localhost:6379/2&#39;
+    CELERY_RESULT_BACKEND = &#39;redis://localhost:6379/2&#39;
+    CELERY_TASK_SERIALIZER = &#39;json&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;BaseConfig&lt;/code&gt; 是整个项目用到的配置的基类，实际上还会派生出 &lt;code&gt;DevelopmentConfig&lt;/code&gt;, &lt;code&gt;StagingConfig&lt;/code&gt; 和 &lt;code&gt;ProductionConfig&lt;/code&gt; 等类。这里不讨论配置的细节，也只关心和 Celery 相关的配置项。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;app/__init__.py&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from celery import Celery
+from flask import Flask
+
+from app.config import BaseConfig
+
+celery = Celery(__name__, broker=BaseConfig.CELERY_BROKER_URL)
+
+
+def create_app():
+    app = Flask(__name__)
+    # ....
+    celery.conf.update(app.config)	# 更新 celery 的配置
+    # ...
+    return app
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;app/tasks/email.py&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from flask import current_app
+from celery.util.log import get_task_logger
+
+from app import celery
+
+logger = get_task_logger(__name__)
+
+
+@celery.task
+def send_email(to, subject, content):
+    app = current_app._get_current_object()
+    subject = app.config[&#39;EMAIL_SUBJECT_PREFIX&#39;] + subject
+    logger.info(&#39;send message &amp;quot;%s&amp;quot; to %s&#39;, content, to)
+    return do_send_email(to, subject, content)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;app/views/account.py&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import uuid
+
+from flask import Blueprint, request,jsonify
+
+from app.tasks.email import send_email
+
+bp_account = Blueprint(&#39;account&#39;, __name__)
+
+
+@bp_account.route(&#39;/password/forgot/&#39;, methods=[&#39;POST&#39;])
+def reset_password():
+    email = request.form[&#39;email&#39;]
+    token = str(uuid.uuid4())
+    content = u&#39;请点击链接重置密码：http://example.com/password/reset/?token=%s&#39; % token
+    send_email.delay(email, content)
+    return jsonify(code=0, message=u&#39;发送成功&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ceelry_worker.py&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from app import create_app, celery
+
+app = create_app()
+app.app_context().push()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个 &lt;code&gt;celery_worker.py&lt;/code&gt; 文件有两个操作：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;创建一个 Flask 实例&lt;/li&gt;
+&lt;li&gt;推入 Flask application context&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;第一个操作很简单，其实也是初始化了 celery 实例。&lt;/p&gt;
+
+&lt;p&gt;第二个操作看起来有些奇怪，实际上也很好理解。如果用过 Flask 就应该知道 Flask 的 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/appcontext/&#34;&gt;Application Context&lt;/a&gt; 和 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/reqcontext/&#34;&gt;Request Context&lt;/a&gt;. Flask 一个很重要的设计理念是：在一个 Python 进程里可以运行多个应用（application），当存在多个 application 时可以通过 &lt;code&gt;current_app&lt;/code&gt; 获取当前请求所对应的 application. &lt;code&gt;current_app&lt;/code&gt; 绑定的是当前 request 的 application 的引用，在非 request-response 环境里，是没有 request context 的，所以调用 &lt;code&gt;current_app&lt;/code&gt; 就会抛出异常（&lt;code&gt;RuntimeError: working outside of application context&lt;/code&gt;）。创建一个 request context 没有必要，而且消耗资源，所以就引入了 application context.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;app.app_context().push()&lt;/code&gt; 会推入一个 application context，后续所有操作都会在这个环境里执行，直到进程退出。因此，如果在 tasks 里用到了 &lt;code&gt;current_app&lt;/code&gt; 或其它需要 application context 的东西，就一定需要这样做。（默认情况下 Celery 的 pool 是 prefork，也就是多进程，现在这种写法没有问题；但是如果指定使用 gevent，是没用的。这种情况下有别的解决方案，以后会写文章讨论。）&lt;/p&gt;
+
+&lt;h3 id=&#34;运行:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;运行&lt;/h3&gt;
+
+&lt;p&gt;在项目的根路径下启动 Celery worker:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -l INFO
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;总结:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Celery 使用简介</title>
@@ -1870,111 +2082,6 @@ def foo_id(id):
 &lt;h1 id=&#34;3-end:6e1d883f88cf13596243023295e5bb32&#34;&gt;3. End&lt;/h1&gt;
 
 &lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>less 命令支持语法高亮和行号</title>
-      <link>http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number</link>
-      <pubDate>Sun, 03 Nov 2013 00:30:00 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number</guid>
-      <description>
-
-&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;less is more&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h1 id=&#34;1-how:bea817191773b780e7e12130f8d11db2&#34;&gt;1. How&lt;/h1&gt;
-
-&lt;p&gt;less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，&lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;source-highlight&lt;/a&gt; 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install source-highlight
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# less hightlight
-export LESSOPEN=&amp;quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;quot;
-export LESS=&amp;quot; -R &amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
-
-&lt;p&gt;使配置生效：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;source ~/.bashrc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;
-
-&lt;h1 id=&#34;2-why:bea817191773b780e7e12130f8d11db2&#34;&gt;2. Why&lt;/h1&gt;
-
-&lt;p&gt;接下来看看到底发生了什么事情，可以做到这么「神奇」的效果。&lt;/p&gt;
-
-&lt;h2 id=&#34;2-1-lessopen:bea817191773b780e7e12130f8d11db2&#34;&gt;2.1. LESSOPEN&lt;/h2&gt;
-
-&lt;p&gt;首先来看&lt;code&gt;source-highlight&lt;/code&gt;，这个工具可以根据给定的源文件，读取动态读取语言特性，然后输出一个语法高亮的文件，支持多种输出格式，如 HTML、XHTML、LATEX、 「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」等；默认是 HTML格式。最后一种输出格式是 ANSI 颜色转义序列，支持彩色。这种输出格式恰好可以和 less 结合使用，使其输出结果支持语法高亮。&lt;/p&gt;
-
-&lt;p&gt;再看 &lt;code&gt;LESSOPEN&lt;/code&gt;。查看 less 的 man 帮助手册，可以看到 less 支持一个叫 「input preprocessor」的东西，可以在 less 打开源文件之前对源文件进行一次预处理。这个「input preprocessor」 可以自己定义：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;To  set up an input preprocessor, set the LESSOPEN environment variable to a command line which will invoke your input preprocessor.  This command line should include one occurrence of the string &amp;ldquo;%s&amp;rdquo;, which will be replaced by the  filename  when  the input preprocessor command is invoked.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;上面这句话说明了如何使用自己定义的预处理器，就是设置一下 &lt;code&gt;LESSOPEN&lt;/code&gt; 这个环境变量。那么 &lt;code&gt;LESSOPEN&lt;/code&gt; 到底是什么呢？ 可以在帮助手册找到定义：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Command line to invoke the (optional) input-preprocessor.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;code&gt;LESSOPEN&lt;/code&gt; 指定一个「input preprocessor」，后面用 &lt;code&gt;%s&lt;/code&gt; 读取文件路径。可以看到上面的配置中，有一个前导的竖线 &lt;code&gt;|&lt;/code&gt;。熟悉 &lt;code&gt;*nix&lt;/code&gt; 命令行的人知道这是管道，这个竖线表示把「input preprocessor」的处理结果写到标准输出（standard output），然后 less 通过 input pipe 读取再显示到屏幕上。&lt;/p&gt;
-
-&lt;h2 id=&#34;2-2-less:bea817191773b780e7e12130f8d11db2&#34;&gt;2.2. LESS&lt;/h2&gt;
-
-&lt;p&gt;另一个变量是 &lt;code&gt;LESS&lt;/code&gt;，同样查看帮助手册：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Options which are passed to less automatically.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;也就是自动传给 less 的选项，相当于缺省参数。上面设置的缺省选项是 &lt;code&gt;-R&lt;/code&gt;，看看 &lt;code&gt;-R&lt;/code&gt; 选项的意义：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;-R or &amp;ndash;RAW-CONTROL-CHARS&lt;/p&gt;
-
-&lt;p&gt;Like -r, but only ANSI &amp;ldquo;color&amp;rdquo; escape sequences are output in &amp;ldquo;raw&amp;rdquo; form. &amp;hellip;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这个选项的意义是，对于「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」是直接输出的，而不错其他处理。上面用 &lt;code&gt;source-highlight&lt;/code&gt; 提供的 src-hilite-lesspipe.sh 脚本用作 「input preprocessor」把源文件进行了高亮处理，并且输出「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」格式，这里设置 &lt;code&gt;-R&lt;/code&gt; 选项刚好可以把这个高亮过后的字符序列直接输出，因此就可以看到 less 下的语法高亮。&lt;/p&gt;
-
-&lt;h1 id=&#34;3-more:bea817191773b780e7e12130f8d11db2&#34;&gt;3. More&amp;hellip;&lt;/h1&gt;
-
-&lt;p&gt;在第二节里说到 &lt;code&gt;LESS&lt;/code&gt; 这个环境变量，同理，可以设置其他默认选项，比如 &lt;code&gt;-N&lt;/code&gt;。&lt;code&gt;-N&lt;/code&gt; 选项的意义相对更为显然：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;-N or &amp;ndash;LINE-NUMBERS&lt;/p&gt;
-
-&lt;p&gt;Causes a line number to be displayed at the beginning of each line in the display.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;就是在每一行开头显示行号。这个非常有用啊～于是只要修改一下配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export LESS=&amp;quot; -R -N &amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样一来，就可以在 less 时既能语法高亮，还能查看行号，感觉很不错的说。试着贴一张效果图看看。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://ww3.sinaimg.cn/large/65df5320tw1ea3o9tmdirj20ch0alq3h.jpg&#34; alt=&#34;less-with-syntax-highlight-and-line-number&#34; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&#34;4-references:bea817191773b780e7e12130f8d11db2&#34;&gt;4. References&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;GNU Source-highlight: &lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;http://www.gnu.org/software/src-highlite/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Powering Less to Highlight Syntax and Display Line Numbers:  &lt;a href=&#34;http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/&#34;&gt;http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
