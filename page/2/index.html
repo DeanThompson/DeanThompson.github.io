@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -112,6 +112,72 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, Jun 11, 2014' data-updated="true" itemprop="datePublished">Wed, Jun 11, 2014</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/golang"> golang </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
+
+<h2 id="int-to-string:fa92a5344b4f2c93ba7190e9f429e269">int to string</h2>
+
+<p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
+
+<p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;strconv&quot;
+    &quot;time&quot;
+)
+
+const LOOP = 10000
+
+var num int64 = 10000
+
+func main() {
+    startTime := time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        fmt.Sprintf(&quot;%d&quot;, num)
+    }
+    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime))
+
+    startTime = time.Now()
+    for i := 0; i &lt; LOOP; i++ {
+        strconv.FormatInt(num, 10)
+    }
+    fmt.Printf(&quot;strconv.FormatInt taken: %v\n&quot;, time.Since(startTime))
+}
+</code></pre>
+
+<p>其中某一次运行结果：</p>
+
+<pre><code class="language-text">fmt.Sprintf taken: 2.995178ms
+strconv.FormatInt taken: 1.057318ms
+</code></pre>
+
+		<a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Tue, Jun 3, 2014' data-updated="true" itemprop="datePublished">Tue, Jun 3, 2014</time>

@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
+    <lastmod>2015-11-14T16:44:34+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</loc>
+    <lastmod>2015-11-14T16:44:34+08:00</lastmod>
   </url>
   
   <url>
