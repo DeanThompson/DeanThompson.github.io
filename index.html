@@ -114,6 +114,44 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Nov 28, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 28, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/go"> go </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client" itemprop="url">极光推送 Go SDK</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
+
+<p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
+
+<p>啰嗦了一大推，差点忘了最重要的东西，下面给出链接：</p>
+
+<ul>
+<li>源代码和示例：<a href="https://github.com/DeanThompson/jpush-api-go-client">https://github.com/DeanThompson/jpush-api-go-client</a></li>
+<li>官方文档：<a href="http://docs.jpush.io/server/rest_api_v3_push/">http://docs.jpush.io/server/rest_api_v3_push/</a></li>
+</ul>
+
+<p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
+
+		
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
 </div>
 		<div class="tags">
@@ -527,52 +565,6 @@
 </code></pre>
 
 		<a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/golang"> golang </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang" itemprop="url">Golang 并发安全的 map 实现</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
-
-<h2 id="并发安全:743dbbe92226f1ed32f110ba88fc33fe">并发安全</h2>
-
-<p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
-
-<pre><code class="language-go">type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
-}
-</code></pre>
-
-<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
-
-<p>但是这种设计会有些性能隐患。主要是两个方面：</p>
-
-<ol>
-<li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
-<li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
-</ol>
-
-		<a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
 

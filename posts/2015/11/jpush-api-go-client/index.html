@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>李林克斯</title>
+	<title>极光推送 Go SDK - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://deanthompson.github.io/tags/cache/">
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client">
 	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
 	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -102,62 +102,57 @@
 		
 	</div>
 </nav>
-</header>				
+</header>
 			</div>
-		</div>	
+		</div>
 		<div class="mid-col">
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 					<div itemscope itemtype="http://schema.org/Blog">
-	
-	
-	
-		
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">极光推送 Go SDK</h1>
+	<div class="entry-content" itemprop="articleBody"><p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
 
-		
-		<section class="archives"><h1 class="year">2015</h1>
-		
+<p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
 
-		<article itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-			<div class="meta">
-				<span class="date"><time datetime='2015' itemprop="datePublished">Nov 5</time></span>
-				<br>
-				<span class="tags">
+<p>啰嗦了一大推，差点忘了最重要的东西，下面给出链接：</p>
 
+<ul>
+<li>源代码和示例：<a href="https://github.com/DeanThompson/jpush-api-go-client">https://github.com/DeanThompson/jpush-api-go-client</a></li>
+<li>官方文档：<a href="http://docs.jpush.io/server/rest_api_v3_push/">http://docs.jpush.io/server/rest_api_v3_push/</a></li>
+</ul>
 
-	
-	
-		<a href="http://deanthompson.github.io/categories/python"> python </a>,
-	
+<p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
+</div></article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
 
-	
-	
-		<a href="http://deanthompson.github.io/categories/flask"> flask </a>,
-	
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/tornado"> tornado </a>,
-	
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/cache"> cache </a>
-	
-
-
-</span>
-			    
-			</div>
-			<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask">Tornado 和 Flask 应用缓存响应结果</a></h1>
-		</article>
-
-		
-	
-	</section>
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-
+					</section>
+					
+				    </div>
 				</div>
 			</div>
 			<footer id="footer" class="inner">Copyright &copy; 2015
