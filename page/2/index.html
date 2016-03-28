@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -112,6 +112,43 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 15, 2015' data-updated="true" itemprop="datePublished">Sun, Mar 15, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/linux"> linux </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" itemprop="url">重用 SSH 连接</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
+
+<p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
+
+<p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
+
+<pre><code class="language-sshconfig">Host *
+    ControlMaster auto
+    ControlPath /tmp/ssh_mux_%h_%p_%r
+    ControlPersist 600
+</code></pre>
+
+		<a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
@@ -614,43 +651,6 @@ except NameError, e:
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Dec 1, 2012' data-updated="true" itemprop="datePublished">Sat, Dec 1, 2012</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" itemprop="url">Python字典切片</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-
-<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-
-<pre><code class="language-python">def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-</code></pre>
-
-		<a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
 				    </div>
 				    <nav id="pagenavi">
 					    
@@ -663,7 +663,7 @@ except NameError, e:
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2015
+			<footer id="footer" class="inner">Copyright &copy; 2016
 
     Yangliang Li
 

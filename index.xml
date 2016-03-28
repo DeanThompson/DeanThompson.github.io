@@ -7,7 +7,23 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 28 Nov 2015 22:32:35 CST</updated>
+    <updated>Mon, 28 Mar 2016 23:35:58 CST</updated>
+    
+    <item>
+      <title>zhihu-go: 知乎非官方 API库 with Go</title>
+      <link>http://deanthompson.github.io/posts/2016/03/zhihu-go</link>
+      <pubDate>Mon, 28 Mar 2016 23:35:58 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go</guid>
+      <description>&lt;p&gt;我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 &lt;a href=&#34;https://github.com/egrcc/zhihu-python&#34;&gt;zhihu-python&lt;/a&gt;. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。&lt;/p&gt;
+
+&lt;p&gt;恰巧我也是一个 &lt;a href=&#34;http://golang.org/&#34;&gt;Go 语言&lt;/a&gt; 爱好者，在之前的工作中也用 Go 写过项目。语法简单，开发效率高，性能很好。GitHub 上搜了一下，zhihu-python 或同类项目，并没有一个 Go 实现的版本。于是就想动手造个轮子，把 zhihu-python 移植到 Go，所以就有了标题里提到的 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt;. 主要是出于练手的目的，最近一年都在做 Python 开发，Go 还有点生疏了。因为是移植，最初的设计和实现思路很大程度上参考或模仿了 zhihu-python，后来在开发过程中，新增了一些 API，也删除了少数几个我认为没什么用的 API. 开发过程中又看到了一个 Python 3 版本的实现 &lt;a href=&#34;https://github.com/7sDream/zhihu-py3&#34;&gt;zhihu-py3&lt;/a&gt;，这个库也是受启发于 zhihu-python，代码质量也要更好，而且实现了更丰富的 API，尤其是关于操作类的，如点赞、收藏答案等。zhihu-go 也参考了 zhihu-py3 的一些 API 设计。截止到现在，zhihu-go 的完成度应该和 zhihu-python 差不多，还多了一些 API；比 zhihu-py3 少了活动、评论及操作类的 API，这些在 TODO list 都列了出来。&lt;/p&gt;
+
+&lt;p&gt;前几天在 V2EX 发了一个 &lt;a href=&#34;http://v2ex.com/t/266372&#34;&gt;推广的帖子&lt;/a&gt;，没想到反响还不错，收到不少支持和鼓励，GitHub 也在一两天内收获了 50 来个 star （个人最高）. 其实在这之前，还在 StuduGolang 发了 &lt;a href=&#34;http://studygolang.com/topics/1528&#34;&gt;一个主题&lt;/a&gt;，然而并没有人回复，带到 GitHub 的流量也很少，好像只有 1 个 star. golangtc 也发了，流量就更少了，可以忽略不计。&lt;/p&gt;
+
+&lt;p&gt;后续有时间简单分析一下源码，分享一下开发过程和心得。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>极光推送 Go SDK</title>
@@ -2005,38 +2021,6 @@ if __name__ == &amp;quot;__main__&amp;quot;:
 
 &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; 
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</title>
-      <link>http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog</link>
-      <pubDate>Sun, 02 Mar 2014 16:16:04 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog</guid>
-      <description>
-
-&lt;p&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 和 &lt;code&gt;sync_binlog&lt;/code&gt; 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。&lt;/p&gt;
-
-&lt;h2 id=&#34;1-innodb-flush-log-at-trx-commit:59ae80d39a9fc958db330bc7cfc3b146&#34;&gt;1. innodb_flush_log_at_trx_commit&lt;/h2&gt;
-
-&lt;p&gt;简而言之，&lt;a href=&#34;http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit&#34;&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt;&lt;/a&gt; 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;当 &lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 取值为 &lt;code&gt;0&lt;/code&gt; 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
-&lt;li&gt;当取值为 &lt;code&gt;1&lt;/code&gt; 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。&lt;/li&gt;
-&lt;li&gt;当取值为 &lt;code&gt;2&lt;/code&gt; 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 &lt;code&gt;2&lt;/code&gt; 就足够了；如果为了最高性能，可以设置为 &lt;code&gt;0&lt;/code&gt;。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;2-sync-binlog:59ae80d39a9fc958db330bc7cfc3b146&#34;&gt;2. sync_binlog&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://dev.MySQL.com/doc/refman/5.5/en/replication-options-binary-log.html#sysvar_sync_binlog&#34;&gt;sync_binlog&lt;/a&gt; 是 MySQL 的二进制日志（binary log）同步到磁盘的频率。MySQL server 在 binary log 每写入 &lt;code&gt;sync_binlog&lt;/code&gt; 次后，刷写到磁盘。&lt;/p&gt;
-
-&lt;p&gt;如果 &lt;code&gt;autocommit&lt;/code&gt; 开启，每个语句都写一次 binary log，否则每次事务写一次。默认值是 &lt;code&gt;0&lt;/code&gt;，不主动同步，而依赖操作系统本身不定期把文件内容 flush 到磁盘。设为 &lt;code&gt;1&lt;/code&gt; 最安全，在每个语句或事务后同步一次 binary log，即使在崩溃时也最多丢失一个语句或事务的日志，但因此也最慢。&lt;/p&gt;
-
-&lt;p&gt;大多数情况下，对数据的一致性并没有很严格的要求，所以并不会把 &lt;code&gt;sync_binlog&lt;/code&gt; 配置成 &lt;code&gt;1&lt;/code&gt;. 为了追求高并发，提升性能，可以设置为 &lt;code&gt;100&lt;/code&gt; 或直接用 &lt;code&gt;0&lt;/code&gt;. 而和 &lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 一样，对于支付服务这样的应用，还是比较推荐 &lt;code&gt;sync_binlog = 1&lt;/code&gt;.&lt;/p&gt;
 </description>
     </item>
     
