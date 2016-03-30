@@ -7,7 +7,175 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Mon, 28 Mar 2016 23:35:58 CST</updated>
+    <updated>Wed, 30 Mar 2016 23:02:51 CST</updated>
+    
+    <item>
+      <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
+      <link>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</link>
+      <pubDate>Wed, 30 Mar 2016 23:02:51 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
+
+&lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
+
+&lt;h3 id=&#34;创建-document-对象:b21917a396369c0669213bf730deae3f&#34;&gt;创建 Document 对象&lt;/h3&gt;
+
+&lt;p&gt;goquery 暴露了两个结构体：&lt;code&gt;Document&lt;/code&gt; 和 &lt;code&gt;Selection&lt;/code&gt;. &lt;code&gt;Document&lt;/code&gt; 表示一个 HTML 文档，&lt;code&gt;Selection&lt;/code&gt; 用于像 jQuery 一样操作，支持链式调用。goquery 需要指定一个 HTML 文档才能继续后续的操作，有以下几个构造方式：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;NewDocumentFromNode(root *html.Node) *Document&lt;/code&gt;: 传入 &lt;code&gt;*html.Node&lt;/code&gt; 对象，也就是根节点。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NewDocument(url string) (*Document, error)&lt;/code&gt;: 传入 URL，内部用 &lt;code&gt;http.Get&lt;/code&gt; 获取网页。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NewDocumentFromReader(r io.Reader) (*Document, error)&lt;/code&gt;: 传入 &lt;code&gt;io.Reader&lt;/code&gt;，内部从 reader 中读取内容并解析。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NewDocumentFromResponse(res *http.Response) (*Document, error)&lt;/code&gt;: 传入 HTTP 响应，内部拿到 &lt;code&gt;res.Body&lt;/code&gt;(实现了 &lt;code&gt;io.Reader&lt;/code&gt;) 后的处理方式类似 &lt;code&gt;NewDocumentFromReader&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;因为知乎的页面需要登录才能访问（还需要伪造请求头），而且我们并不想手动解析 HTML 来获取 &lt;code&gt;*html.Node&lt;/code&gt;，最后用到了另外两个构造方法。大致的使用场景是：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;请求 HTML 页面（如问题页面），调用 &lt;code&gt;NewDocumentFromResponse&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;请求 Ajax 接口，返回的 JSON 数据里是一些 HTML 片段，用 &lt;code&gt;NewDocumentFromReader&lt;/code&gt;，其中 &lt;code&gt;r = strings.NewReader(html)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;为了方便举例说明，下文采用这个定义：&lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;查找到指定节点:b21917a396369c0669213bf730deae3f&#34;&gt;查找到指定节点&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Selection&lt;/code&gt; 有一系列类似 jQuery 的方法，&lt;code&gt;Document&lt;/code&gt; 结构体内嵌了 &lt;code&gt;*Selection&lt;/code&gt;，因此也能直接调用这些方法。主要的方法是 &lt;code&gt;Selection.Find(selector string)&lt;/code&gt;，传入一个选择器，返回一个新的，匹配到的 &lt;code&gt;*Selection&lt;/code&gt;，所以能够链式调用。&lt;/p&gt;
+
+&lt;p&gt;比如在用户主页（如 &lt;a href=&#34;https://www.zhihu.com/people/jixin&#34;&gt;黄继新&lt;/a&gt;），要获取用户的 BIO. 首先用 Chrome 定位到对应的 HTML：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;span class=&amp;quot;bio&amp;quot; title=&amp;quot;和知乎在一起&amp;quot;&amp;gt;和知乎在一起&amp;lt;/span&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对应的 go 代码就是：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;doc.Find(&amp;quot;span.bio&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果一个选择器对应多个结果，可以使用 &lt;code&gt;First()&lt;/code&gt;, &lt;code&gt;Last()&lt;/code&gt;, &lt;code&gt;Eq(index int)&lt;/code&gt;, &lt;code&gt;Slice(start, end int)&lt;/code&gt; 这些方法进一步定位。&lt;/p&gt;
+
+&lt;p&gt;还是在用户主页，在用户资料栏的底下，从左往右展示了提问数、回答数、文章数、收藏数和公共编辑的次数。查看 HTML 源码后发现这几项的 class 是一样的，所以只能通过下标索引来区分。&lt;/p&gt;
+
+&lt;p&gt;先看 HTML 源码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-html&#34;&gt;&amp;lt;div class=&amp;quot;profile-navbar clearfix&amp;quot;&amp;gt;
+&amp;lt;a class=&amp;quot;item &amp;quot; href=&amp;quot;/people/jixin/asks&amp;quot;&amp;gt;提问&amp;lt;span class=&amp;quot;num&amp;quot;&amp;gt;1336&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;
+&amp;lt;a class=&amp;quot;item &amp;quot; href=&amp;quot;/people/jixin/answers&amp;quot;&amp;gt;回答&amp;lt;span class=&amp;quot;num&amp;quot;&amp;gt;785&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;
+&amp;lt;a class=&amp;quot;item &amp;quot; href=&amp;quot;/people/jixin/posts&amp;quot;&amp;gt;文章&amp;lt;span class=&amp;quot;num&amp;quot;&amp;gt;91&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;
+&amp;lt;a class=&amp;quot;item &amp;quot; href=&amp;quot;/people/jixin/collections&amp;quot;&amp;gt;收藏&amp;lt;span class=&amp;quot;num&amp;quot;&amp;gt;44&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;
+&amp;lt;a class=&amp;quot;item &amp;quot; href=&amp;quot;/people/jixin/logs&amp;quot;&amp;gt;公共编辑&amp;lt;span class=&amp;quot;num&amp;quot;&amp;gt;51648&amp;lt;/span&amp;gt;&amp;lt;/a&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果要定位找到回答数，对应的 go 代码是：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;span.num&amp;quot;).Eq(1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;属性操作:b21917a396369c0669213bf730deae3f&#34;&gt;属性操作&lt;/h3&gt;
+
+&lt;p&gt;经常需要获取一个标签的内容和某些属性值，使用 goquery 可以很容易做到。&lt;/p&gt;
+
+&lt;p&gt;继续上面获取回答数的例子，用 &lt;code&gt;Text() string&lt;/code&gt; 方法可以获取标签内的文本内容，其中包含所有子标签。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;text := doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;span.num&amp;quot;).Eq(1).Text()    // &amp;quot;785&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;需要注意的是，&lt;code&gt;Text()&lt;/code&gt; 方法返回的字符串，可能前后有很多空白字符，可以视情况做清除。&lt;/p&gt;
+
+&lt;p&gt;获取属性值也很容易，有两个方法：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Attr(attrName string) (val string, exists bool)&lt;/code&gt;: 返回属性值和该属性是否存在，类似从 &lt;code&gt;map&lt;/code&gt; 中取值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AttrOr(attrName, defaultValue string) string&lt;/code&gt;: 和上一个方法类似，区别在于如果属性不存在，则返回给定的默认值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;常见的使用场景就是获取一个 a 标签的链接。继续上面获取回答的例子，如果想要得到用户回答的主页，可以这么做：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;href, _ := doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;a.item&amp;quot;).Eq(1).Attr(&amp;quot;href&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还有其他设置属性、操作 class 的方法，就不展开讨论了。&lt;/p&gt;
+
+&lt;h3 id=&#34;迭代:b21917a396369c0669213bf730deae3f&#34;&gt;迭代&lt;/h3&gt;
+
+&lt;p&gt;很多场景需要返回列表数据，比如问题的关注者列表、所有回答，某个答案的点赞的用户列表等。这种情况下一般需要用到迭代，遍历所有的同类节点，做某些操作。&lt;/p&gt;
+
+&lt;p&gt;goquery 提供了三个用于迭代的方法，都接受一个匿名函数作为参数：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Each(f func(int, *Selection)) *Selection&lt;/code&gt;: 其中函数 &lt;code&gt;f&lt;/code&gt; 的第一个参数是当前的下标，第二个参数是当前的节点&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;EachWithBreak(f func(int, *Selection) bool) *Selection&lt;/code&gt;: 和 &lt;code&gt;Each&lt;/code&gt; 类似，增加了中途跳出循环的能力，当 &lt;code&gt;f&lt;/code&gt; 返回 &lt;code&gt;false&lt;/code&gt; 时结束迭代&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Map(f func(int, *Selection) string) (result []string)&lt;/code&gt;: &lt;code&gt;f&lt;/code&gt; 的参数与上面一样，返回一个 string 类型，最终返回 []string.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;比如获取一个收藏夹（如 &lt;a href=&#34;https://www.zhihu.com/collection/19573315&#34;&gt;黄继新的收藏：关于知乎的思考&lt;/a&gt;）下所有的问题，可以这么做（见 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/collection.go&#34;&gt;zhihu-go/collections.go&lt;/a&gt;）：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func getQuestionsFromDoc(doc *goquery.Document) []*Question {
+	questions := make([]*Question, 0, pageSize)
+	items := doc.Find(&amp;quot;div#zh-list-answer-wrap&amp;quot;).Find(&amp;quot;h2.zm-item-title&amp;quot;)
+	items.Each(func(index int, sel *goquery.Selection) {
+		a := sel.Find(&amp;quot;a&amp;quot;)
+		qTitle := strip(a.Text())
+		qHref, _ := a.Attr(&amp;quot;href&amp;quot;)
+		thisQuestion := NewQuestion(makeZhihuLink(qHref), qTitle)
+		questions = append(questions, thisQuestion)
+	})
+	return questions
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;EachWithBreak&lt;/code&gt; 在 zhihu-go 中也有用到，可以参见 &lt;code&gt;Answer.GetVotersN 方法&lt;/code&gt;：&lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go&#34;&gt;zhihu-go/answer.go&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&#34;删除节点-插入-html-导出-html:b21917a396369c0669213bf730deae3f&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
+
+&lt;p&gt;有一个需求是把回答内容输出到 HTML，说白了其实就是修复和清洗 HTML，具体的细节可以看 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go#L222&#34;&gt;answer.go 里的 answerSelectionToHtml 函数&lt;/a&gt;. 其中用到了一些需要修改文档的操作。&lt;/p&gt;
+
+&lt;p&gt;比如，调用 &lt;code&gt;Remove()&lt;/code&gt; 方法把一个节点删掉：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;sel.Find(&amp;quot;noscript&amp;quot;).Each(func(_ int, tag *goquery.Selection) {
+    tag.Remove() // 把无用的 noscript 去掉
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在节点后插入一段 HTML:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;sel.Find(&amp;quot;img&amp;quot;).Each(func(_ int, tag *goquery.Selection) {
+    var src string
+    if tag.HasClass(&amp;quot;origin_image&amp;quot;) {
+        src, _ = tag.Attr(&amp;quot;data-original&amp;quot;)
+    } else {
+        src, _ = tag.Attr(&amp;quot;data-actualsrc&amp;quot;)
+    }
+    tag.SetAttr(&amp;quot;src&amp;quot;, src)
+    if tag.Next().Size() == 0 {
+        tag.AfterHtml(&amp;quot;&amp;lt;br&amp;gt;&amp;quot;)   // 在 img 标签后插入一个换行
+    }
+})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在标签尾部 append 一段内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;wrapper := `&amp;lt;html&amp;gt;&amp;lt;head&amp;gt;&amp;lt;meta charset=&amp;quot;utf-8&amp;quot;&amp;gt;&amp;lt;/head&amp;gt;&amp;lt;body&amp;gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;`
+doc, _ := goquery.NewDocumentFromReader(strings.NewReader(wrapper))
+doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最终输出为 html 文档：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;html, err := doc.Html()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;总结:b21917a396369c0669213bf730deae3f&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>zhihu-go: 知乎非官方 API库 with Go</title>
@@ -1829,198 +1997,6 @@ hex.EncodeToString taken: 2.080457ms
 &lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
 
 &lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Golang 排序</title>
-      <link>http://deanthompson.github.io/posts/2014/06/sort-in-golang</link>
-      <pubDate>Tue, 03 Jun 2014 16:50:50 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/06/sort-in-golang</guid>
-      <description>
-
-&lt;h2 id=&#34;interface-接口:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;Interface 接口&lt;/h2&gt;
-
-&lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &amp;gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
-        }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &amp;lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
-    }
-    if b-a &amp;gt; 1 {
-        insertionSort(data, a, b)
-    }
-}
-
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &amp;gt; 0; i &amp;gt;&amp;gt;= 1 {
-        maxDepth++
-    }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。&lt;/p&gt;
-
-&lt;p&gt;标准库提供一个通用接口，只要实现了这个接口，就可以通过调用 &lt;code&gt;sort.Sort&lt;/code&gt; 来排序。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Interface interface {
-    // Len is the number of elements in the collection.
-    Len() int
-    // Less returns whether the element with index i should sort
-    // before the element with index j.
-    Less(i, j int) bool
-    // Swap swaps the elements with indexes i and j.
-    Swap(i, j int)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;基本数据类型的排序:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;基本数据类型的排序&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;Interface&lt;/code&gt; 接口的三个函数分别用于获取长度（&lt;code&gt;Len&lt;/code&gt;）、大小比较（&lt;code&gt;Less&lt;/code&gt;）和交换（&lt;code&gt;Swap&lt;/code&gt;）。对 &lt;code&gt;int&lt;/code&gt;、&lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，标准库已经做好了封装，直接调用即可。以 &lt;code&gt;int&lt;/code&gt; 为例简单说明：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main                                                                                                                                                                                                 
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;sort&amp;quot;
-)
-
-func main() {
-    a := []int{100, 5, 29, 3, 76} 
-    fmt.Println(a)     // [100 5 29 3 76]
-    sort.Ints(a)       // sort.Sort(IntSlice(a)) 的封装
-    fmt.Println(a)     // [3 5 29 76 100]，默认的 Less() 实现的是升序
-
-    a = []int{100, 5, 29, 3, 76} 
-    fmt.Println(a)     // [100 5 29 3 76]
-    sort.Sort(sort.Reverse(sort.IntSlice(a)))
-    fmt.Println(a)     // [100 76 29 5 3]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;对 &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，和上面类似。需要注意的是，默认的 &lt;code&gt;sort.Less&lt;/code&gt; 实现的是升序排列，如果想要让结果降序，可以先用 &lt;code&gt;sort.Reverse&lt;/code&gt; 包装一次。这个调用会得到一个 &lt;code&gt;reverse&lt;/code&gt; 的类型，包含一个 &lt;code&gt;Interface&lt;/code&gt; 的匿名字段，其 &lt;code&gt;Less&lt;/code&gt; 函数与 &lt;code&gt;Interface&lt;/code&gt; 里的相反，从而实现逆序。&lt;/p&gt;
-
-&lt;h2 id=&#34;自定义数据类型的排序:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;自定义数据类型的排序&lt;/h2&gt;
-
-&lt;p&gt;如果要对自定义的数据类型进行排序，需要实现 &lt;code&gt;sort.Interface&lt;/code&gt; 接口，也就是实现 &lt;code&gt;Len&lt;/code&gt;、&lt;code&gt;Less&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 三个函数。很多场景下 &lt;code&gt;Len&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 基本上和数据类型无关，所以实际上只有 &lt;code&gt;Less&lt;/code&gt; 会有差别。&lt;/p&gt;
-
-&lt;p&gt;例如有个游戏下载排行榜，知道游戏ID和对应的下载量，需要把数据根据下载量进行排序。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;math/rand&amp;quot;
-    &amp;quot;sort&amp;quot;
-)
-
-type GameDownloadItem struct {
-    GameID        int // 游戏ID
-    DownloadTimes int // 下载次数
-}
-
-func (self GameDownloadItem) String() string {
-    return fmt.Sprintf(&amp;quot;&amp;lt;Item(%d, %d)&amp;gt;&amp;quot;, self.GameID, self.DownloadTimes)
-}
-
-type GameDownloadSlice []*GameDownloadItem
-
-func (p GameDownloadSlice) Len() int {
-    return len(p)
-}
-
-func (p GameDownloadSlice) Swap(i int, j int) {
-    p[i], p[j] = p[j], p[i]
-}
-
-// 根据游戏下载量 降序 排列
-func (p GameDownloadSlice) Less(i int, j int) bool {
-    return p[i].DownloadTimes &amp;gt; p[j].DownloadTimes
-}
-
-func main() {
-    a := make(GameDownloadSlice, 7)
-    for i := 0; i &amp;lt; len(a); i++ {
-        a[i] = &amp;amp;GameDownloadItem{i + 1, rand.Intn(1000)}
-    }
-
-    fmt.Println(a)
-    sort.Sort(a)
-    fmt.Println(a)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;[&amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(4, 59)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(7, 425)&amp;gt;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;排序后：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;[&amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(7, 425)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(4, 59)&amp;gt;]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;vs-python:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;Vs. Python&lt;/h2&gt;
-
-&lt;p&gt;相比之下，Python 里的排序就非常简单便捷了，直接调用 &lt;code&gt;list&lt;/code&gt; 的 &lt;code&gt;sort&lt;/code&gt; 方法（in-place）即可，还可以用 built-in 函数 &lt;code&gt;sorted&lt;/code&gt; （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 &lt;code&gt;sort&lt;/code&gt; 方法的 &lt;code&gt;key&lt;/code&gt; 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;#!/usr/bin/env python                                                                                                                                                                                        
-# -*- coding: utf-8 -*-
-
-import random
-
-class GameDownloadItem(object):
-
-    def __init__(self, game_id, download_times):
-        self.game_id = game_id
-        self.download_times = download_times
-
-    def __str__(self):
-        return &#39;&amp;lt;Item(%d, %d)&amp;gt;&#39; % (self.game_id, self.download_times)
-
-def display(items):
-    for item in items:
-        print item,
-    print &#39;\n&#39;
-
-
-if __name__ == &amp;quot;__main__&amp;quot;:
-    items = [GameDownloadItem(i+1, random.randrange(1000)) for i in range(7)]
-    display(items)
-
-    items.sort(key=lambda item: item.download_times, reverse=True)
-    display(items)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;某一次的执行结果：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; 
-
-&amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; 
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     
