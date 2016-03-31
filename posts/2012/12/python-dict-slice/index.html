@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Python字典切片 - 李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -23,13 +23,15 @@
 	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
 	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/custom.css" media="screen, projection" rel="stylesheet" title="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	
-    <script src="//cdn.bootcss.com/highlight.js/8.9.1/highlight.min.js"></script>
-
-<link href="//cdn.bootcss.com/highlight.js/8.9.1/styles/github.min.css" rel="stylesheet">
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
 <script>hljs.initHighlightingOnLoad();</script>
 
   
@@ -111,6 +113,24 @@
 				<div id="content" class="inner">
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Sat, Dec 1, 2012' data-updated="true" itemprop="datePublished">Sat, Dec 1, 2012</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2012/12/python-dict-slice#disqus_thread">Comments</a></span>
+							
+						</div>
+						
     <h1 class="title" itemprop="name">Python字典切片</h1>
 	<div class="entry-content" itemprop="articleBody"><p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
 
@@ -162,7 +182,8 @@
 </code></pre>
 
 <p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p>
-</div></article>
+</div>
+					</article>
 					
 					<section id="comment">
 					    <h1 class="title">Comments</h1>

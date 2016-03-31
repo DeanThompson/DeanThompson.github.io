@@ -23,13 +23,15 @@
 	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
 	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/custom.css" media="screen, projection" rel="stylesheet" title="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	
-    <script src="//cdn.bootcss.com/highlight.js/8.9.1/highlight.min.js"></script>
-
-<link href="//cdn.bootcss.com/highlight.js/8.9.1/styles/github.min.css" rel="stylesheet">
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
 <script>hljs.initHighlightingOnLoad();</script>
 
   
@@ -111,6 +113,24 @@
 				<div id="content" class="inner">
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/golang"> golang </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang#disqus_thread">Comments</a></span>
+							
+						</div>
+						
     <h1 class="title" itemprop="name">Golang 并发安全的 map 实现</h1>
 	<div class="entry-content" itemprop="articleBody">
 
@@ -172,7 +192,8 @@ func (m *SyncMap) locate(key string) *syncMap {
 <p><code>locate</code> 方法调用 <code>bkdrHash</code> 函数计算一个 <code>key</code> 的哈希值，然后用该值对分表量取模得到在 slice 的 <code>index</code>，之后就能定位到对应的 <code>syncMap</code>.</p>
 
 <p>这种实现足够简单，而且也有不错的性能表现。除了基本的 <code>Get</code>、<code>Set</code>、<code>Delete</code> 等基本操作之外，迭代（<code>range</code>）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： <a href="https://github.com/DeanThompson/syncmap">https://github.com/DeanThompson/syncmap</a>.</p>
-</div></article>
+</div>
+					</article>
 					
 					<section id="comment">
 					    <h1 class="title">Comments</h1>

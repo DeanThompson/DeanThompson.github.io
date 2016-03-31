@@ -23,13 +23,15 @@
 	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
 	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/custom.css" media="screen, projection" rel="stylesheet" title="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	
-    <script src="//cdn.bootcss.com/highlight.js/8.9.1/highlight.min.js"></script>
-
-<link href="//cdn.bootcss.com/highlight.js/8.9.1/styles/github.min.css" rel="stylesheet">
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
 <script>hljs.initHighlightingOnLoad();</script>
 
   
@@ -111,6 +113,24 @@
 				<div id="content" class="inner">
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Sun, Mar 15, 2015' data-updated="true" itemprop="datePublished">Sun, Mar 15, 2015</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/linux"> linux </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection#disqus_thread">Comments</a></span>
+							
+						</div>
+						
     <h1 class="title" itemprop="name">重用 SSH 连接</h1>
 	<div class="entry-content" itemprop="articleBody"><p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
 
@@ -135,7 +155,8 @@
 <p><code>ControlPersist</code> 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。</p>
 
 <p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p>
-</div></article>
+</div>
+					</article>
 					
 					<section id="comment">
 					    <h1 class="title">Comments</h1>

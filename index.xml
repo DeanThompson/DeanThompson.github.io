@@ -41,7 +41,7 @@
 &lt;li&gt;请求 Ajax 接口，返回的 JSON 数据里是一些 HTML 片段，用 &lt;code&gt;NewDocumentFromReader&lt;/code&gt;，其中 &lt;code&gt;r = strings.NewReader(html)&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;为了方便举例说明，下文采用这个定义：&lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;为了方便举例说明，下文采用这个定义: &lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h3 id=&#34;查找到指定节点:b21917a396369c0669213bf730deae3f&#34;&gt;查找到指定节点&lt;/h3&gt;
 
