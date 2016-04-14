@@ -7,7 +7,68 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Wed, 30 Mar 2016 23:02:51 CST</updated>
+    <updated>Thu, 14 Apr 2016 15:33:52 CST</updated>
+    
+    <item>
+      <title>Nginx AWS ELB 域名解析</title>
+      <link>http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution</link>
+      <pubDate>Thu, 14 Apr 2016 15:33:52 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution</guid>
+      <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;两个域名：api.example.com, web.example.com&lt;/li&gt;
+&lt;li&gt;环境：AWS + ELB + Nginx&lt;/li&gt;
+&lt;li&gt;后端：Python + Django + Gunicorn&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                      proxy_pass         backends                      proxy_pass
+APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backend Nginx(s) ------------&amp;gt; Gunicorn(s)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
+    proxy_pass http://name.of.elb.aws.com;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。&lt;/p&gt;
+
+&lt;p&gt;后来 Google 了一番，发现确实是 DNS 的问题。Nginx 会在启动的时候进行域名查找，然后把 IP 地址缓存起来，后续就直接使用这些 IP 地址。而 AWS 的 ELB 所指向的 IP 地址是不固定的，会经常更新；所以这会导致 Nginx 缓存的 IP 地址实际上已经失效。定位出了问题，也参考网上的做法，把 API 的 Nginx 配置稍作修改：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
+    resolver 233.5.5.5 valid=30s;
+    proxy_pass http://name.of.elb.aws.com;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中 &lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;resolver&lt;/a&gt; 就是 Nginx 用于把域名转换为 IP 地址的域名服务器。后面的第一个参数是域名服务器，valid 指定了缓存有效期，这里是 30s （默认 5min）. 加上这个配置后，Nginx 会用指定的域名服务器来解析域名，并定期把缓存失效。这样就能避免 ELB 地址更新带来的问题。&lt;/p&gt;
+
+&lt;p&gt;刚开始以为只需要加上 resolver 这一行配置就可以，后来看 &lt;a href=&#34;[http://serverfault.com/a/562518/192152&#34;&gt;这个 serverfault 上的回答&lt;/a&gt;，还需要把 proxy_pass 的地址定义成一个变量。于是最终的配置变成了：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
+    resolver 233.5.5.5 valid=30s;
+    set $backends &amp;quot;http://name.of.elb.aws.com&amp;quot;;
+    proxy_pass $backends;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;修改配置，reload，一两天后如果无响应的现象不再出现，说明问题已经解决。&lt;/p&gt;
+
+&lt;p&gt;参考材料：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;Nginx 文档&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://tenzer.dk/nginx-with-dynamic-upstreams/&#34;&gt;Nginx with dynamic upstreams&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers&#34;&gt;nginx AWS ELB name resolution with resolvers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day&#34;&gt;serverfault - Some nginx reverse proxy configs stops working once a day&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
@@ -1886,117 +1947,6 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</link>
-      <pubDate>Wed, 11 Jun 2014 15:50:41 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
-      <description>
-
-&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
-
-&lt;h2 id=&#34;int-to-string:fa92a5344b4f2c93ba7190e9f429e269&#34;&gt;int to string&lt;/h2&gt;
-
-&lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
-
-&lt;p&gt;比较一下 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 和 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 的时间开销：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;strconv&amp;quot;
-    &amp;quot;time&amp;quot;
-)
-
-const LOOP = 10000
-
-var num int64 = 10000
-
-func main() {
-    startTime := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%d&amp;quot;, num)
-    }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(startTime))
-
-    startTime = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
-    }
-    fmt.Printf(&amp;quot;strconv.FormatInt taken: %v\n&amp;quot;, time.Since(startTime))
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;fmt.Sprintf taken: 2.995178ms
-strconv.FormatInt taken: 1.057318ms
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;多次运行结果都类似，结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 的 3 倍。&lt;/p&gt;
-
-&lt;p&gt;同理，对于 &lt;code&gt;float64&lt;/code&gt; 类型，推荐使用 &lt;code&gt;strconv.FormatFloat&lt;/code&gt;。测试代码和上面类似，得到的结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatFloat&lt;/code&gt; 的 1.1 倍。效果没有整型明显，但依然更高效。&lt;/p&gt;
-
-&lt;h2 id=&#34;hexadecimal-to-string:fa92a5344b4f2c93ba7190e9f429e269&#34;&gt;hexadecimal to string&lt;/h2&gt;
-
-&lt;p&gt;十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 &lt;code&gt;encoding/hex&lt;/code&gt; 包提供了十六进制数的编解码函数。&lt;/p&gt;
-
-&lt;p&gt;下面比较一下 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 和 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的时间开销：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;crypto/md5&amp;quot;
-    &amp;quot;encoding/hex&amp;quot;
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;io&amp;quot;
-    &amp;quot;time&amp;quot;
-)
-
-const LOOP = 10000
-
-func makeMd5(data string) []byte {
-    h := md5.New()
-    io.WriteString(h, data)
-    return h.Sum(nil)
-}
-
-func main() {
-    s := &amp;quot;123456&amp;quot;
-    hexBytes := makeMd5(s)
-    s1 := fmt.Sprintf(&amp;quot;%x&amp;quot;, hexBytes)
-    s2 := hex.EncodeToString(hexBytes)
-    fmt.Println(&amp;quot;result of fmt.Sprintf == hex.EncodeToString:&amp;quot;, s1 == s2) // 确保结果一致
-
-    start := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%x&amp;quot;, hexBytes)
-    }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(start))
-
-    start = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        hex.EncodeToString(hexBytes)
-    }
-    fmt.Printf(&amp;quot;hex.EncodeToString taken: %v\n&amp;quot;, time.Since(start))
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个程序某一次的运行结果是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;result of fmt.Sprintf == hex.EncodeToString: true
-fmt.Sprintf taken: 10.285488ms
-hex.EncodeToString taken: 2.080457ms
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
-
-&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;
 </description>
     </item>
     

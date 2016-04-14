@@ -120,6 +120,52 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Tue, Jun 9, 2015' data-updated="true" itemprop="datePublished">Tue, Jun 9, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/development"> development </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/tools"> tools </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/06/using-supervisor#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/06/using-supervisor" itemprop="url">使用 supervisor 管理进程</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+
+<h2 id="安装:0374c09b00e8eddcfa304907db4e0a23">安装</h2>
+
+<p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :</p>
+
+<pre><code class="language-bash">sudo pip install supervisor
+</code></pre>
+
+<p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
+
+		<a href="http://deanthompson.github.io/posts/2015/06/using-supervisor" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sun, May 24, 2015' data-updated="true" itemprop="datePublished">Sun, May 24, 2015</time>
 </div>
 		<div class="tags">
@@ -575,101 +621,6 @@ export LESS=&quot; -R &quot;
 <p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
 
 		<a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, Mar 13, 2013' data-updated="true" itemprop="datePublished">Wed, Mar 13, 2013</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="note:5cd98240460e7b5c77708168d0565250">Note</h2>
-
-<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
-
-<blockquote>
-<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
-</blockquote>
-
-<hr />
-
-<h1 id="1-python的函数是对象-python-s-functions-are-objects:5cd98240460e7b5c77708168d0565250">1. python的函数是对象（Python&rsquo;s functions are objects）</h1>
-
-<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
-
-<pre><code class="language-python">def shout(word=&quot;yes&quot;):
-    return word.capitalize()+&quot;!&quot;
- 
-print shout()
-# outputs : 'Yes!'
- 
-# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量
- 
-scream = shout
- 
-# 注意我们没有用括号：我们不是在调用函数，
-# 而是把函数'shout'的值绑定到'scream'这个变量上
-# 这也意味着你可以通过'scream'这个变量来调用'shout'函数
- 
-print scream()
-# outputs : 'Yes!'
- 
-# 不仅如此，这也还意味着你可以把原来的名字'shout'删掉，
-# 而这个函数仍然可以通过'scream'来访问
-del shout
-try:
-    print shout()
-except NameError, e:
-    print e
-    #outputs: &quot;name 'shout' is not defined&quot;
- 
-print scream()
-outputs: 'Yes!'
-</code></pre>
-
-<p>OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。</p>
-
-<pre><code class="language-python">def talk():
- 
-    # 你可以在 'talk' 里动态的(on the fly)定义一个函数...
-    def whisper(word=&quot;yes&quot;):
-        return word.lower()+&quot;...&quot;
- 
-    # ... 然后马上调用它！
- 
-    print whisper()
- 
-# 每当调用'talk'，都会定义一次'whisper'，然后'whisper'在'talk'里被调用
-talk()
-# outputs:
-# &quot;yes...&quot;
- 
-# 但是&quot;whisper&quot; 在 &quot;talk&quot;外并不存在:
- 
-try:
-    print whisper()
-except NameError, e:
-    print e
-    #outputs : &quot;name 'whisper' is not defined&quot;*
-</code></pre>
-
-		<a href="http://deanthompson.github.io/posts/2013/03/understand-python-decorators" class="more-link">Read on →</a>
 	</div>
 </article>
 
