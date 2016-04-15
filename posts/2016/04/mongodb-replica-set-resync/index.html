@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Golang 并发安全的 map 实现 - 李林克斯</title>
+	<title>MongoDB Replica Set 重新同步 - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang">
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync">
 	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
 	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -118,84 +118,47 @@
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 						<div class="meta">
-							<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
+							<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
 </div>
 							<div class="tags">
 
 
 	
 	
-	    <a href="http://deanthompson.github.io/categories/golang"> golang </a>
+	    <a href="http://deanthompson.github.io/categories/mongodb"> mongodb </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync#disqus_thread">Comments</a></span>
 							
 						</div>
 						
-    <h1 class="title" itemprop="name">Golang 并发安全的 map 实现</h1>
-	<div class="entry-content" itemprop="articleBody">
+    <h1 class="title" itemprop="name">MongoDB Replica Set 重新同步</h1>
+	<div class="entry-content" itemprop="articleBody"><p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
 
-<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
-
-<h2 id="并发安全:743dbbe92226f1ed32f110ba88fc33fe">并发安全</h2>
-
-<p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
-
-<pre><code class="language-go">type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
-}
+<pre><code>2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
 </code></pre>
 
-<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
-
-<p>但是这种设计会有些性能隐患。主要是两个方面：</p>
+<p>其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：</p>
 
 <ol>
-<li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
-<li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
+<li>为什么会挂掉？</li>
+<li>如何修复？</li>
 </ol>
 
-<h2 id="分表:743dbbe92226f1ed32f110ba88fc33fe">「分表」</h2>
+<p>当务之急是先修复集群，这一点官方文档有说明：<a href="https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/">Resync a Member of a Replica Set</a>. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：</p>
 
-<p>一种解决思路是“分表”存储，具体实现就是，基于上面的 <code>syncMap</code> 再包装一次，用多个 <code>syncMap</code> 来模拟实现一个 map：</p>
+<ol>
+<li>清空数据目录，重启 mongod 实例，让MongoDB进行正常的初始化同步。这是个简单的方式，但是耗时较长。</li>
+<li>为该机器从其他节点上复制一份最近的数据文件，并重启。操作步骤较多，但是最为快速。</li>
+</ol>
 
-<pre><code class="language-go">type SyncMap struct {
-    shardCount uint8
-    shards     []*syncMap
-}
-</code></pre>
+<p>考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。</p>
 
-<p>上面这种设计用了一个 <code>*syncMap</code> 的 slice 来保存数据，<code>shardCount</code> 提供了分表量的可定制性。实际上 <code>shards</code> 同样可以实现为 <code>map[string]*syncMap</code>。</p>
-
-<p>在这种设计下，数据（key:value）会被分散到不同的 <code>syncMap</code>，而每个 <code>syncMap</code> 又有自己底层的 map。数据分散了，锁也分散了，能够很大程度上提高随机访问性能。而且在数据量大、高并发、写操作频繁的场景下，这种提升会更加明显。</p>
-
-<p>那么数据如何被分配到指定的分块呢？一种很通用也很简单的方法就是 hash. 字符串的哈希算法有很多，byvoid 大神实现和比较了多种字符串 hash 函数（<a href="https://www.byvoid.com/blog/string-hash-compare/">各种字符串Hash函数比较</a>），得出结论是：“BKDRHash无论是在实际效果还是编码实现中，效果都是最突出的”。这里采用了 BKDRHash 来实现：</p>
-
-<pre><code class="language-golang">const seed uint32 = 131 // 31 131 1313 13131 131313 etc..
-
-func bkdrHash(str string) uint32 {
-    var h uint32
-
-    for _, c := range str {
-        h = h*seed + uint32(c)
-    }
-
-    return h
-}
-
-// Find the specific shard with the given key
-func (m *SyncMap) locate(key string) *syncMap {
-    return m.shards[bkdrHash(key)&amp;uint32((m.shardCount-1))]
-}
-</code></pre>
-
-<p><code>locate</code> 方法调用 <code>bkdrHash</code> 函数计算一个 <code>key</code> 的哈希值，然后用该值对分表量取模得到在 slice 的 <code>index</code>，之后就能定位到对应的 <code>syncMap</code>.</p>
-
-<p>这种实现足够简单，而且也有不错的性能表现。除了基本的 <code>Get</code>、<code>Set</code>、<code>Delete</code> 等基本操作之外，迭代（<code>range</code>）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： <a href="https://github.com/DeanThompson/syncmap">https://github.com/DeanThompson/syncmap</a>.</p>
+<p>遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，<code>history</code> 也没发现有 <code>kill</code> 的记录。
+幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。</p>
 </div>
 					</article>
 					

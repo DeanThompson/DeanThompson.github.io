@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -118,6 +118,62 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Fri, Jun 12, 2015' data-updated="true" itemprop="datePublished">Fri, Jun 12, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/tools"> tools </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric" itemprop="url">用 Fabric 实现自动化部署</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？</p>
+
+<p>部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。</p>
+
+<p>上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：</p>
+
+<ul>
+<li>rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
+
+<ul>
+<li>配置复杂，命令行参数多</li>
+<li>需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）</li>
+</ul></li>
+<li>scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
+
+<ul>
+<li>不能增量更新，每次都是全部传输</li>
+<li>不能配置忽略文件（.git 怎么办？）</li>
+</ul></li>
+<li>git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。</li>
+</ul>
+
+<p>很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。</p>
+
+<p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
+
+		<a href="http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Tue, Jun 9, 2015' data-updated="true" itemprop="datePublished">Tue, Jun 9, 2015</time>
@@ -567,60 +623,6 @@ def foo_id(id):
 <p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
 
 		<a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, Nov 3, 2013' data-updated="true" itemprop="datePublished">Sun, Nov 3, 2013</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/linux"> linux </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" itemprop="url">less 命令支持语法高亮和行号</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>首先来一句装X的话：</p>
-
-<blockquote>
-<p>less is more</p>
-</blockquote>
-
-<h1 id="1-how:bea817191773b780e7e12130f8d11db2">1. How</h1>
-
-<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-
-<pre><code class="language-bash">sudo apt-get install source-highlight
-</code></pre>
-
-<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-
-<pre><code class="language-bash"># less hightlight
-export LESSOPEN=&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;
-export LESS=&quot; -R &quot;
-</code></pre>
-
-<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
-
-<p>使配置生效：</p>
-
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-
-<p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
-
-		<a href="http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number" class="more-link">Read on →</a>
 	</div>
 </article>
 

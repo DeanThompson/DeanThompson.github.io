@@ -7,7 +7,39 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Thu, 14 Apr 2016 15:33:52 CST</updated>
+    <updated>Fri, 15 Apr 2016 11:47:00 CST</updated>
+    
+    <item>
+      <title>MongoDB Replica Set 重新同步</title>
+      <link>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</link>
+      <pubDate>Fri, 15 Apr 2016 11:47:00 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</guid>
+      <description>&lt;p&gt;生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;为什么会挂掉？&lt;/li&gt;
+&lt;li&gt;如何修复？&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;当务之急是先修复集群，这一点官方文档有说明：&lt;a href=&#34;https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/&#34;&gt;Resync a Member of a Replica Set&lt;/a&gt;. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;清空数据目录，重启 mongod 实例，让MongoDB进行正常的初始化同步。这是个简单的方式，但是耗时较长。&lt;/li&gt;
+&lt;li&gt;为该机器从其他节点上复制一份最近的数据文件，并重启。操作步骤较多，但是最为快速。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。&lt;/p&gt;
+
+&lt;p&gt;遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，&lt;code&gt;history&lt;/code&gt; 也没发现有 &lt;code&gt;kill&lt;/code&gt; 的记录。
+幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
@@ -1872,81 +1904,6 @@ func (m *SyncMap) locate(key string) *syncMap {
 &lt;p&gt;&lt;code&gt;locate&lt;/code&gt; 方法调用 &lt;code&gt;bkdrHash&lt;/code&gt; 函数计算一个 &lt;code&gt;key&lt;/code&gt; 的哈希值，然后用该值对分表量取模得到在 slice 的 &lt;code&gt;index&lt;/code&gt;，之后就能定位到对应的 &lt;code&gt;syncMap&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 &lt;code&gt;Get&lt;/code&gt;、&lt;code&gt;Set&lt;/code&gt;、&lt;code&gt;Delete&lt;/code&gt; 等基本操作之外，迭代（&lt;code&gt;range&lt;/code&gt;）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href=&#34;https://github.com/DeanThompson/syncmap&#34;&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Golang 的 defer 语句</title>
-      <link>http://deanthompson.github.io/posts/2014/12/defer-in-golang</link>
-      <pubDate>Thu, 18 Dec 2014 15:35:38 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/12/defer-in-golang</guid>
-      <description>&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://blog.golang.org/defer-panic-and-recover&#34;&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;传递给 &lt;code&gt;defer&lt;/code&gt; 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 &lt;code&gt;0&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func a() {
-    i := 0
-    defer fmt.Println(i)
-    i++
-    return
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;多个 &lt;code&gt;defer&lt;/code&gt; 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 &lt;code&gt;3210&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func b() {
-    for i := 0; i &amp;lt; 4; i++ {
-        defer fmt.Print(i)
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;defer&lt;/code&gt; 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 &lt;code&gt;2&lt;/code&gt; ，而不是 &lt;code&gt;1&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func c() (i int) {
-    defer func() { i++ }()
-    return 1
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 语句配合 &lt;code&gt;panic&lt;/code&gt; 和 &lt;code&gt;recover&lt;/code&gt; 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，&lt;code&gt;defer&lt;/code&gt; 也是有些额外的开销的。&lt;/p&gt;
-
-&lt;p&gt;最近在看 &lt;a href=&#34;https://github.com/revel/revel&#34;&gt;revel 框架&lt;/a&gt; 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，&lt;a href=&#34;https://github.com/robfig/go-cache/blob/master/cache.go#L65&#34;&gt;其中一个方法源码如下&lt;/a&gt;：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// Add an item to the cache, replacing any existing item. If the duration is 0,
-// the cache&#39;s default expiration time is used. If it is -1, the item never
-// expires.
-func (c *cache) Set(k string, x interface{}, d time.Duration) {
-    c.Lock()
-    c.set(k, x, d)
-    // TODO: Calls to mu.Unlock are currently not deferred because defer
-    // adds ~200 ns (as of go1.)
-    c.Unlock()
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里没有用 &lt;code&gt;defer&lt;/code&gt; 来调用 &lt;code&gt;Unlock&lt;/code&gt;，而且在代码里明确注释说 &lt;code&gt;defer&lt;/code&gt; 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 &lt;code&gt;defer&lt;/code&gt;，却从没考虑过这一点。robfig 说 &lt;code&gt;defer&lt;/code&gt; 大概需要 200ns，一时兴起写了个&lt;a href=&#34;https://gist.github.com/DeanThompson/48365dc9472e0a64dba1&#34;&gt;简单的 benchmark 测试&lt;/a&gt;，来看看 Go 1.4 里究竟如何。&lt;/p&gt;
-
-&lt;p&gt;这是某一次测试的结果：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;testing: warning: no tests to run
-PASS
-BenchmarkDeferredUnlock     10000000            134 ns/op
-BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;
 </description>
     </item>
     

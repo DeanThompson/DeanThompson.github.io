@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2016-04-14T15:33:52+08:00</lastmod>
+    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</loc>
+    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
   </url>
   
   <url>
