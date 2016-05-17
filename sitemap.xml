@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
+    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</loc>
+    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
   </url>
   
   <url>

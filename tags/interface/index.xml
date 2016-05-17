@@ -86,12 +86,12 @@ import (
 )
 
 func main() {
-    a := []int{100, 5, 29, 3, 76} 
+    a := []int{100, 5, 29, 3, 76}
     fmt.Println(a)     // [100 5 29 3 76]
     sort.Ints(a)       // sort.Sort(IntSlice(a)) 的封装
     fmt.Println(a)     // [3 5 29 76 100]，默认的 Less() 实现的是升序
 
-    a = []int{100, 5, 29, 3, 76} 
+    a = []int{100, 5, 29, 3, 76}
     fmt.Println(a)     // [100 5 29 3 76]
     sort.Sort(sort.Reverse(sort.IntSlice(a)))
     fmt.Println(a)     // [100 76 29 5 3]
@@ -152,12 +152,12 @@ func main() {
 
 &lt;p&gt;第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;[&amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(4, 59)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(7, 425)&amp;gt;]
+&lt;pre&gt;&lt;code&gt;[&amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(4, 59)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(7, 425)&amp;gt;]
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;排序后：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;[&amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(7, 425)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(4, 59)&amp;gt;]
+&lt;pre&gt;&lt;code&gt;[&amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(7, 425)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(4, 59)&amp;gt;]
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&#34;vs-python:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;Vs. Python&lt;/h2&gt;
@@ -194,9 +194,9 @@ if __name__ == &amp;quot;__main__&amp;quot;:
 
 &lt;p&gt;某一次的执行结果：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; 
+&lt;pre&gt;&lt;code&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt;
 
-&amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; 
+&amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>

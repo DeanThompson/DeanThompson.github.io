@@ -207,12 +207,12 @@ import (
 )
 
 func main() {
-    a := []int{100, 5, 29, 3, 76} 
+    a := []int{100, 5, 29, 3, 76}
     fmt.Println(a)     // [100 5 29 3 76]
     sort.Ints(a)       // sort.Sort(IntSlice(a)) 的封装
     fmt.Println(a)     // [3 5 29 76 100]，默认的 Less() 实现的是升序
 
-    a = []int{100, 5, 29, 3, 76} 
+    a = []int{100, 5, 29, 3, 76}
     fmt.Println(a)     // [100 5 29 3 76]
     sort.Sort(sort.Reverse(sort.IntSlice(a)))
     fmt.Println(a)     // [100 76 29 5 3]
@@ -273,12 +273,12 @@ func main() {
 
 <p>第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：</p>
 
-<pre><code class="language-text">[&lt;Item(1, 81)&gt; &lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(4, 59)&gt; &lt;Item(5, 81)&gt; &lt;Item(6, 318)&gt; &lt;Item(7, 425)&gt;]
+<pre><code>[&lt;Item(1, 81)&gt; &lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(4, 59)&gt; &lt;Item(5, 81)&gt; &lt;Item(6, 318)&gt; &lt;Item(7, 425)&gt;]
 </code></pre>
 
 <p>排序后：</p>
 
-<pre><code class="language-text">[&lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(7, 425)&gt; &lt;Item(6, 318)&gt; &lt;Item(1, 81)&gt; &lt;Item(5, 81)&gt; &lt;Item(4, 59)&gt;]
+<pre><code>[&lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(7, 425)&gt; &lt;Item(6, 318)&gt; &lt;Item(1, 81)&gt; &lt;Item(5, 81)&gt; &lt;Item(4, 59)&gt;]
 </code></pre>
 
 <h2 id="vs-python:a0aceb8e02a4cd06e9365f18ce315aea">Vs. Python</h2>
@@ -315,9 +315,9 @@ if __name__ == &quot;__main__&quot;:
 
 <p>某一次的执行结果：</p>
 
-<pre><code class="language-text">&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; 
+<pre><code>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt;
 
-&lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt; 
+&lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt;
 </code></pre>
 </div>
 					</article>

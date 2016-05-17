@@ -120,6 +120,50 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Wed, Feb 26, 2014' data-updated="true" itemprop="datePublished">Wed, Feb 26, 2014</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" itemprop="url">Flask 路由做范围限制</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
+
+<h1 id="1-what:6e1d883f88cf13596243023295e5bb32">1. What</h1>
+
+<p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
+
+<p>简单翻译一下，大致如下：</p>
+
+<p>Flask 应用里面有一个这样的路由</p>
+
+<pre><code class="language-python">from foo import get_foo
+
+@app.route(&quot;/foo/&lt;int:id&gt;&quot;)
+def foo_id(id):
+    return render_template('foo.html', foo = get_foo(id))
+</code></pre>
+
+<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
+
+		<a href="http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sun, Nov 3, 2013' data-updated="true" itemprop="datePublished">Sun, Nov 3, 2013</time>
 </div>
 		<div class="tags">

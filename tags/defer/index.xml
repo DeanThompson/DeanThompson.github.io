@@ -74,7 +74,7 @@ func (c *cache) Set(k string, x interface{}, d time.Duration) {
 
 &lt;p&gt;这是某一次测试的结果：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;testing: warning: no tests to run
+&lt;pre&gt;&lt;code&gt;testing: warning: no tests to run
 PASS
 BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op

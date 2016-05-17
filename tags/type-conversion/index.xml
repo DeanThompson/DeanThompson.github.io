@@ -54,7 +54,7 @@ func main() {
 
 &lt;p&gt;其中某一次运行结果：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;fmt.Sprintf taken: 2.995178ms
+&lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -109,7 +109,7 @@ func main() {
 
 &lt;p&gt;这个程序某一次的运行结果是：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;result of fmt.Sprintf == hex.EncodeToString: true
+&lt;pre&gt;&lt;code&gt;result of fmt.Sprintf == hex.EncodeToString: true
 fmt.Sprintf taken: 10.285488ms
 hex.EncodeToString taken: 2.080457ms
 &lt;/code&gt;&lt;/pre&gt;

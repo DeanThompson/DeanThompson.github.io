@@ -120,6 +120,52 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Tue, May 17, 2016' data-updated="true" itemprop="datePublished">Tue, May 17, 2016</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/flask"> flask </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/celery"> celery </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent" itemprop="url">在 Flask 项目的 celery 中使用 gevent</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
+
+<h2 id="1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826">1. 使用 gevent 并发模型</h2>
+
+<p>如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：</p>
+
+<pre><code class="language-bash">$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
+</code></pre>
+
+<p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
+
+		<a href="http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
 </div>
 		<div class="tags">
@@ -481,52 +527,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
 
 		<a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide" itemprop="url">Python 编码规范</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
-
-<p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
-
-<ul>
-<li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
-<li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
-<li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
-<li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
-</ul>
-
-<p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
-
-<ul>
-<li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
-<li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
-<li>pyflakes, pylint 等工具及各种编辑器的插件</li>
-</ul>
-
-<p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
-
-		<a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide" class="more-link">Read on →</a>
 	</div>
 </article>
 
