@@ -19,7 +19,7 @@
 
 &lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
 
-&lt;h1 id=&#34;1-what:6e1d883f88cf13596243023295e5bb32&#34;&gt;1. What&lt;/h1&gt;
+&lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
 
 &lt;p&gt;原题在这里：&lt;a href=&#34;http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/&#34;&gt;How to validate integer range in Flask routing (Werkzeug)?&lt;/a&gt;&lt;/p&gt;
 
@@ -36,13 +36,13 @@ def foo_id(id):
 
 &lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h1 id=&#34;2-how:6e1d883f88cf13596243023295e5bb32&#34;&gt;2. How&lt;/h1&gt;
+&lt;h1 id=&#34;2-how&#34;&gt;2. How&lt;/h1&gt;
 
 &lt;p&gt;这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。&lt;/p&gt;
 
 &lt;p&gt;虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 &lt;a href=&#34;http://werkzeug.pocoo.org/&#34;&gt;WSGI Utility Library: Werkzeug&lt;/a&gt; 和 &lt;a href=&#34;http://jinja.pocoo.org&#34;&gt;模板引擎 Jinja2&lt;/a&gt;，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-1-builtin-converters:6e1d883f88cf13596243023295e5bb32&#34;&gt;2.1 Builtin Converters&lt;/h2&gt;
+&lt;h2 id=&#34;2-1-builtin-converters&#34;&gt;2.1 Builtin Converters&lt;/h2&gt;
 
 &lt;p&gt;如前所述，Werkzeug 提供了几种 &lt;a href=&#34;http://werkzeug.pocoo.org/docs/routing/#builtin-converters&#34;&gt;builtin converters&lt;/a&gt;，分别是：&lt;/p&gt;
 
@@ -56,7 +56,7 @@ def foo_id(id):
 
 &lt;p&gt;从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（&lt;code&gt;minlength&lt;/code&gt;）、最大长度（&lt;code&gt;maxlength&lt;/code&gt;）或者指定长度（&lt;code&gt;length&lt;/code&gt;）。IntergerConverter 和 FloatConverter 都可以指定最小值（&lt;code&gt;min&lt;/code&gt;）和最大值（&lt;code&gt;max&lt;/code&gt;）。所以看完这些，就可以解决最开始的问题了。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-2-solution:6e1d883f88cf13596243023295e5bb32&#34;&gt;2.2 Solution&lt;/h2&gt;
+&lt;h2 id=&#34;2-2-solution&#34;&gt;2.2 Solution&lt;/h2&gt;
 
 &lt;p&gt;回到原题，是需要对 &lt;code&gt;id&lt;/code&gt; 做范围限制（&lt;code&gt;1～300&lt;/code&gt;），因此路由就可以这样写了（&lt;a href=&#34;http://stackoverflow.com/a/19076418/1461780&#34;&gt;我的回答&lt;/a&gt;）：&lt;/p&gt;
 
@@ -69,7 +69,7 @@ def foo_id(id):
 
 &lt;p&gt;这个路由就限定了 &lt;code&gt;id&lt;/code&gt; 的范围，对于超出范围的请求，如 &lt;code&gt;/foo/1024/&lt;/code&gt;，就会找不到对应的路由，因此会返回 &lt;code&gt;404&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h1 id=&#34;3-end:6e1d883f88cf13596243023295e5bb32&#34;&gt;3. End&lt;/h1&gt;
+&lt;h1 id=&#34;3-end&#34;&gt;3. End&lt;/h1&gt;
 
 &lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;
 </description>

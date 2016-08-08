@@ -3,6 +3,7 @@
 <html lang="zh-CN">
 
 <head>
+	<meta name="generator" content="Hugo 0.16" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
@@ -26,6 +27,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -150,7 +153,7 @@
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
 
-<h2 id="1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826">1. 使用 gevent 并发模型</h2>
+<h2 id="1-使用-gevent-并发模型">1. 使用 gevent 并发模型</h2>
 
 <p>如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：</p>
 
@@ -412,9 +415,9 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery" itemprop="url">Celery 使用简介</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		<h2 id="introduction:d2146fb3793abd4f6cbfeada8f10d4fd">Introduction</h2>
+		<h2 id="introduction">Introduction</h2>
 
-<h3 id="分布式任务队列:d2146fb3793abd4f6cbfeada8f10d4fd">分布式任务队列</h3>
+<h3 id="分布式任务队列">分布式任务队列</h3>
 
 <p>Celery 是一个分布式任务队列，下面是 <a href="http://www.celeryproject.org/">官网</a> 的一段描述：</p>
 
@@ -424,7 +427,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。</p>
 
-<h3 id="何为任务队列:d2146fb3793abd4f6cbfeada8f10d4fd">何为任务队列？</h3>
+<h3 id="何为任务队列">何为任务队列？</h3>
 
 <p>摘自 Celery 官方文档的 <a href="http://docs.jinkan.org/docs/celery/getting-started/introduction.html">中文翻译</a>：</p>
 

@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -143,9 +145,9 @@
     <h1 class="title" itemprop="name">Celery 使用简介</h1>
 	<div class="entry-content" itemprop="articleBody">
 
-<h2 id="introduction:d2146fb3793abd4f6cbfeada8f10d4fd">Introduction</h2>
+<h2 id="introduction">Introduction</h2>
 
-<h3 id="分布式任务队列:d2146fb3793abd4f6cbfeada8f10d4fd">分布式任务队列</h3>
+<h3 id="分布式任务队列">分布式任务队列</h3>
 
 <p>Celery 是一个分布式任务队列，下面是 <a href="http://www.celeryproject.org/">官网</a> 的一段描述：</p>
 
@@ -155,7 +157,7 @@
 
 <p>Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。</p>
 
-<h3 id="何为任务队列:d2146fb3793abd4f6cbfeada8f10d4fd">何为任务队列？</h3>
+<h3 id="何为任务队列">何为任务队列？</h3>
 
 <p>摘自 Celery 官方文档的 <a href="http://docs.jinkan.org/docs/celery/getting-started/introduction.html">中文翻译</a>：</p>
 
@@ -169,7 +171,7 @@
 <p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
 </blockquote>
 
-<h3 id="适用场景:d2146fb3793abd4f6cbfeada8f10d4fd">适用场景</h3>
+<h3 id="适用场景">适用场景</h3>
 
 <ol>
 <li>可以在 Request-Response 循环之外执行的操作：发送邮件、推送消息</li>
@@ -177,11 +179,11 @@
 <li>周期性任务：取代 crontab</li>
 </ol>
 
-<h2 id="simple-tutorial:d2146fb3793abd4f6cbfeada8f10d4fd">Simple Tutorial</h2>
+<h2 id="simple-tutorial">Simple Tutorial</h2>
 
 <p>主要参考了官网文档：<a href="http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html">First Steps with Celery</a></p>
 
-<h3 id="选择-broker:d2146fb3793abd4f6cbfeada8f10d4fd">选择 Broker</h3>
+<h3 id="选择-broker">选择 Broker</h3>
 
 <p>下图描述了 Celery 的基本架构和工作流程。</p>
 
@@ -201,7 +203,7 @@
 
 <p>我们在这里选择使用 Reids.</p>
 
-<h3 id="安装:d2146fb3793abd4f6cbfeada8f10d4fd">安装</h3>
+<h3 id="安装">安装</h3>
 
 <p>Celery 是一个 Python 的应用，而且已经上传到了 PyPi，所以可以使用 <code>pip</code> 或 <code>easy_install</code> 安装：</p>
 
@@ -210,7 +212,7 @@
 
 <p>安装完成后会在 PATH （或 virtualenv 的 bin 目录）添加几个命令：celery, celerybeat, celeryd 和 celeryd-multi. 我们这里只使用 celery 命令。</p>
 
-<h3 id="创建-application-和-task:d2146fb3793abd4f6cbfeada8f10d4fd">创建 Application 和 Task</h3>
+<h3 id="创建-application-和-task">创建 Application 和 Task</h3>
 
 <p>Celery 的使用方法和 Flask 很像，实例化一个 Celery 对象 <code>app</code>，然后通过 <code>@app.task</code> 装饰器注册一个 task. 下面是一个简单的例子 tasks.py：</p>
 
@@ -224,7 +226,7 @@ def add(x, y):
     return x + y
 </code></pre>
 
-<h3 id="运行-worker:d2146fb3793abd4f6cbfeada8f10d4fd">运行 worker</h3>
+<h3 id="运行-worker">运行 worker</h3>
 
 <p>在 tasks.py 文件所在目录运行</p>
 
@@ -251,7 +253,7 @@ def add(x, y):
 <pre><code class="language-bash">$ celery worker --help
 </code></pre>
 
-<h3 id="调用-task:d2146fb3793abd4f6cbfeada8f10d4fd">调用 task</h3>
+<h3 id="调用-task">调用 task</h3>
 
 <p>有些 Task 可以当作一个普通的函数同步调用，这里讨论异步的方式：</p>
 
@@ -263,11 +265,11 @@ add.apply_async(1, 2)
 
 <p>上面两种调用方式等价，<code>delay()</code> 方法是 <code>apply_async()</code> 方法的简写。这个调用会把 <code>add</code> 操作放入到队列里，然后立即返回一个 <code>AsyncResult</code> 对象。如果关心处理结果，需要给 <code>app</code> 配置 <code>CELERY_RESULT_BACKEND</code>，指定一个存储后端保存任务的返回值。</p>
 
-<h3 id="配置:d2146fb3793abd4f6cbfeada8f10d4fd">配置</h3>
+<h3 id="配置">配置</h3>
 
 <p>前文说过 Celery 与 Flask 的使用很像，配置也是如此。一般情况下，使用 Celery 的默认配置就已经足够，但 Celery 也提供了很灵活的配置。下面是两种配置方式，<a href="http://docs.celeryproject.org/en/latest/configuration.html">官方文档</a> 可以查看所有的配置项及默认值。</p>
 
-<h4 id="直接修改配置:d2146fb3793abd4f6cbfeada8f10d4fd">直接修改配置</h4>
+<h4 id="直接修改配置">直接修改配置</h4>
 
 <p>单个：</p>
 
@@ -285,7 +287,7 @@ add.apply_async(1, 2)
 )
 </code></pre>
 
-<h4 id="配置模块:d2146fb3793abd4f6cbfeada8f10d4fd">配置模块</h4>
+<h4 id="配置模块">配置模块</h4>
 
 <p>类似 Flask，对于比较大的 Celery 项目，配置模块（configuration module）是更好的选择。Celery 对象有个 <code>config_from_object</code> 方法，读取一个 object (py 文件或 class)来更新配置。</p>
 

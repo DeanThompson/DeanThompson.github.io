@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -144,7 +146,7 @@
 
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
 
-<h3 id="创建-document-对象:b21917a396369c0669213bf730deae3f">创建 Document 对象</h3>
+<h3 id="创建-document-对象">创建 Document 对象</h3>
 
 <p>goquery 暴露了两个结构体：<code>Document</code> 和 <code>Selection</code>. <code>Document</code> 表示一个 HTML 文档，<code>Selection</code> 用于像 jQuery 一样操作，支持链式调用。goquery 需要指定一个 HTML 文档才能继续后续的操作，有以下几个构造方式：</p>
 
@@ -164,7 +166,7 @@
 
 <p>为了方便举例说明，下文采用这个定义: <code>var doc *goquery.Document</code>.</p>
 
-<h3 id="查找到指定节点:b21917a396369c0669213bf730deae3f">查找到指定节点</h3>
+<h3 id="查找到指定节点">查找到指定节点</h3>
 
 <p><code>Selection</code> 有一系列类似 jQuery 的方法，<code>Document</code> 结构体内嵌了 <code>*Selection</code>，因此也能直接调用这些方法。主要的方法是 <code>Selection.Find(selector string)</code>，传入一个选择器，返回一个新的，匹配到的 <code>*Selection</code>，所以能够链式调用。</p>
 
@@ -198,7 +200,7 @@
 <pre><code class="language-go">doc.Find(&quot;div.profile-navbar&quot;).Find(&quot;span.num&quot;).Eq(1)
 </code></pre>
 
-<h3 id="属性操作:b21917a396369c0669213bf730deae3f">属性操作</h3>
+<h3 id="属性操作">属性操作</h3>
 
 <p>经常需要获取一个标签的内容和某些属性值，使用 goquery 可以很容易做到。</p>
 
@@ -223,7 +225,7 @@
 
 <p>还有其他设置属性、操作 class 的方法，就不展开讨论了。</p>
 
-<h3 id="迭代:b21917a396369c0669213bf730deae3f">迭代</h3>
+<h3 id="迭代">迭代</h3>
 
 <p>很多场景需要返回列表数据，比如问题的关注者列表、所有回答，某个答案的点赞的用户列表等。这种情况下一般需要用到迭代，遍历所有的同类节点，做某些操作。</p>
 
@@ -253,7 +255,7 @@
 
 <p><code>EachWithBreak</code> 在 zhihu-go 中也有用到，可以参见 <code>Answer.GetVotersN 方法</code>：<a href="https://github.com/DeanThompson/zhihu-go/blob/master/answer.go">zhihu-go/answer.go</a>.</p>
 
-<h3 id="删除节点-插入-html-导出-html:b21917a396369c0669213bf730deae3f">删除节点、插入 HTML、导出 HTML</h3>
+<h3 id="删除节点-插入-html-导出-html">删除节点、插入 HTML、导出 HTML</h3>
 
 <p>有一个需求是把回答内容输出到 HTML，说白了其实就是修复和清洗 HTML，具体的细节可以看 <a href="https://github.com/DeanThompson/zhihu-go/blob/master/answer.go#L222">answer.go 里的 answerSelectionToHtml 函数</a>. 其中用到了一些需要修改文档的操作。</p>
 
@@ -292,7 +294,7 @@ doc.Find(&quot;body&quot;).AppendSelection(sel)
 <pre><code class="language-go">html, err := doc.Html()
 </code></pre>
 
-<h2 id="总结:b21917a396369c0669213bf730deae3f">总结</h2>
+<h2 id="总结">总结</h2>
 
 <p>上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。</p>
 </div>

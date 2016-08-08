@@ -153,7 +153,7 @@ def register():
       <guid>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</guid>
       <description>
 
-&lt;h2 id=&#34;note:5cd98240460e7b5c77708168d0565250&#34;&gt;Note&lt;/h2&gt;
+&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
 
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
 
@@ -163,7 +163,7 @@ def register():
 
 &lt;hr /&gt;
 
-&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects:5cd98240460e7b5c77708168d0565250&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
+&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
 
 &lt;p&gt;要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。&lt;/p&gt;
 
@@ -223,7 +223,7 @@ except NameError, e:
     #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;2-函数引用-functions-references:5cd98240460e7b5c77708168d0565250&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
+&lt;h1 id=&#34;2-函数引用-functions-references&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
 
 &lt;p&gt;OK，还在吧？！现在到了有趣的部分，你刚刚已经知道了，python的函数也是对象，因此：&lt;/p&gt;
 
@@ -283,7 +283,7 @@ doSomethingBefore(scream)
 
 &lt;p&gt;那好，你现在已经具备了理解装饰器的所有基础知识了。你看，装饰器也就是一种包装材料，&lt;strong&gt;它们可以让你在执行被装饰的函数之前或之后执行其他代码，而且不需要修改函数本身&lt;/strong&gt;。（原句比较长：You see, decorators are wrappers which means that they let you execute code before and after the function they decorate without the need to modify the function itself.）&lt;/p&gt;
 
-&lt;h1 id=&#34;3-手工制作装饰器-handcrafted-decorators:5cd98240460e7b5c77708168d0565250&#34;&gt;3. 手工制作装饰器（Handcrafted decorators）&lt;/h1&gt;
+&lt;h1 id=&#34;3-手工制作装饰器-handcrafted-decorators&#34;&gt;3. 手工制作装饰器（Handcrafted decorators）&lt;/h1&gt;
 
 &lt;p&gt;你可以像这样来定制：&lt;/p&gt;
 
@@ -341,7 +341,7 @@ a_stand_alone_function()
 # And guess what? That&#39;s EXACTLY what decorators do!
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;4-揭秘装饰器-decorators-demystified:5cd98240460e7b5c77708168d0565250&#34;&gt;4. 揭秘装饰器(Decorators demystified)&lt;/h1&gt;
+&lt;h1 id=&#34;4-揭秘装饰器-decorators-demystified&#34;&gt;4. 揭秘装饰器(Decorators demystified)&lt;/h1&gt;
 
 &lt;p&gt;我们用装饰器的语法来重写一下前面的例子：&lt;/p&gt;
 
@@ -425,9 +425,9 @@ strange_sandwich()
 # ~salad~
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;5-回答题主问题-略:5cd98240460e7b5c77708168d0565250&#34;&gt;5. 回答题主问题，略&lt;/h1&gt;
+&lt;h1 id=&#34;5-回答题主问题-略&#34;&gt;5. 回答题主问题，略&lt;/h1&gt;
 
-&lt;h1 id=&#34;6-给装饰器函数传参-passing-arguments-to-the-decorated-function:5cd98240460e7b5c77708168d0565250&#34;&gt;6. 给装饰器函数传参（Passing arguments to the decorated function）&lt;/h1&gt;
+&lt;h1 id=&#34;6-给装饰器函数传参-passing-arguments-to-the-decorated-function&#34;&gt;6. 给装饰器函数传参（Passing arguments to the decorated function）&lt;/h1&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# 这不是什么黑色魔法(black magic)，你只是必须让wrapper传递参数:
  
@@ -450,7 +450,7 @@ print_full_name(&amp;quot;Peter&amp;quot;, &amp;quot;Venkman&amp;quot;)
 #My name is Peter 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;7-装饰方法-decorating-methods:5cd98240460e7b5c77708168d0565250&#34;&gt;7. 装饰方法（Decorating methods）&lt;/h1&gt;
+&lt;h1 id=&#34;7-装饰方法-decorating-methods&#34;&gt;7. 装饰方法（Decorating methods）&lt;/h1&gt;
 
 &lt;p&gt;Python的一个伟大之处在于：方法和函数几乎是一样的(methods and functions are really the same)，除了方法的第一个参数应该是当前对象的引用(也就是 self)。这也就意味着只要记住把 self 考虑在内，你就可以用同样的方法给方法创建装饰器了：&lt;/p&gt;
 
@@ -541,7 +541,7 @@ m.sayYourAge()
 #I am 28, what did you think?
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;8-给装饰器传参-passing-arguments-to-the-decorator:5cd98240460e7b5c77708168d0565250&#34;&gt;8. 给装饰器传参（Passing arguments to the decorator）&lt;/h1&gt;
+&lt;h1 id=&#34;8-给装饰器传参-passing-arguments-to-the-decorator&#34;&gt;8. 给装饰器传参（Passing arguments to the decorator）&lt;/h1&gt;
 
 &lt;p&gt;太棒了，那么现在对于给装饰器本身传参数，你有什么看法呢？好吧，这样说有点绕，因为装饰器必须接受一个函数作为参数，所以就不能把被装饰的函数的参数，直接传给装饰器（you cannot pass the decorated function arguments directly to the decorator.）&lt;/p&gt;
 
@@ -728,7 +728,7 @@ decorated_function_with_arguments(c2, &amp;quot;Howard&amp;quot;)
 
 &lt;p&gt;如你所见，你可以给装饰器传递参数，就好像其他任意一个使用了这种把戏的函数一样（you can pass arguments to the decorator like any function using this trick. ）。如果你愿意，甚至可以使用 &lt;code&gt;*args&lt;/code&gt;, &lt;code&gt;**kwargs&lt;/code&gt;。但是，记住，装置器只调用一次，仅当python导入这个脚本时。你不能在之后动态的设置参数（You can&amp;rsquo;t dynamically set the arguments afterwards.）。当你执行 &lt;code&gt;import x&lt;/code&gt; 时，这个函数已经被装饰了，因此你不能修改任何东西。&lt;/p&gt;
 
-&lt;h1 id=&#34;9-实践-装饰器装饰一个装饰器-let-s-practice-a-decorator-to-decorate-a-decorator:5cd98240460e7b5c77708168d0565250&#34;&gt;9. 实践：装饰器装饰一个装饰器（Let&amp;rsquo;s practice: a decorator to decorate a decorator）&lt;/h1&gt;
+&lt;h1 id=&#34;9-实践-装饰器装饰一个装饰器-let-s-practice-a-decorator-to-decorate-a-decorator&#34;&gt;9. 实践：装饰器装饰一个装饰器（Let&amp;rsquo;s practice: a decorator to decorate a decorator）&lt;/h1&gt;
 
 &lt;p&gt;OK，作为一个福利，我将展示一段能用来创建能接受通用的任意参数的装饰器的代码（I&amp;rsquo;ll give you a snippet to make any decorator accept generically any argument. ）。毕竟，为了能接受参数，我们用了另一个函数来创建我们的装饰器。我们包装了装饰器。在我们刚刚看到的东西里，还有用来包装函数的吗？是的，就是装饰器。让我们给装饰器写一个装饰器来玩玩：&lt;/p&gt;
 
@@ -785,7 +785,7 @@ decorated_function(&amp;quot;Universe and&amp;quot;, &amp;quot;everything&amp;qu
 
 &lt;p&gt;我知道，你上一次有这种感觉，是在听一个人说“在理解递归之前，你必须先理解递归”之后。但是现在，掌握之后，你不觉得很爽吗？&lt;/p&gt;
 
-&lt;h1 id=&#34;10-装饰器最佳实践-best-practices-while-using-decorators:5cd98240460e7b5c77708168d0565250&#34;&gt;10. 装饰器最佳实践（Best practices while using decorators）&lt;/h1&gt;
+&lt;h1 id=&#34;10-装饰器最佳实践-best-practices-while-using-decorators&#34;&gt;10. 装饰器最佳实践（Best practices while using decorators）&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;装饰器是在 python 2.4 之后才有的，所以先确定你的代码运行时；&lt;/li&gt;
@@ -831,7 +831,7 @@ def bar(func):
     return wrapper
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;11-装饰器如何才能有用-how-can-the-decorators-be-useful:5cd98240460e7b5c77708168d0565250&#34;&gt;11. 装饰器如何才能有用（How can the decorators be useful?）&lt;/h1&gt;
+&lt;h1 id=&#34;11-装饰器如何才能有用-how-can-the-decorators-be-useful&#34;&gt;11. 装饰器如何才能有用（How can the decorators be useful?）&lt;/h1&gt;
 
 &lt;p&gt;现在问题来了：我能用装饰器来干嘛？看起来很酷也很强大，但是来一个实际例子才更好。好吧，有1000中可能性（Well, there are 1000 possibilities.）。一个典型的用途是，用来扩展一个外部导入的函数（你不能修改）的行为，或者为了调试（你不想修改这个函数，因为只是暂时的）。你也可以用装饰器实现只用一段相同的代码来扩展成几个不同的函数，而且你不需要每次都重写这段代码。这样就是常说的 DRY。比如：&lt;/p&gt;
 

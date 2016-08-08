@@ -21,7 +21,7 @@
 
 &lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;
 
-&lt;h1 id=&#34;1-安装:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;1. 安装&lt;/h1&gt;
+&lt;h1 id=&#34;1-安装&#34;&gt;1. 安装&lt;/h1&gt;
 
 &lt;p&gt;可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1.&lt;/p&gt;
 
@@ -29,7 +29,7 @@
 &lt;p&gt;&lt;a href=&#34;https://pypi.python.org/pypi/openpyxl&#34;&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h1 id=&#34;2-读:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;2. 读&lt;/h1&gt;
+&lt;h1 id=&#34;2-读&#34;&gt;2. 读&lt;/h1&gt;
 
 &lt;p&gt;用openpyxl读一个xlsx文件很简单：&lt;/p&gt;
 
@@ -58,7 +58,7 @@ print ws.cell(row=12, column=2).value
 
 &lt;p&gt;当调用 &lt;code&gt;get_sheet_by_name(&#39;sheet_name&#39;)&lt;/code&gt; 方法获取表格时，如果名字为 &lt;code&gt;sheet_name&lt;/code&gt; 的表格不存在，不会报错或抛出异常，而只是返回 &lt;code&gt;None&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h1 id=&#34;3-写:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;3. 写&lt;/h1&gt;
+&lt;h1 id=&#34;3-写&#34;&gt;3. 写&lt;/h1&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from openpyxl import Workbook
  
@@ -82,7 +82,7 @@ for row in range(100):
 wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;4-文档:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;4. 文档&lt;/h1&gt;
+&lt;h1 id=&#34;4-文档&#34;&gt;4. 文档&lt;/h1&gt;
 
 &lt;p&gt;对于常规的小文件的操作，以上的一些介绍基本是够了。有时候需要处理大文件，就需要用到更高级一些的方法。更详细的用法、教程和API文档请参考这里：&lt;/p&gt;
 
@@ -90,7 +90,7 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;p&gt;&lt;a href=&#34;http://pythonhosted.org/openpyxl/&#34;&gt;http://pythonhosted.org/openpyxl/&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h1 id=&#34;5-references:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;5. References&lt;/h1&gt;
+&lt;h1 id=&#34;5-references&#34;&gt;5. References&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;下载 openpyxl：&lt;a href=&#34;https://pypi.python.org/pypi/openpyxl&#34;&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/li&gt;

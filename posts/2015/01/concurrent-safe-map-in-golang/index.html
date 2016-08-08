@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -140,7 +142,7 @@
 
 <p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
 
-<h2 id="并发安全:743dbbe92226f1ed32f110ba88fc33fe">并发安全</h2>
+<h2 id="并发安全">并发安全</h2>
 
 <p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
 
@@ -159,7 +161,7 @@
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
 
-<h2 id="分表:743dbbe92226f1ed32f110ba88fc33fe">「分表」</h2>
+<h2 id="分表">「分表」</h2>
 
 <p>一种解决思路是“分表”存储，具体实现就是，基于上面的 <code>syncMap</code> 再包装一次，用多个 <code>syncMap</code> 来模拟实现一个 map：</p>
 

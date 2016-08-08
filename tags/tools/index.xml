@@ -19,7 +19,7 @@
 
 &lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;安装&lt;/h2&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
 &lt;p&gt;Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;
 
-&lt;h2 id=&#34;supervisord-配置:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;supervisord 配置&lt;/h2&gt;
+&lt;h2 id=&#34;supervisord-配置&#34;&gt;supervisord 配置&lt;/h2&gt;
 
 &lt;p&gt;Supervisor 相当强大，提供了很丰富的功能，不过我们可能只需要用到其中一小部分。安装完成之后，可以编写配置文件，来满足自己的需求。为了方便，我们把配置分成两部分：supervisord（supervisor 是一个 C/S 模型的程序，这是 server 端，对应的有 client 端：supervisorctl）和应用程序（即我们要管理的程序）。&lt;/p&gt;
 
@@ -84,7 +84,7 @@ files = relative/directory/*.ini    ; 可以是 *.conf 或 *.ini
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ps aux | grep supervisord
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;program-配置:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;program 配置&lt;/h2&gt;
+&lt;h2 id=&#34;program-配置&#34;&gt;program 配置&lt;/h2&gt;
 
 &lt;p&gt;上面我们已经把 supervisrod 运行起来了，现在可以添加我们要管理的进程的配置文件。可以把所有配置项都写到 supervisord.conf 文件里，但并不推荐这样做，而是通过 include 的方式把不同的程序（组）写到不同的配置文件里。&lt;/p&gt;
 
@@ -122,7 +122,7 @@ stdout_logfile = /data/logs/usercenter_stdout.log
 
 &lt;p&gt;一份配置文件至少需要一个 &lt;code&gt;[program:x]&lt;/code&gt; 部分的配置，来告诉 supervisord 需要管理那个进程。&lt;code&gt;[program:x]&lt;/code&gt; 语法中的 &lt;code&gt;x&lt;/code&gt; 表示 program name，会在客户端（supervisorctl 或 web 界面）显示，在 supervisorctl 中通过这个值来对程序进行 start、restart、stop 等操作。&lt;/p&gt;
 
-&lt;h2 id=&#34;使用-supervisorctl:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;使用 supervisorctl&lt;/h2&gt;
+&lt;h2 id=&#34;使用-supervisorctl&#34;&gt;使用 supervisorctl&lt;/h2&gt;
 
 &lt;p&gt;Supervisorctl 是 supervisord 的一个命令行客户端工具，启动时需要指定与 supervisord 使用同一份配置文件，否则与 supervisord 一样按照顺序查找配置文件。&lt;/p&gt;
 
@@ -149,7 +149,7 @@ $ supervisorctl reread
 $ supervisorctl update 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;其它:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;其它&lt;/h2&gt;
+&lt;h2 id=&#34;其它&#34;&gt;其它&lt;/h2&gt;
 
 &lt;p&gt;除了 supervisorctl 之外，还可以配置 supervisrod 启动 web 管理界面，这个 web 后台使用 Basic Auth 的方式进行身份认证。&lt;/p&gt;
 

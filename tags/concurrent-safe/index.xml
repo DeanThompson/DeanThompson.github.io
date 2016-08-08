@@ -19,7 +19,7 @@
 
 &lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
 
-&lt;h2 id=&#34;并发安全:743dbbe92226f1ed32f110ba88fc33fe&#34;&gt;并发安全&lt;/h2&gt;
+&lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
 
 &lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
 
@@ -38,7 +38,7 @@
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;分表:743dbbe92226f1ed32f110ba88fc33fe&#34;&gt;「分表」&lt;/h2&gt;
+&lt;h2 id=&#34;分表&#34;&gt;「分表」&lt;/h2&gt;
 
 &lt;p&gt;一种解决思路是“分表”存储，具体实现就是，基于上面的 &lt;code&gt;syncMap&lt;/code&gt; 再包装一次，用多个 &lt;code&gt;syncMap&lt;/code&gt; 来模拟实现一个 map：&lt;/p&gt;
 

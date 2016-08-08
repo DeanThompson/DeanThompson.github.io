@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -167,7 +169,7 @@
 
 <p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
 
-<h2 id="基本思想:a2bd452655e299f799e36f1a03619c2b">基本思想</h2>
+<h2 id="基本思想">基本思想</h2>
 
 <p>“一码胜千言”，直接上代码描述一下：</p>
 
@@ -182,7 +184,7 @@
 
 <p>实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。</p>
 
-<h2 id="tornado-的实现:a2bd452655e299f799e36f1a03619c2b">Tornado 的实现</h2>
+<h2 id="tornado-的实现">Tornado 的实现</h2>
 
 <p>Tornado 的 <code>tornado.web.RequestHandler</code> 有两个方法：<code>prepare</code> 和 <code>write</code>。前者会在执行业务代码前执行，后者用于写入响应结果。所以可以在 <code>prepare</code> 里查询缓存，如果命中就直接返回。没有命中的请求会执行业务代码，然后在 <code>write</code> 里顺便写入缓存。</p>
 
@@ -254,7 +256,7 @@ def set_cache_timeout(expiration=300):
         self.write(&quot;Hello world!&quot;)
 </code></pre>
 
-<h2 id="flask-的实现:a2bd452655e299f799e36f1a03619c2b">Flask 的实现</h2>
+<h2 id="flask-的实现">Flask 的实现</h2>
 
 <p>Flask 里可以用 <code>before_request</code> 和 <code>after_request</code> 这两个 hooks 实现 Tornado 里覆盖 <code>prepare</code> 和 <code>write</code> 来缓存所有请求，具体实现大同小异。也可以用装饰器来获得更好的灵活性。</p>
 
@@ -326,7 +328,7 @@ def hello():
     return &quot;Hello, world!&quot;
 </code></pre>
 
-<h2 id="结语:a2bd452655e299f799e36f1a03619c2b">结语</h2>
+<h2 id="结语">结语</h2>
 
 <p>上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。</p>
 </div>

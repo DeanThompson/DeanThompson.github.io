@@ -23,7 +23,7 @@
 
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-document-对象:b21917a396369c0669213bf730deae3f&#34;&gt;创建 Document 对象&lt;/h3&gt;
+&lt;h3 id=&#34;创建-document-对象&#34;&gt;创建 Document 对象&lt;/h3&gt;
 
 &lt;p&gt;goquery 暴露了两个结构体：&lt;code&gt;Document&lt;/code&gt; 和 &lt;code&gt;Selection&lt;/code&gt;. &lt;code&gt;Document&lt;/code&gt; 表示一个 HTML 文档，&lt;code&gt;Selection&lt;/code&gt; 用于像 jQuery 一样操作，支持链式调用。goquery 需要指定一个 HTML 文档才能继续后续的操作，有以下几个构造方式：&lt;/p&gt;
 
@@ -43,7 +43,7 @@
 
 &lt;p&gt;为了方便举例说明，下文采用这个定义: &lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;查找到指定节点:b21917a396369c0669213bf730deae3f&#34;&gt;查找到指定节点&lt;/h3&gt;
+&lt;h3 id=&#34;查找到指定节点&#34;&gt;查找到指定节点&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;Selection&lt;/code&gt; 有一系列类似 jQuery 的方法，&lt;code&gt;Document&lt;/code&gt; 结构体内嵌了 &lt;code&gt;*Selection&lt;/code&gt;，因此也能直接调用这些方法。主要的方法是 &lt;code&gt;Selection.Find(selector string)&lt;/code&gt;，传入一个选择器，返回一个新的，匹配到的 &lt;code&gt;*Selection&lt;/code&gt;，所以能够链式调用。&lt;/p&gt;
 
@@ -77,7 +77,7 @@
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;span.num&amp;quot;).Eq(1)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;属性操作:b21917a396369c0669213bf730deae3f&#34;&gt;属性操作&lt;/h3&gt;
+&lt;h3 id=&#34;属性操作&#34;&gt;属性操作&lt;/h3&gt;
 
 &lt;p&gt;经常需要获取一个标签的内容和某些属性值，使用 goquery 可以很容易做到。&lt;/p&gt;
 
@@ -102,7 +102,7 @@
 
 &lt;p&gt;还有其他设置属性、操作 class 的方法，就不展开讨论了。&lt;/p&gt;
 
-&lt;h3 id=&#34;迭代:b21917a396369c0669213bf730deae3f&#34;&gt;迭代&lt;/h3&gt;
+&lt;h3 id=&#34;迭代&#34;&gt;迭代&lt;/h3&gt;
 
 &lt;p&gt;很多场景需要返回列表数据，比如问题的关注者列表、所有回答，某个答案的点赞的用户列表等。这种情况下一般需要用到迭代，遍历所有的同类节点，做某些操作。&lt;/p&gt;
 
@@ -132,7 +132,7 @@
 
 &lt;p&gt;&lt;code&gt;EachWithBreak&lt;/code&gt; 在 zhihu-go 中也有用到，可以参见 &lt;code&gt;Answer.GetVotersN 方法&lt;/code&gt;：&lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go&#34;&gt;zhihu-go/answer.go&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;删除节点-插入-html-导出-html:b21917a396369c0669213bf730deae3f&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
+&lt;h3 id=&#34;删除节点-插入-html-导出-html&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
 
 &lt;p&gt;有一个需求是把回答内容输出到 HTML，说白了其实就是修复和清洗 HTML，具体的细节可以看 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go#L222&#34;&gt;answer.go 里的 answerSelectionToHtml 函数&lt;/a&gt;. 其中用到了一些需要修改文档的操作。&lt;/p&gt;
 
@@ -171,7 +171,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;html, err := doc.Html()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:b21917a396369c0669213bf730deae3f&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
 </description>
@@ -224,7 +224,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 
 &lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
 
-&lt;h2 id=&#34;并发安全:743dbbe92226f1ed32f110ba88fc33fe&#34;&gt;并发安全&lt;/h2&gt;
+&lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
 
 &lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
 
@@ -243,7 +243,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;分表:743dbbe92226f1ed32f110ba88fc33fe&#34;&gt;「分表」&lt;/h2&gt;
+&lt;h2 id=&#34;分表&#34;&gt;「分表」&lt;/h2&gt;
 
 &lt;p&gt;一种解决思路是“分表”存储，具体实现就是，基于上面的 &lt;code&gt;syncMap&lt;/code&gt; 再包装一次，用多个 &lt;code&gt;syncMap&lt;/code&gt; 来模拟实现一个 map：&lt;/p&gt;
 
@@ -368,7 +368,7 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 
 &lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
 
-&lt;h2 id=&#34;int-to-string:fa92a5344b4f2c93ba7190e9f429e269&#34;&gt;int to string&lt;/h2&gt;
+&lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
 
 &lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
 
@@ -411,7 +411,7 @@ strconv.FormatInt taken: 1.057318ms
 
 &lt;p&gt;同理，对于 &lt;code&gt;float64&lt;/code&gt; 类型，推荐使用 &lt;code&gt;strconv.FormatFloat&lt;/code&gt;。测试代码和上面类似，得到的结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatFloat&lt;/code&gt; 的 1.1 倍。效果没有整型明显，但依然更高效。&lt;/p&gt;
 
-&lt;h2 id=&#34;hexadecimal-to-string:fa92a5344b4f2c93ba7190e9f429e269&#34;&gt;hexadecimal to string&lt;/h2&gt;
+&lt;h2 id=&#34;hexadecimal-to-string&#34;&gt;hexadecimal to string&lt;/h2&gt;
 
 &lt;p&gt;十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 &lt;code&gt;encoding/hex&lt;/code&gt; 包提供了十六进制数的编解码函数。&lt;/p&gt;
 
@@ -477,7 +477,7 @@ hex.EncodeToString taken: 2.080457ms
       <guid>http://deanthompson.github.io/posts/2014/06/sort-in-golang</guid>
       <description>
 
-&lt;h2 id=&#34;interface-接口:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;Interface 接口&lt;/h2&gt;
+&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
 
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
 
@@ -534,7 +534,7 @@ func Sort(data Interface) {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;基本数据类型的排序:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;基本数据类型的排序&lt;/h2&gt;
+&lt;h2 id=&#34;基本数据类型的排序&#34;&gt;基本数据类型的排序&lt;/h2&gt;
 
 &lt;p&gt;&lt;code&gt;Interface&lt;/code&gt; 接口的三个函数分别用于获取长度（&lt;code&gt;Len&lt;/code&gt;）、大小比较（&lt;code&gt;Less&lt;/code&gt;）和交换（&lt;code&gt;Swap&lt;/code&gt;）。对 &lt;code&gt;int&lt;/code&gt;、&lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，标准库已经做好了封装，直接调用即可。以 &lt;code&gt;int&lt;/code&gt; 为例简单说明：&lt;/p&gt;
 
@@ -560,7 +560,7 @@ func main() {
 
 &lt;p&gt;对 &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 的排序，和上面类似。需要注意的是，默认的 &lt;code&gt;sort.Less&lt;/code&gt; 实现的是升序排列，如果想要让结果降序，可以先用 &lt;code&gt;sort.Reverse&lt;/code&gt; 包装一次。这个调用会得到一个 &lt;code&gt;reverse&lt;/code&gt; 的类型，包含一个 &lt;code&gt;Interface&lt;/code&gt; 的匿名字段，其 &lt;code&gt;Less&lt;/code&gt; 函数与 &lt;code&gt;Interface&lt;/code&gt; 里的相反，从而实现逆序。&lt;/p&gt;
 
-&lt;h2 id=&#34;自定义数据类型的排序:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;自定义数据类型的排序&lt;/h2&gt;
+&lt;h2 id=&#34;自定义数据类型的排序&#34;&gt;自定义数据类型的排序&lt;/h2&gt;
 
 &lt;p&gt;如果要对自定义的数据类型进行排序，需要实现 &lt;code&gt;sort.Interface&lt;/code&gt; 接口，也就是实现 &lt;code&gt;Len&lt;/code&gt;、&lt;code&gt;Less&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 三个函数。很多场景下 &lt;code&gt;Len&lt;/code&gt; 和 &lt;code&gt;Swap&lt;/code&gt; 基本上和数据类型无关，所以实际上只有 &lt;code&gt;Less&lt;/code&gt; 会有差别。&lt;/p&gt;
 
@@ -620,7 +620,7 @@ func main() {
 &lt;pre&gt;&lt;code&gt;[&amp;lt;Item(2, 887)&amp;gt; &amp;lt;Item(3, 847)&amp;gt; &amp;lt;Item(7, 425)&amp;gt; &amp;lt;Item(6, 318)&amp;gt; &amp;lt;Item(1, 81)&amp;gt; &amp;lt;Item(5, 81)&amp;gt; &amp;lt;Item(4, 59)&amp;gt;]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;vs-python:a0aceb8e02a4cd06e9365f18ce315aea&#34;&gt;Vs. Python&lt;/h2&gt;
+&lt;h2 id=&#34;vs-python&#34;&gt;Vs. Python&lt;/h2&gt;
 
 &lt;p&gt;相比之下，Python 里的排序就非常简单便捷了，直接调用 &lt;code&gt;list&lt;/code&gt; 的 &lt;code&gt;sort&lt;/code&gt; 方法（in-place）即可，还可以用 built-in 函数 &lt;code&gt;sorted&lt;/code&gt; （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 &lt;code&gt;sort&lt;/code&gt; 方法的 &lt;code&gt;key&lt;/code&gt; 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：&lt;/p&gt;
 

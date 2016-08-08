@@ -55,7 +55,7 @@
 &lt;p&gt;less is more&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h1 id=&#34;1-how:bea817191773b780e7e12130f8d11db2&#34;&gt;1. How&lt;/h1&gt;
+&lt;h1 id=&#34;1-how&#34;&gt;1. How&lt;/h1&gt;
 
 &lt;p&gt;less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，&lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;source-highlight&lt;/a&gt; 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：&lt;/p&gt;
 
@@ -78,11 +78,11 @@ export LESS=&amp;quot; -R &amp;quot;
 
 &lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;
 
-&lt;h1 id=&#34;2-why:bea817191773b780e7e12130f8d11db2&#34;&gt;2. Why&lt;/h1&gt;
+&lt;h1 id=&#34;2-why&#34;&gt;2. Why&lt;/h1&gt;
 
 &lt;p&gt;接下来看看到底发生了什么事情，可以做到这么「神奇」的效果。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-1-lessopen:bea817191773b780e7e12130f8d11db2&#34;&gt;2.1. LESSOPEN&lt;/h2&gt;
+&lt;h2 id=&#34;2-1-lessopen&#34;&gt;2.1. LESSOPEN&lt;/h2&gt;
 
 &lt;p&gt;首先来看&lt;code&gt;source-highlight&lt;/code&gt;，这个工具可以根据给定的源文件，读取动态读取语言特性，然后输出一个语法高亮的文件，支持多种输出格式，如 HTML、XHTML、LATEX、 「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」等；默认是 HTML格式。最后一种输出格式是 ANSI 颜色转义序列，支持彩色。这种输出格式恰好可以和 less 结合使用，使其输出结果支持语法高亮。&lt;/p&gt;
 
@@ -100,7 +100,7 @@ export LESS=&amp;quot; -R &amp;quot;
 
 &lt;p&gt;&lt;code&gt;LESSOPEN&lt;/code&gt; 指定一个「input preprocessor」，后面用 &lt;code&gt;%s&lt;/code&gt; 读取文件路径。可以看到上面的配置中，有一个前导的竖线 &lt;code&gt;|&lt;/code&gt;。熟悉 &lt;code&gt;*nix&lt;/code&gt; 命令行的人知道这是管道，这个竖线表示把「input preprocessor」的处理结果写到标准输出（standard output），然后 less 通过 input pipe 读取再显示到屏幕上。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-2-less:bea817191773b780e7e12130f8d11db2&#34;&gt;2.2. LESS&lt;/h2&gt;
+&lt;h2 id=&#34;2-2-less&#34;&gt;2.2. LESS&lt;/h2&gt;
 
 &lt;p&gt;另一个变量是 &lt;code&gt;LESS&lt;/code&gt;，同样查看帮助手册：&lt;/p&gt;
 
@@ -118,7 +118,7 @@ export LESS=&amp;quot; -R &amp;quot;
 
 &lt;p&gt;这个选项的意义是，对于「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」是直接输出的，而不错其他处理。上面用 &lt;code&gt;source-highlight&lt;/code&gt; 提供的 src-hilite-lesspipe.sh 脚本用作 「input preprocessor」把源文件进行了高亮处理，并且输出「ANSI &lt;em&gt;color escape sequences&lt;/em&gt; 」格式，这里设置 &lt;code&gt;-R&lt;/code&gt; 选项刚好可以把这个高亮过后的字符序列直接输出，因此就可以看到 less 下的语法高亮。&lt;/p&gt;
 
-&lt;h1 id=&#34;3-more:bea817191773b780e7e12130f8d11db2&#34;&gt;3. More&amp;hellip;&lt;/h1&gt;
+&lt;h1 id=&#34;3-more&#34;&gt;3. More&amp;hellip;&lt;/h1&gt;
 
 &lt;p&gt;在第二节里说到 &lt;code&gt;LESS&lt;/code&gt; 这个环境变量，同理，可以设置其他默认选项，比如 &lt;code&gt;-N&lt;/code&gt;。&lt;code&gt;-N&lt;/code&gt; 选项的意义相对更为显然：&lt;/p&gt;
 
@@ -137,7 +137,7 @@ export LESS=&amp;quot; -R &amp;quot;
 
 &lt;p&gt;&lt;img src=&#34;http://ww3.sinaimg.cn/large/65df5320tw1ea3o9tmdirj20ch0alq3h.jpg&#34; alt=&#34;less-with-syntax-highlight-and-line-number&#34; /&gt;&lt;/p&gt;
 
-&lt;h1 id=&#34;4-references:bea817191773b780e7e12130f8d11db2&#34;&gt;4. References&lt;/h1&gt;
+&lt;h1 id=&#34;4-references&#34;&gt;4. References&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;GNU Source-highlight: &lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;http://www.gnu.org/software/src-highlite/&lt;/a&gt;&lt;/li&gt;

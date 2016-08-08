@@ -19,7 +19,7 @@
 
 &lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
-&lt;h2 id=&#34;1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
+&lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-引用-flask-的-application-context:74e658e30842a8e82e2fb07a649e5826&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
+&lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
 &lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
@@ -113,7 +113,7 @@ def add(x, y):
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;minimum-example:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Minimum Example&lt;/h2&gt;
+&lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
 &lt;p&gt;Celery 的一些设计和概念，与 Flask 很像，在 Flask 项目中集成 Celery 也很简单，不像 Django 或其他框架需要扩展插件。首先来看个最简单的例子 example.py：&lt;/p&gt;
 
@@ -160,13 +160,13 @@ if __name__ == &#39;__main__&#39;:
 
 &lt;p&gt;当然，实际应用在生产环境下，不能直接用 Flask 自带的 server，需要使用 Gunicorn 这样的 WSGI 容器，或 uWSGI. 而且 Celery worker 进程和 Web server 进程应该用 supervisord 管理起来。&lt;/p&gt;
 
-&lt;h2 id=&#34;becoming-bigger:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Becoming Bigger&lt;/h2&gt;
+&lt;h2 id=&#34;becoming-bigger&#34;&gt;Becoming Bigger&lt;/h2&gt;
 
 &lt;p&gt;这是个最简单的例子，实际应用会比这个复杂很多：有很多模块，更复杂的配置，更多的 task 等。在这种情况下，Flask 推荐使用 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Application Factory Pattern&lt;/a&gt;，也就是定义一个 function，在这里创建 Flask app 对象，并且处理注册路由（blueprints）、配置 logging 等一系列初始化操作。&lt;/p&gt;
 
 &lt;p&gt;下面我们看看在更大的 Flask 项目里，应该如何使用 Celery.&lt;/p&gt;
 
-&lt;h3 id=&#34;项目结构:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;项目结构&lt;/h3&gt;
+&lt;h3 id=&#34;项目结构&#34;&gt;项目结构&lt;/h3&gt;
 
 &lt;p&gt;首先来看一下整个项目的结构：&lt;/p&gt;
 
@@ -195,7 +195,7 @@ if __name__ == &#39;__main__&#39;:
 &lt;li&gt;app 包里是主要业务代码，其中 tasks 里定义里一系列的 task，提供给其他模块调用。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;主要代码:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;主要代码。&lt;/h3&gt;
+&lt;h3 id=&#34;主要代码&#34;&gt;主要代码。&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;app/config.py&lt;/li&gt;
@@ -295,14 +295,14 @@ app.app_context().push()
 
 &lt;p&gt;&lt;code&gt;app.app_context().push()&lt;/code&gt; 会推入一个 application context，后续所有操作都会在这个环境里执行，直到进程退出。因此，如果在 tasks 里用到了 &lt;code&gt;current_app&lt;/code&gt; 或其它需要 application context 的东西，就一定需要这样做。（默认情况下 Celery 的 pool 是 prefork，也就是多进程，现在这种写法没有问题；但是如果指定使用 gevent，是没用的。这种情况下有别的解决方案，以后会写文章讨论。）&lt;/p&gt;
 
-&lt;h3 id=&#34;运行:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;运行&lt;/h3&gt;
+&lt;h3 id=&#34;运行&#34;&gt;运行&lt;/h3&gt;
 
 &lt;p&gt;在项目的根路径下启动 Celery worker:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -l INFO
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
 </description>
@@ -330,7 +330,7 @@ app.app_context().push()
 
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;
 
-&lt;h2 id=&#34;基本思想:a2bd452655e299f799e36f1a03619c2b&#34;&gt;基本思想&lt;/h2&gt;
+&lt;h2 id=&#34;基本思想&#34;&gt;基本思想&lt;/h2&gt;
 
 &lt;p&gt;“一码胜千言”，直接上代码描述一下：&lt;/p&gt;
 
@@ -345,7 +345,7 @@ app.app_context().push()
 
 &lt;p&gt;实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。&lt;/p&gt;
 
-&lt;h2 id=&#34;tornado-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Tornado 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;tornado-的实现&#34;&gt;Tornado 的实现&lt;/h2&gt;
 
 &lt;p&gt;Tornado 的 &lt;code&gt;tornado.web.RequestHandler&lt;/code&gt; 有两个方法：&lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt;。前者会在执行业务代码前执行，后者用于写入响应结果。所以可以在 &lt;code&gt;prepare&lt;/code&gt; 里查询缓存，如果命中就直接返回。没有命中的请求会执行业务代码，然后在 &lt;code&gt;write&lt;/code&gt; 里顺便写入缓存。&lt;/p&gt;
 
@@ -417,7 +417,7 @@ def set_cache_timeout(expiration=300):
         self.write(&amp;quot;Hello world!&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;flask-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Flask 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;flask-的实现&#34;&gt;Flask 的实现&lt;/h2&gt;
 
 &lt;p&gt;Flask 里可以用 &lt;code&gt;before_request&lt;/code&gt; 和 &lt;code&gt;after_request&lt;/code&gt; 这两个 hooks 实现 Tornado 里覆盖 &lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt; 来缓存所有请求，具体实现大同小异。也可以用装饰器来获得更好的灵活性。&lt;/p&gt;
 
@@ -489,7 +489,7 @@ def hello():
     return &amp;quot;Hello, world!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;结语:a2bd452655e299f799e36f1a03619c2b&#34;&gt;结语&lt;/h2&gt;
+&lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
 
 &lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;
 </description>

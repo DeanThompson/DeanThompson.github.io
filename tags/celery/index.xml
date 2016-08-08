@@ -19,7 +19,7 @@
 
 &lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
-&lt;h2 id=&#34;1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
+&lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-引用-flask-的-application-context:74e658e30842a8e82e2fb07a649e5826&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
+&lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
 &lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
@@ -113,7 +113,7 @@ def add(x, y):
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;minimum-example:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Minimum Example&lt;/h2&gt;
+&lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
 &lt;p&gt;Celery 的一些设计和概念，与 Flask 很像，在 Flask 项目中集成 Celery 也很简单，不像 Django 或其他框架需要扩展插件。首先来看个最简单的例子 example.py：&lt;/p&gt;
 
@@ -160,13 +160,13 @@ if __name__ == &#39;__main__&#39;:
 
 &lt;p&gt;当然，实际应用在生产环境下，不能直接用 Flask 自带的 server，需要使用 Gunicorn 这样的 WSGI 容器，或 uWSGI. 而且 Celery worker 进程和 Web server 进程应该用 supervisord 管理起来。&lt;/p&gt;
 
-&lt;h2 id=&#34;becoming-bigger:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Becoming Bigger&lt;/h2&gt;
+&lt;h2 id=&#34;becoming-bigger&#34;&gt;Becoming Bigger&lt;/h2&gt;
 
 &lt;p&gt;这是个最简单的例子，实际应用会比这个复杂很多：有很多模块，更复杂的配置，更多的 task 等。在这种情况下，Flask 推荐使用 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Application Factory Pattern&lt;/a&gt;，也就是定义一个 function，在这里创建 Flask app 对象，并且处理注册路由（blueprints）、配置 logging 等一系列初始化操作。&lt;/p&gt;
 
 &lt;p&gt;下面我们看看在更大的 Flask 项目里，应该如何使用 Celery.&lt;/p&gt;
 
-&lt;h3 id=&#34;项目结构:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;项目结构&lt;/h3&gt;
+&lt;h3 id=&#34;项目结构&#34;&gt;项目结构&lt;/h3&gt;
 
 &lt;p&gt;首先来看一下整个项目的结构：&lt;/p&gt;
 
@@ -195,7 +195,7 @@ if __name__ == &#39;__main__&#39;:
 &lt;li&gt;app 包里是主要业务代码，其中 tasks 里定义里一系列的 task，提供给其他模块调用。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;主要代码:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;主要代码。&lt;/h3&gt;
+&lt;h3 id=&#34;主要代码&#34;&gt;主要代码。&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;app/config.py&lt;/li&gt;
@@ -295,14 +295,14 @@ app.app_context().push()
 
 &lt;p&gt;&lt;code&gt;app.app_context().push()&lt;/code&gt; 会推入一个 application context，后续所有操作都会在这个环境里执行，直到进程退出。因此，如果在 tasks 里用到了 &lt;code&gt;current_app&lt;/code&gt; 或其它需要 application context 的东西，就一定需要这样做。（默认情况下 Celery 的 pool 是 prefork，也就是多进程，现在这种写法没有问题；但是如果指定使用 gevent，是没用的。这种情况下有别的解决方案，以后会写文章讨论。）&lt;/p&gt;
 
-&lt;h3 id=&#34;运行:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;运行&lt;/h3&gt;
+&lt;h3 id=&#34;运行&#34;&gt;运行&lt;/h3&gt;
 
 &lt;p&gt;在项目的根路径下启动 Celery worker:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -l INFO
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
 </description>
@@ -316,9 +316,9 @@ app.app_context().push()
       <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
       <description>
 
-&lt;h2 id=&#34;introduction:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Introduction&lt;/h2&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
-&lt;h3 id=&#34;分布式任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;分布式任务队列&lt;/h3&gt;
+&lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个分布式任务队列，下面是 &lt;a href=&#34;http://www.celeryproject.org/&#34;&gt;官网&lt;/a&gt; 的一段描述：&lt;/p&gt;
 
@@ -328,7 +328,7 @@ app.app_context().push()
 
 &lt;p&gt;Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。&lt;/p&gt;
 
-&lt;h3 id=&#34;何为任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;何为任务队列？&lt;/h3&gt;
+&lt;h3 id=&#34;何为任务队列&#34;&gt;何为任务队列？&lt;/h3&gt;
 
 &lt;p&gt;摘自 Celery 官方文档的 &lt;a href=&#34;http://docs.jinkan.org/docs/celery/getting-started/introduction.html&#34;&gt;中文翻译&lt;/a&gt;：&lt;/p&gt;
 
@@ -342,7 +342,7 @@ app.app_context().push()
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&#34;适用场景:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;适用场景&lt;/h3&gt;
+&lt;h3 id=&#34;适用场景&#34;&gt;适用场景&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;可以在 Request-Response 循环之外执行的操作：发送邮件、推送消息&lt;/li&gt;
@@ -350,11 +350,11 @@ app.app_context().push()
 &lt;li&gt;周期性任务：取代 crontab&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;simple-tutorial:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Simple Tutorial&lt;/h2&gt;
+&lt;h2 id=&#34;simple-tutorial&#34;&gt;Simple Tutorial&lt;/h2&gt;
 
 &lt;p&gt;主要参考了官网文档：&lt;a href=&#34;http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html&#34;&gt;First Steps with Celery&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;选择-broker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;选择 Broker&lt;/h3&gt;
+&lt;h3 id=&#34;选择-broker&#34;&gt;选择 Broker&lt;/h3&gt;
 
 &lt;p&gt;下图描述了 Celery 的基本架构和工作流程。&lt;/p&gt;
 
@@ -374,7 +374,7 @@ app.app_context().push()
 
 &lt;p&gt;我们在这里选择使用 Reids.&lt;/p&gt;
 
-&lt;h3 id=&#34;安装:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个 Python 的应用，而且已经上传到了 PyPi，所以可以使用 &lt;code&gt;pip&lt;/code&gt; 或 &lt;code&gt;easy_install&lt;/code&gt; 安装：&lt;/p&gt;
 
@@ -383,7 +383,7 @@ app.app_context().push()
 
 &lt;p&gt;安装完成后会在 PATH （或 virtualenv 的 bin 目录）添加几个命令：celery, celerybeat, celeryd 和 celeryd-multi. 我们这里只使用 celery 命令。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-application-和-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
+&lt;h3 id=&#34;创建-application-和-task&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
 
 &lt;p&gt;Celery 的使用方法和 Flask 很像，实例化一个 Celery 对象 &lt;code&gt;app&lt;/code&gt;，然后通过 &lt;code&gt;@app.task&lt;/code&gt; 装饰器注册一个 task. 下面是一个简单的例子 tasks.py：&lt;/p&gt;
 
@@ -397,7 +397,7 @@ def add(x, y):
     return x + y
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;运行-worker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;运行 worker&lt;/h3&gt;
+&lt;h3 id=&#34;运行-worker&#34;&gt;运行 worker&lt;/h3&gt;
 
 &lt;p&gt;在 tasks.py 文件所在目录运行&lt;/p&gt;
 
@@ -424,7 +424,7 @@ def add(x, y):
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker --help
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;调用-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;调用 task&lt;/h3&gt;
+&lt;h3 id=&#34;调用-task&#34;&gt;调用 task&lt;/h3&gt;
 
 &lt;p&gt;有些 Task 可以当作一个普通的函数同步调用，这里讨论异步的方式：&lt;/p&gt;
 
@@ -436,11 +436,11 @@ add.apply_async(1, 2)
 
 &lt;p&gt;上面两种调用方式等价，&lt;code&gt;delay()&lt;/code&gt; 方法是 &lt;code&gt;apply_async()&lt;/code&gt; 方法的简写。这个调用会把 &lt;code&gt;add&lt;/code&gt; 操作放入到队列里，然后立即返回一个 &lt;code&gt;AsyncResult&lt;/code&gt; 对象。如果关心处理结果，需要给 &lt;code&gt;app&lt;/code&gt; 配置 &lt;code&gt;CELERY_RESULT_BACKEND&lt;/code&gt;，指定一个存储后端保存任务的返回值。&lt;/p&gt;
 
-&lt;h3 id=&#34;配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置&lt;/h3&gt;
+&lt;h3 id=&#34;配置&#34;&gt;配置&lt;/h3&gt;
 
 &lt;p&gt;前文说过 Celery 与 Flask 的使用很像，配置也是如此。一般情况下，使用 Celery 的默认配置就已经足够，但 Celery 也提供了很灵活的配置。下面是两种配置方式，&lt;a href=&#34;http://docs.celeryproject.org/en/latest/configuration.html&#34;&gt;官方文档&lt;/a&gt; 可以查看所有的配置项及默认值。&lt;/p&gt;
 
-&lt;h4 id=&#34;直接修改配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;直接修改配置&lt;/h4&gt;
+&lt;h4 id=&#34;直接修改配置&#34;&gt;直接修改配置&lt;/h4&gt;
 
 &lt;p&gt;单个：&lt;/p&gt;
 
@@ -458,7 +458,7 @@ add.apply_async(1, 2)
 )
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置模块:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置模块&lt;/h4&gt;
+&lt;h4 id=&#34;配置模块&#34;&gt;配置模块&lt;/h4&gt;
 
 &lt;p&gt;类似 Flask，对于比较大的 Celery 项目，配置模块（configuration module）是更好的选择。Celery 对象有个 &lt;code&gt;config_from_object&lt;/code&gt; 方法，读取一个 object (py 文件或 class)来更新配置。&lt;/p&gt;
 

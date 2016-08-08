@@ -17,7 +17,7 @@
       <guid>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</guid>
       <description>
 
-&lt;h2 id=&#34;缘起:4855d9d6e5f234c654404b26568913d6&#34;&gt;缘起&lt;/h2&gt;
+&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
 
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
 
@@ -33,7 +33,7 @@
 
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;
 
-&lt;h2 id=&#34;购买-vps:4855d9d6e5f234c654404b26568913d6&#34;&gt;购买 VPS&lt;/h2&gt;
+&lt;h2 id=&#34;购买-vps&#34;&gt;购买 VPS&lt;/h2&gt;
 
 &lt;p&gt;比较熟悉的是 Linode 和 DigitalOcean，两家的最低配置基本上差不多，但是 Linode 的价格（$10 每月）是后者的两倍。本来是想选择 DigitalOcean 的，但是在家折腾的时候，始终打不开 DigialOcean 的网站。。。于是就选择了 Linode 的 VPS。&lt;/p&gt;
 
@@ -43,7 +43,7 @@
 
 &lt;p&gt;购买的是最低的配置（&lt;a href=&#34;https://www.linode.com/pricing&#34;&gt;https://www.linode.com/pricing&lt;/a&gt;），不过对于个人应用，尤其是目前只有搭建 VPN 的需求来说，还是很奢侈的了。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装-shadowsocks:4855d9d6e5f234c654404b26568913d6&#34;&gt;安装 Shadowsocks&lt;/h2&gt;
+&lt;h2 id=&#34;安装-shadowsocks&#34;&gt;安装 Shadowsocks&lt;/h2&gt;
 
 &lt;p&gt;我用的是 Python 实现的版本，安装过程非常简单，文档上也有&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks&#34;&gt;教程&lt;/a&gt;。&lt;/p&gt;
 
@@ -80,7 +80,7 @@
 
 &lt;p&gt;最终使用的时候，VPN 配置的是本机的 shadowsocks，即 &lt;code&gt;127.0.0.1:1080&lt;/code&gt;，而不是直接连接服务端版本。&lt;/p&gt;
 
-&lt;h2 id=&#34;chrome-使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;Chrome 使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;chrome-使用-socks-代理&#34;&gt;Chrome 使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;Linux 系统可以配置全局的网络代理，Chrome 可以设置使用系统默认的代理配置，也可以使用 SwitchySharp 做更灵活的配置。&lt;/p&gt;
 
@@ -95,7 +95,7 @@
 
 &lt;p&gt;OK，完成。此后访问规则列表里的网站，都会走 Shadowsocks 的代理。如果使用过 SwitchySharp + GoAgent，即使没有截图，上面的配置很容易理解。&lt;/p&gt;
 
-&lt;h2 id=&#34;命令行使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;命令行使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;命令行使用-socks-代理&#34;&gt;命令行使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;浏览器可以自由翻墙了，终端却仍然还在墙内，使用 curl，wget 和 go get 访问墙外资源时依然失败。&lt;/p&gt;
 
@@ -127,11 +127,11 @@ forward         127.*.*.*/      .
 
 &lt;p&gt;现在就可以在命令行里愉快的上网了，用 go get 安装各种 golang package 都非常顺利。&lt;/p&gt;
 
-&lt;h2 id=&#34;android-手机使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;Android 手机使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;android-手机使用-socks-代理&#34;&gt;Android 手机使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;Shadowsocks 真心人类的希望，还提供了 Android 的客户端：&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks-android&#34;&gt;https://github.com/shadowsocks/shadowsocks-android&lt;/a&gt;，安装和配置过程都很简单，略去不表。&lt;/p&gt;
 
-&lt;h2 id=&#34;后记:4855d9d6e5f234c654404b26568913d6&#34;&gt;后记&lt;/h2&gt;
+&lt;h2 id=&#34;后记&#34;&gt;后记&lt;/h2&gt;
 
 &lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
 

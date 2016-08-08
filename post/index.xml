@@ -19,7 +19,7 @@
 
 &lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
-&lt;h2 id=&#34;1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
+&lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-引用-flask-的-application-context:74e658e30842a8e82e2fb07a649e5826&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
+&lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
 &lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
@@ -203,7 +203,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-document-对象:b21917a396369c0669213bf730deae3f&#34;&gt;创建 Document 对象&lt;/h3&gt;
+&lt;h3 id=&#34;创建-document-对象&#34;&gt;创建 Document 对象&lt;/h3&gt;
 
 &lt;p&gt;goquery 暴露了两个结构体：&lt;code&gt;Document&lt;/code&gt; 和 &lt;code&gt;Selection&lt;/code&gt;. &lt;code&gt;Document&lt;/code&gt; 表示一个 HTML 文档，&lt;code&gt;Selection&lt;/code&gt; 用于像 jQuery 一样操作，支持链式调用。goquery 需要指定一个 HTML 文档才能继续后续的操作，有以下几个构造方式：&lt;/p&gt;
 
@@ -223,7 +223,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 
 &lt;p&gt;为了方便举例说明，下文采用这个定义: &lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;查找到指定节点:b21917a396369c0669213bf730deae3f&#34;&gt;查找到指定节点&lt;/h3&gt;
+&lt;h3 id=&#34;查找到指定节点&#34;&gt;查找到指定节点&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;Selection&lt;/code&gt; 有一系列类似 jQuery 的方法，&lt;code&gt;Document&lt;/code&gt; 结构体内嵌了 &lt;code&gt;*Selection&lt;/code&gt;，因此也能直接调用这些方法。主要的方法是 &lt;code&gt;Selection.Find(selector string)&lt;/code&gt;，传入一个选择器，返回一个新的，匹配到的 &lt;code&gt;*Selection&lt;/code&gt;，所以能够链式调用。&lt;/p&gt;
 
@@ -257,7 +257,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;span.num&amp;quot;).Eq(1)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;属性操作:b21917a396369c0669213bf730deae3f&#34;&gt;属性操作&lt;/h3&gt;
+&lt;h3 id=&#34;属性操作&#34;&gt;属性操作&lt;/h3&gt;
 
 &lt;p&gt;经常需要获取一个标签的内容和某些属性值，使用 goquery 可以很容易做到。&lt;/p&gt;
 
@@ -282,7 +282,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 
 &lt;p&gt;还有其他设置属性、操作 class 的方法，就不展开讨论了。&lt;/p&gt;
 
-&lt;h3 id=&#34;迭代:b21917a396369c0669213bf730deae3f&#34;&gt;迭代&lt;/h3&gt;
+&lt;h3 id=&#34;迭代&#34;&gt;迭代&lt;/h3&gt;
 
 &lt;p&gt;很多场景需要返回列表数据，比如问题的关注者列表、所有回答，某个答案的点赞的用户列表等。这种情况下一般需要用到迭代，遍历所有的同类节点，做某些操作。&lt;/p&gt;
 
@@ -312,7 +312,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 
 &lt;p&gt;&lt;code&gt;EachWithBreak&lt;/code&gt; 在 zhihu-go 中也有用到，可以参见 &lt;code&gt;Answer.GetVotersN 方法&lt;/code&gt;：&lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go&#34;&gt;zhihu-go/answer.go&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;删除节点-插入-html-导出-html:b21917a396369c0669213bf730deae3f&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
+&lt;h3 id=&#34;删除节点-插入-html-导出-html&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
 
 &lt;p&gt;有一个需求是把回答内容输出到 HTML，说白了其实就是修复和清洗 HTML，具体的细节可以看 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go#L222&#34;&gt;answer.go 里的 answerSelectionToHtml 函数&lt;/a&gt;. 其中用到了一些需要修改文档的操作。&lt;/p&gt;
 
@@ -351,7 +351,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;html, err := doc.Html()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:b21917a396369c0669213bf730deae3f&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
 </description>
@@ -411,7 +411,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;minimum-example:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Minimum Example&lt;/h2&gt;
+&lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
 &lt;p&gt;Celery 的一些设计和概念，与 Flask 很像，在 Flask 项目中集成 Celery 也很简单，不像 Django 或其他框架需要扩展插件。首先来看个最简单的例子 example.py：&lt;/p&gt;
 
@@ -458,13 +458,13 @@ if __name__ == &#39;__main__&#39;:
 
 &lt;p&gt;当然，实际应用在生产环境下，不能直接用 Flask 自带的 server，需要使用 Gunicorn 这样的 WSGI 容器，或 uWSGI. 而且 Celery worker 进程和 Web server 进程应该用 supervisord 管理起来。&lt;/p&gt;
 
-&lt;h2 id=&#34;becoming-bigger:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Becoming Bigger&lt;/h2&gt;
+&lt;h2 id=&#34;becoming-bigger&#34;&gt;Becoming Bigger&lt;/h2&gt;
 
 &lt;p&gt;这是个最简单的例子，实际应用会比这个复杂很多：有很多模块，更复杂的配置，更多的 task 等。在这种情况下，Flask 推荐使用 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Application Factory Pattern&lt;/a&gt;，也就是定义一个 function，在这里创建 Flask app 对象，并且处理注册路由（blueprints）、配置 logging 等一系列初始化操作。&lt;/p&gt;
 
 &lt;p&gt;下面我们看看在更大的 Flask 项目里，应该如何使用 Celery.&lt;/p&gt;
 
-&lt;h3 id=&#34;项目结构:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;项目结构&lt;/h3&gt;
+&lt;h3 id=&#34;项目结构&#34;&gt;项目结构&lt;/h3&gt;
 
 &lt;p&gt;首先来看一下整个项目的结构：&lt;/p&gt;
 
@@ -493,7 +493,7 @@ if __name__ == &#39;__main__&#39;:
 &lt;li&gt;app 包里是主要业务代码，其中 tasks 里定义里一系列的 task，提供给其他模块调用。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;主要代码:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;主要代码。&lt;/h3&gt;
+&lt;h3 id=&#34;主要代码&#34;&gt;主要代码。&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;app/config.py&lt;/li&gt;
@@ -593,14 +593,14 @@ app.app_context().push()
 
 &lt;p&gt;&lt;code&gt;app.app_context().push()&lt;/code&gt; 会推入一个 application context，后续所有操作都会在这个环境里执行，直到进程退出。因此，如果在 tasks 里用到了 &lt;code&gt;current_app&lt;/code&gt; 或其它需要 application context 的东西，就一定需要这样做。（默认情况下 Celery 的 pool 是 prefork，也就是多进程，现在这种写法没有问题；但是如果指定使用 gevent，是没用的。这种情况下有别的解决方案，以后会写文章讨论。）&lt;/p&gt;
 
-&lt;h3 id=&#34;运行:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;运行&lt;/h3&gt;
+&lt;h3 id=&#34;运行&#34;&gt;运行&lt;/h3&gt;
 
 &lt;p&gt;在项目的根路径下启动 Celery worker:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -l INFO
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
 </description>
@@ -614,9 +614,9 @@ app.app_context().push()
       <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
       <description>
 
-&lt;h2 id=&#34;introduction:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Introduction&lt;/h2&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
-&lt;h3 id=&#34;分布式任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;分布式任务队列&lt;/h3&gt;
+&lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个分布式任务队列，下面是 &lt;a href=&#34;http://www.celeryproject.org/&#34;&gt;官网&lt;/a&gt; 的一段描述：&lt;/p&gt;
 
@@ -626,7 +626,7 @@ app.app_context().push()
 
 &lt;p&gt;Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。&lt;/p&gt;
 
-&lt;h3 id=&#34;何为任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;何为任务队列？&lt;/h3&gt;
+&lt;h3 id=&#34;何为任务队列&#34;&gt;何为任务队列？&lt;/h3&gt;
 
 &lt;p&gt;摘自 Celery 官方文档的 &lt;a href=&#34;http://docs.jinkan.org/docs/celery/getting-started/introduction.html&#34;&gt;中文翻译&lt;/a&gt;：&lt;/p&gt;
 
@@ -640,7 +640,7 @@ app.app_context().push()
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&#34;适用场景:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;适用场景&lt;/h3&gt;
+&lt;h3 id=&#34;适用场景&#34;&gt;适用场景&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;可以在 Request-Response 循环之外执行的操作：发送邮件、推送消息&lt;/li&gt;
@@ -648,11 +648,11 @@ app.app_context().push()
 &lt;li&gt;周期性任务：取代 crontab&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;simple-tutorial:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Simple Tutorial&lt;/h2&gt;
+&lt;h2 id=&#34;simple-tutorial&#34;&gt;Simple Tutorial&lt;/h2&gt;
 
 &lt;p&gt;主要参考了官网文档：&lt;a href=&#34;http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html&#34;&gt;First Steps with Celery&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;选择-broker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;选择 Broker&lt;/h3&gt;
+&lt;h3 id=&#34;选择-broker&#34;&gt;选择 Broker&lt;/h3&gt;
 
 &lt;p&gt;下图描述了 Celery 的基本架构和工作流程。&lt;/p&gt;
 
@@ -672,7 +672,7 @@ app.app_context().push()
 
 &lt;p&gt;我们在这里选择使用 Reids.&lt;/p&gt;
 
-&lt;h3 id=&#34;安装:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个 Python 的应用，而且已经上传到了 PyPi，所以可以使用 &lt;code&gt;pip&lt;/code&gt; 或 &lt;code&gt;easy_install&lt;/code&gt; 安装：&lt;/p&gt;
 
@@ -681,7 +681,7 @@ app.app_context().push()
 
 &lt;p&gt;安装完成后会在 PATH （或 virtualenv 的 bin 目录）添加几个命令：celery, celerybeat, celeryd 和 celeryd-multi. 我们这里只使用 celery 命令。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-application-和-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
+&lt;h3 id=&#34;创建-application-和-task&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
 
 &lt;p&gt;Celery 的使用方法和 Flask 很像，实例化一个 Celery 对象 &lt;code&gt;app&lt;/code&gt;，然后通过 &lt;code&gt;@app.task&lt;/code&gt; 装饰器注册一个 task. 下面是一个简单的例子 tasks.py：&lt;/p&gt;
 
@@ -695,7 +695,7 @@ def add(x, y):
     return x + y
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;运行-worker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;运行 worker&lt;/h3&gt;
+&lt;h3 id=&#34;运行-worker&#34;&gt;运行 worker&lt;/h3&gt;
 
 &lt;p&gt;在 tasks.py 文件所在目录运行&lt;/p&gt;
 
@@ -722,7 +722,7 @@ def add(x, y):
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker --help
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;调用-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;调用 task&lt;/h3&gt;
+&lt;h3 id=&#34;调用-task&#34;&gt;调用 task&lt;/h3&gt;
 
 &lt;p&gt;有些 Task 可以当作一个普通的函数同步调用，这里讨论异步的方式：&lt;/p&gt;
 
@@ -734,11 +734,11 @@ add.apply_async(1, 2)
 
 &lt;p&gt;上面两种调用方式等价，&lt;code&gt;delay()&lt;/code&gt; 方法是 &lt;code&gt;apply_async()&lt;/code&gt; 方法的简写。这个调用会把 &lt;code&gt;add&lt;/code&gt; 操作放入到队列里，然后立即返回一个 &lt;code&gt;AsyncResult&lt;/code&gt; 对象。如果关心处理结果，需要给 &lt;code&gt;app&lt;/code&gt; 配置 &lt;code&gt;CELERY_RESULT_BACKEND&lt;/code&gt;，指定一个存储后端保存任务的返回值。&lt;/p&gt;
 
-&lt;h3 id=&#34;配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置&lt;/h3&gt;
+&lt;h3 id=&#34;配置&#34;&gt;配置&lt;/h3&gt;
 
 &lt;p&gt;前文说过 Celery 与 Flask 的使用很像，配置也是如此。一般情况下，使用 Celery 的默认配置就已经足够，但 Celery 也提供了很灵活的配置。下面是两种配置方式，&lt;a href=&#34;http://docs.celeryproject.org/en/latest/configuration.html&#34;&gt;官方文档&lt;/a&gt; 可以查看所有的配置项及默认值。&lt;/p&gt;
 
-&lt;h4 id=&#34;直接修改配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;直接修改配置&lt;/h4&gt;
+&lt;h4 id=&#34;直接修改配置&#34;&gt;直接修改配置&lt;/h4&gt;
 
 &lt;p&gt;单个：&lt;/p&gt;
 
@@ -756,7 +756,7 @@ add.apply_async(1, 2)
 )
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置模块:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置模块&lt;/h4&gt;
+&lt;h4 id=&#34;配置模块&#34;&gt;配置模块&lt;/h4&gt;
 
 &lt;p&gt;类似 Flask，对于比较大的 Celery 项目，配置模块（configuration module）是更好的选择。Celery 对象有个 &lt;code&gt;config_from_object&lt;/code&gt; 方法，读取一个 object (py 文件或 class)来更新配置。&lt;/p&gt;
 
@@ -798,7 +798,7 @@ CELERY_ENABLE_UTC = True
 
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;
 
-&lt;h2 id=&#34;基本思想:a2bd452655e299f799e36f1a03619c2b&#34;&gt;基本思想&lt;/h2&gt;
+&lt;h2 id=&#34;基本思想&#34;&gt;基本思想&lt;/h2&gt;
 
 &lt;p&gt;“一码胜千言”，直接上代码描述一下：&lt;/p&gt;
 
@@ -813,7 +813,7 @@ CELERY_ENABLE_UTC = True
 
 &lt;p&gt;实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。&lt;/p&gt;
 
-&lt;h2 id=&#34;tornado-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Tornado 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;tornado-的实现&#34;&gt;Tornado 的实现&lt;/h2&gt;
 
 &lt;p&gt;Tornado 的 &lt;code&gt;tornado.web.RequestHandler&lt;/code&gt; 有两个方法：&lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt;。前者会在执行业务代码前执行，后者用于写入响应结果。所以可以在 &lt;code&gt;prepare&lt;/code&gt; 里查询缓存，如果命中就直接返回。没有命中的请求会执行业务代码，然后在 &lt;code&gt;write&lt;/code&gt; 里顺便写入缓存。&lt;/p&gt;
 
@@ -885,7 +885,7 @@ def set_cache_timeout(expiration=300):
         self.write(&amp;quot;Hello world!&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;flask-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Flask 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;flask-的实现&#34;&gt;Flask 的实现&lt;/h2&gt;
 
 &lt;p&gt;Flask 里可以用 &lt;code&gt;before_request&lt;/code&gt; 和 &lt;code&gt;after_request&lt;/code&gt; 这两个 hooks 实现 Tornado 里覆盖 &lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt; 来缓存所有请求，具体实现大同小异。也可以用装饰器来获得更好的灵活性。&lt;/p&gt;
 
@@ -957,7 +957,7 @@ def hello():
     return &amp;quot;Hello, world!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;结语:a2bd452655e299f799e36f1a03619c2b&#34;&gt;结语&lt;/h2&gt;
+&lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
 
 &lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;
 </description>
@@ -1128,7 +1128,7 @@ def register():
 
 &lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;
 
-&lt;h2 id=&#34;缩进:ff97f3d358883b516471cd3d03b40704&#34;&gt;缩进&lt;/h2&gt;
+&lt;h2 id=&#34;缩进&#34;&gt;缩进&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不要使用 tab 缩进&lt;/li&gt;
@@ -1136,7 +1136,7 @@ def register():
 &lt;li&gt;绝对不要混用 tab 和空格，否则容易出现 &lt;code&gt;IndentationError&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;空格:ff97f3d358883b516471cd3d03b40704&#34;&gt;空格&lt;/h2&gt;
+&lt;h2 id=&#34;空格&#34;&gt;空格&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;在 list, dict, tuple, set, 参数列表的 &lt;code&gt;,&lt;/code&gt; 后面加一个空格&lt;/li&gt;
@@ -1147,7 +1147,7 @@ def register():
 &lt;li&gt;括号（&lt;code&gt;()&lt;/code&gt;, &lt;code&gt;{}&lt;/code&gt;, &lt;code&gt;[]&lt;/code&gt;）内的两端不需要空格&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;空行:ff97f3d358883b516471cd3d03b40704&#34;&gt;空行&lt;/h2&gt;
+&lt;h2 id=&#34;空行&#34;&gt;空行&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;function 和 class 顶上两个空行&lt;/li&gt;
@@ -1157,7 +1157,7 @@ def register():
 &lt;li&gt;if/for/while 语句中，即使执行语句只有一句，也要另起一行&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;换行:ff97f3d358883b516471cd3d03b40704&#34;&gt;换行&lt;/h2&gt;
+&lt;h2 id=&#34;换行&#34;&gt;换行&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;每一行代码控制在 80 字符以内&lt;/li&gt;
@@ -1170,13 +1170,12 @@ def register():
         .skip(100).limit(100) \
         .all()
 
-
 text = (&#39;Long strings can be made up &#39;
         &#39;of several shorter strings.&#39;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;命名:ff97f3d358883b516471cd3d03b40704&#34;&gt;命名&lt;/h2&gt;
+&lt;h2 id=&#34;命名&#34;&gt;命名&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用有意义的，英文单词或词组，绝对不要使用汉语拼音&lt;/li&gt;
@@ -1263,7 +1262,7 @@ text = (&#39;Long strings can be made up &#39;
 &lt;/table&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;import:ff97f3d358883b516471cd3d03b40704&#34;&gt;import&lt;/h2&gt;
+&lt;h2 id=&#34;import&#34;&gt;import&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面&lt;/li&gt;
@@ -1296,7 +1295,7 @@ from flask import Flask, render_template, jsonify
 &lt;li&gt;&lt;p&gt;不要出现循环导入(cyclic import)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;注释:ff97f3d358883b516471cd3d03b40704&#34;&gt;注释&lt;/h2&gt;
+&lt;h2 id=&#34;注释&#34;&gt;注释&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;文档字符串 &lt;code&gt;docstring&lt;/code&gt;, 是 package, module, class, method, function 级别的注释，可以通过 &lt;code&gt;__doc__&lt;/code&gt; 成员访问到，注释内容在一对 &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; 符号之间&lt;/li&gt;
@@ -1314,7 +1313,7 @@ x = x - 1       # increase x by 1
 &lt;li&gt;&lt;p&gt;优先使用英文写注释，英文不好全部写中文，否则更加看不懂&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;异常:ff97f3d358883b516471cd3d03b40704&#34;&gt;异常&lt;/h2&gt;
+&lt;h2 id=&#34;异常&#34;&gt;异常&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不要轻易使用 &lt;code&gt;try/except&lt;/code&gt;&lt;/li&gt;
@@ -1331,7 +1330,6 @@ try:
     user.age = int(age) # 可能抛出异常
     user.created_at = datetime.datetime.utcnow()
 
-
     db.session.add(user)
     db.session.commit() # 可能抛出异常
 except:
@@ -1343,13 +1341,11 @@ try:
 except (TypeError, ValueError):
     return # 或别的操作
 
-
 user = User()
 user.name = &amp;quot;leon&amp;quot;
 user.age = age
 user.created_at = datetime.datetime.utcnow()
 db.session.add(user)
-
 
 try:
     db.session.commit()
@@ -1362,7 +1358,7 @@ finally:
 &lt;li&gt;&lt;p&gt;从 &lt;code&gt;Exception&lt;/code&gt; 而不是 &lt;code&gt;BaseException&lt;/code&gt; 继承自定义的异常类&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;class-类:ff97f3d358883b516471cd3d03b40704&#34;&gt;Class（类）&lt;/h2&gt;
+&lt;h2 id=&#34;class-类&#34;&gt;Class（类）&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;显示的写明父类，如果不是继承自别的类，就继承自 &lt;code&gt;object&lt;/code&gt; 类&lt;/li&gt;
@@ -1370,9 +1366,9 @@ finally:
 &lt;li&gt;支持多继承，即同时有多个父类，建议使用 Mixin&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;编码建议:ff97f3d358883b516471cd3d03b40704&#34;&gt;编码建议&lt;/h2&gt;
+&lt;h2 id=&#34;编码建议&#34;&gt;编码建议&lt;/h2&gt;
 
-&lt;h3 id=&#34;字符串:ff97f3d358883b516471cd3d03b40704&#34;&gt;字符串&lt;/h3&gt;
+&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用字符串的 &lt;code&gt;join&lt;/code&gt; 方法拼接字符串&lt;/li&gt;
@@ -1381,7 +1377,7 @@ finally:
 &lt;li&gt;使用 &lt;code&gt;format&lt;/code&gt; 方法格式化字符串&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;比较:ff97f3d358883b516471cd3d03b40704&#34;&gt;比较&lt;/h3&gt;
+&lt;h3 id=&#34;比较&#34;&gt;比较&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;空的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;str&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, &lt;code&gt;dict&lt;/code&gt; 和 &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;0.0&lt;/code&gt;, &lt;code&gt;None&lt;/code&gt; 都是 &lt;code&gt;False&lt;/code&gt;&lt;/li&gt;
@@ -1409,7 +1405,7 @@ if k in d:
 &lt;/ol&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;其他:ff97f3d358883b516471cd3d03b40704&#34;&gt;其他&lt;/h3&gt;
+&lt;h3 id=&#34;其他&#34;&gt;其他&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用列表表达式（&lt;a href=&#34;https://www.python.org/dev/peps/pep-0202/&#34;&gt;list comprehension&lt;/a&gt;），字典表达式(&lt;a href=&#34;https://www.python.org/dev/peps/pep-0274/&#34;&gt;dict comprehension&lt;/a&gt;, Python 2.7+) 和生成器(generator)&lt;/li&gt;
@@ -1463,7 +1459,7 @@ if k in d:
 
 &lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装:be4f35f0576547f0cd881725d8efc31a&#34;&gt;安装&lt;/h2&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
 &lt;p&gt;Fabric 是 Python 编写的工具，所以可以用 pip 来安装：&lt;/p&gt;
 
@@ -1477,7 +1473,7 @@ if k in d:
 
 &lt;p&gt;安装完成后，会生成一个 &lt;code&gt;fab&lt;/code&gt; 命令，这个命令会读取当前路径在的 fabfile.py 并执行相应的任务。&lt;/p&gt;
 
-&lt;h2 id=&#34;hello-world:be4f35f0576547f0cd881725d8efc31a&#34;&gt;Hello, world!&lt;/h2&gt;
+&lt;h2 id=&#34;hello-world&#34;&gt;Hello, world!&lt;/h2&gt;
 
 &lt;p&gt;先来看一个简单的例子，用 &lt;code&gt;fab&lt;/code&gt; 命令执行一个输出 &lt;code&gt;Hello, world!&lt;/code&gt; 的任务。&lt;/p&gt;
 
@@ -1522,7 +1518,7 @@ Done.
 
 &lt;p&gt;这个例子除了展示 fab 运行任务和传递参数之外，没有什么实际意义，接下来用一个接近真实的场景来展示如何用 Fabric 部署。&lt;/p&gt;
 
-&lt;h2 id=&#34;部署应用:be4f35f0576547f0cd881725d8efc31a&#34;&gt;部署应用&lt;/h2&gt;
+&lt;h2 id=&#34;部署应用&#34;&gt;部署应用&lt;/h2&gt;
 
 &lt;p&gt;假设这样一个场景，有个 Python 项目取名 usercenter，用 git 做版本控制，用 supervisor 做进程管理。一次完整的部署过程可能包括这些流程：&lt;/p&gt;
 
@@ -1596,7 +1592,7 @@ $ fab staging deploy
 
 &lt;p&gt;执行过程中可能会有些交互，按提示输入相应信息，然后等着执行完成就好了。如果一切顺利（应该是这样），就完成了 usercenter 的部署了，整个过程只需要敲一行命令，是不是非常方便？&lt;/p&gt;
 
-&lt;h2 id=&#34;more:be4f35f0576547f0cd881725d8efc31a&#34;&gt;More&amp;hellip;&lt;/h2&gt;
+&lt;h2 id=&#34;more&#34;&gt;More&amp;hellip;&lt;/h2&gt;
 
 &lt;p&gt;上面的例子基本上是可以在实际环境中使用的，不过还是有很多内容没有覆盖到，比如错误处理，多服务器部署，并行等。Fabric 默认是串行执行的，如果有多个远程服务器，是一个一个顺序执行。执行过程中如果发生异常，任务会直接中断，所以可能需要有错误处理。&lt;/p&gt;
 
@@ -1621,7 +1617,7 @@ $ fab staging deploy
 
 &lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;安装&lt;/h2&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
 &lt;p&gt;Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :&lt;/p&gt;
 
@@ -1630,7 +1626,7 @@ $ fab staging deploy
 
 &lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;
 
-&lt;h2 id=&#34;supervisord-配置:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;supervisord 配置&lt;/h2&gt;
+&lt;h2 id=&#34;supervisord-配置&#34;&gt;supervisord 配置&lt;/h2&gt;
 
 &lt;p&gt;Supervisor 相当强大，提供了很丰富的功能，不过我们可能只需要用到其中一小部分。安装完成之后，可以编写配置文件，来满足自己的需求。为了方便，我们把配置分成两部分：supervisord（supervisor 是一个 C/S 模型的程序，这是 server 端，对应的有 client 端：supervisorctl）和应用程序（即我们要管理的程序）。&lt;/p&gt;
 
@@ -1686,7 +1682,7 @@ files = relative/directory/*.ini    ; 可以是 *.conf 或 *.ini
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ps aux | grep supervisord
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;program-配置:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;program 配置&lt;/h2&gt;
+&lt;h2 id=&#34;program-配置&#34;&gt;program 配置&lt;/h2&gt;
 
 &lt;p&gt;上面我们已经把 supervisrod 运行起来了，现在可以添加我们要管理的进程的配置文件。可以把所有配置项都写到 supervisord.conf 文件里，但并不推荐这样做，而是通过 include 的方式把不同的程序（组）写到不同的配置文件里。&lt;/p&gt;
 
@@ -1724,7 +1720,7 @@ stdout_logfile = /data/logs/usercenter_stdout.log
 
 &lt;p&gt;一份配置文件至少需要一个 &lt;code&gt;[program:x]&lt;/code&gt; 部分的配置，来告诉 supervisord 需要管理那个进程。&lt;code&gt;[program:x]&lt;/code&gt; 语法中的 &lt;code&gt;x&lt;/code&gt; 表示 program name，会在客户端（supervisorctl 或 web 界面）显示，在 supervisorctl 中通过这个值来对程序进行 start、restart、stop 等操作。&lt;/p&gt;
 
-&lt;h2 id=&#34;使用-supervisorctl:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;使用 supervisorctl&lt;/h2&gt;
+&lt;h2 id=&#34;使用-supervisorctl&#34;&gt;使用 supervisorctl&lt;/h2&gt;
 
 &lt;p&gt;Supervisorctl 是 supervisord 的一个命令行客户端工具，启动时需要指定与 supervisord 使用同一份配置文件，否则与 supervisord 一样按照顺序查找配置文件。&lt;/p&gt;
 
@@ -1751,7 +1747,7 @@ $ supervisorctl reread
 $ supervisorctl update 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;其它:0374c09b00e8eddcfa304907db4e0a23&#34;&gt;其它&lt;/h2&gt;
+&lt;h2 id=&#34;其它&#34;&gt;其它&lt;/h2&gt;
 
 &lt;p&gt;除了 supervisorctl 之外，还可以配置 supervisrod 启动 web 管理界面，这个 web 后台使用 Basic Auth 的方式进行身份认证。&lt;/p&gt;
 
@@ -1771,7 +1767,7 @@ $ supervisorctl update
       <guid>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</guid>
       <description>
 
-&lt;h2 id=&#34;缘起:4855d9d6e5f234c654404b26568913d6&#34;&gt;缘起&lt;/h2&gt;
+&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
 
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
 
@@ -1787,7 +1783,7 @@ $ supervisorctl update
 
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;
 
-&lt;h2 id=&#34;购买-vps:4855d9d6e5f234c654404b26568913d6&#34;&gt;购买 VPS&lt;/h2&gt;
+&lt;h2 id=&#34;购买-vps&#34;&gt;购买 VPS&lt;/h2&gt;
 
 &lt;p&gt;比较熟悉的是 Linode 和 DigitalOcean，两家的最低配置基本上差不多，但是 Linode 的价格（$10 每月）是后者的两倍。本来是想选择 DigitalOcean 的，但是在家折腾的时候，始终打不开 DigialOcean 的网站。。。于是就选择了 Linode 的 VPS。&lt;/p&gt;
 
@@ -1797,7 +1793,7 @@ $ supervisorctl update
 
 &lt;p&gt;购买的是最低的配置（&lt;a href=&#34;https://www.linode.com/pricing&#34;&gt;https://www.linode.com/pricing&lt;/a&gt;），不过对于个人应用，尤其是目前只有搭建 VPN 的需求来说，还是很奢侈的了。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装-shadowsocks:4855d9d6e5f234c654404b26568913d6&#34;&gt;安装 Shadowsocks&lt;/h2&gt;
+&lt;h2 id=&#34;安装-shadowsocks&#34;&gt;安装 Shadowsocks&lt;/h2&gt;
 
 &lt;p&gt;我用的是 Python 实现的版本，安装过程非常简单，文档上也有&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks&#34;&gt;教程&lt;/a&gt;。&lt;/p&gt;
 
@@ -1834,7 +1830,7 @@ $ supervisorctl update
 
 &lt;p&gt;最终使用的时候，VPN 配置的是本机的 shadowsocks，即 &lt;code&gt;127.0.0.1:1080&lt;/code&gt;，而不是直接连接服务端版本。&lt;/p&gt;
 
-&lt;h2 id=&#34;chrome-使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;Chrome 使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;chrome-使用-socks-代理&#34;&gt;Chrome 使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;Linux 系统可以配置全局的网络代理，Chrome 可以设置使用系统默认的代理配置，也可以使用 SwitchySharp 做更灵活的配置。&lt;/p&gt;
 
@@ -1849,7 +1845,7 @@ $ supervisorctl update
 
 &lt;p&gt;OK，完成。此后访问规则列表里的网站，都会走 Shadowsocks 的代理。如果使用过 SwitchySharp + GoAgent，即使没有截图，上面的配置很容易理解。&lt;/p&gt;
 
-&lt;h2 id=&#34;命令行使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;命令行使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;命令行使用-socks-代理&#34;&gt;命令行使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;浏览器可以自由翻墙了，终端却仍然还在墙内，使用 curl，wget 和 go get 访问墙外资源时依然失败。&lt;/p&gt;
 
@@ -1881,11 +1877,11 @@ forward         127.*.*.*/      .
 
 &lt;p&gt;现在就可以在命令行里愉快的上网了，用 go get 安装各种 golang package 都非常顺利。&lt;/p&gt;
 
-&lt;h2 id=&#34;android-手机使用-socks-代理:4855d9d6e5f234c654404b26568913d6&#34;&gt;Android 手机使用 socks 代理&lt;/h2&gt;
+&lt;h2 id=&#34;android-手机使用-socks-代理&#34;&gt;Android 手机使用 socks 代理&lt;/h2&gt;
 
 &lt;p&gt;Shadowsocks 真心人类的希望，还提供了 Android 的客户端：&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks-android&#34;&gt;https://github.com/shadowsocks/shadowsocks-android&lt;/a&gt;，安装和配置过程都很简单，略去不表。&lt;/p&gt;
 
-&lt;h2 id=&#34;后记:4855d9d6e5f234c654404b26568913d6&#34;&gt;后记&lt;/h2&gt;
+&lt;h2 id=&#34;后记&#34;&gt;后记&lt;/h2&gt;
 
 &lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
 

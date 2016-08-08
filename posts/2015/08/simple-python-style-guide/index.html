@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Python 编码规范 - 李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -159,7 +161,7 @@
 
 <p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
 
-<h2 id="缩进:ff97f3d358883b516471cd3d03b40704">缩进</h2>
+<h2 id="缩进">缩进</h2>
 
 <ul>
 <li>不要使用 tab 缩进</li>
@@ -167,7 +169,7 @@
 <li>绝对不要混用 tab 和空格，否则容易出现 <code>IndentationError</code></li>
 </ul>
 
-<h2 id="空格:ff97f3d358883b516471cd3d03b40704">空格</h2>
+<h2 id="空格">空格</h2>
 
 <ul>
 <li>在 list, dict, tuple, set, 参数列表的 <code>,</code> 后面加一个空格</li>
@@ -178,7 +180,7 @@
 <li>括号（<code>()</code>, <code>{}</code>, <code>[]</code>）内的两端不需要空格</li>
 </ul>
 
-<h2 id="空行:ff97f3d358883b516471cd3d03b40704">空行</h2>
+<h2 id="空行">空行</h2>
 
 <ul>
 <li>function 和 class 顶上两个空行</li>
@@ -188,7 +190,7 @@
 <li>if/for/while 语句中，即使执行语句只有一句，也要另起一行</li>
 </ul>
 
-<h2 id="换行:ff97f3d358883b516471cd3d03b40704">换行</h2>
+<h2 id="换行">换行</h2>
 
 <ul>
 <li>每一行代码控制在 80 字符以内</li>
@@ -201,13 +203,12 @@
         .skip(100).limit(100) \
         .all()
 
-
 text = ('Long strings can be made up '
         'of several shorter strings.')
 </code></pre></li>
 </ul>
 
-<h2 id="命名:ff97f3d358883b516471cd3d03b40704">命名</h2>
+<h2 id="命名">命名</h2>
 
 <ul>
 <li>使用有意义的，英文单词或词组，绝对不要使用汉语拼音</li>
@@ -294,7 +295,7 @@ text = ('Long strings can be made up '
 </table></li>
 </ul>
 
-<h2 id="import:ff97f3d358883b516471cd3d03b40704">import</h2>
+<h2 id="import">import</h2>
 
 <ul>
 <li>所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面</li>
@@ -327,7 +328,7 @@ from flask import Flask, render_template, jsonify
 <li><p>不要出现循环导入(cyclic import)</p></li>
 </ul>
 
-<h2 id="注释:ff97f3d358883b516471cd3d03b40704">注释</h2>
+<h2 id="注释">注释</h2>
 
 <ul>
 <li>文档字符串 <code>docstring</code>, 是 package, module, class, method, function 级别的注释，可以通过 <code>__doc__</code> 成员访问到，注释内容在一对 <code>&quot;&quot;&quot;</code> 符号之间</li>
@@ -345,7 +346,7 @@ x = x - 1       # increase x by 1
 <li><p>优先使用英文写注释，英文不好全部写中文，否则更加看不懂</p></li>
 </ul>
 
-<h2 id="异常:ff97f3d358883b516471cd3d03b40704">异常</h2>
+<h2 id="异常">异常</h2>
 
 <ul>
 <li>不要轻易使用 <code>try/except</code></li>
@@ -362,7 +363,6 @@ try:
     user.age = int(age) # 可能抛出异常
     user.created_at = datetime.datetime.utcnow()
 
-
     db.session.add(user)
     db.session.commit() # 可能抛出异常
 except:
@@ -374,13 +374,11 @@ try:
 except (TypeError, ValueError):
     return # 或别的操作
 
-
 user = User()
 user.name = &quot;leon&quot;
 user.age = age
 user.created_at = datetime.datetime.utcnow()
 db.session.add(user)
-
 
 try:
     db.session.commit()
@@ -393,7 +391,7 @@ finally:
 <li><p>从 <code>Exception</code> 而不是 <code>BaseException</code> 继承自定义的异常类</p></li>
 </ul>
 
-<h2 id="class-类:ff97f3d358883b516471cd3d03b40704">Class（类）</h2>
+<h2 id="class-类">Class（类）</h2>
 
 <ul>
 <li>显示的写明父类，如果不是继承自别的类，就继承自 <code>object</code> 类</li>
@@ -401,9 +399,9 @@ finally:
 <li>支持多继承，即同时有多个父类，建议使用 Mixin</li>
 </ul>
 
-<h2 id="编码建议:ff97f3d358883b516471cd3d03b40704">编码建议</h2>
+<h2 id="编码建议">编码建议</h2>
 
-<h3 id="字符串:ff97f3d358883b516471cd3d03b40704">字符串</h3>
+<h3 id="字符串">字符串</h3>
 
 <ul>
 <li>使用字符串的 <code>join</code> 方法拼接字符串</li>
@@ -412,7 +410,7 @@ finally:
 <li>使用 <code>format</code> 方法格式化字符串</li>
 </ul>
 
-<h3 id="比较:ff97f3d358883b516471cd3d03b40704">比较</h3>
+<h3 id="比较">比较</h3>
 
 <ul>
 <li>空的 <code>list</code>, <code>str</code>, <code>tuple</code>, <code>set</code>, <code>dict</code> 和 <code>0</code>, <code>0.0</code>, <code>None</code> 都是 <code>False</code></li>
@@ -440,7 +438,7 @@ if k in d:
 </ol></li>
 </ul>
 
-<h3 id="其他:ff97f3d358883b516471cd3d03b40704">其他</h3>
+<h3 id="其他">其他</h3>
 
 <ul>
 <li>使用列表表达式（<a href="https://www.python.org/dev/peps/pep-0202/">list comprehension</a>），字典表达式(<a href="https://www.python.org/dev/peps/pep-0274/">dict comprehension</a>, Python 2.7+) 和生成器(generator)</li>

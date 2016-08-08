@@ -19,7 +19,7 @@
 
 &lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
-&lt;h2 id=&#34;1-使用-gevent-并发模型:74e658e30842a8e82e2fb07a649e5826&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
+&lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-引用-flask-的-application-context:74e658e30842a8e82e2fb07a649e5826&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
+&lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
 &lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
@@ -113,7 +113,7 @@ def add(x, y):
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;minimum-example:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Minimum Example&lt;/h2&gt;
+&lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
 &lt;p&gt;Celery 的一些设计和概念，与 Flask 很像，在 Flask 项目中集成 Celery 也很简单，不像 Django 或其他框架需要扩展插件。首先来看个最简单的例子 example.py：&lt;/p&gt;
 
@@ -160,13 +160,13 @@ if __name__ == &#39;__main__&#39;:
 
 &lt;p&gt;当然，实际应用在生产环境下，不能直接用 Flask 自带的 server，需要使用 Gunicorn 这样的 WSGI 容器，或 uWSGI. 而且 Celery worker 进程和 Web server 进程应该用 supervisord 管理起来。&lt;/p&gt;
 
-&lt;h2 id=&#34;becoming-bigger:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;Becoming Bigger&lt;/h2&gt;
+&lt;h2 id=&#34;becoming-bigger&#34;&gt;Becoming Bigger&lt;/h2&gt;
 
 &lt;p&gt;这是个最简单的例子，实际应用会比这个复杂很多：有很多模块，更复杂的配置，更多的 task 等。在这种情况下，Flask 推荐使用 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Application Factory Pattern&lt;/a&gt;，也就是定义一个 function，在这里创建 Flask app 对象，并且处理注册路由（blueprints）、配置 logging 等一系列初始化操作。&lt;/p&gt;
 
 &lt;p&gt;下面我们看看在更大的 Flask 项目里，应该如何使用 Celery.&lt;/p&gt;
 
-&lt;h3 id=&#34;项目结构:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;项目结构&lt;/h3&gt;
+&lt;h3 id=&#34;项目结构&#34;&gt;项目结构&lt;/h3&gt;
 
 &lt;p&gt;首先来看一下整个项目的结构：&lt;/p&gt;
 
@@ -195,7 +195,7 @@ if __name__ == &#39;__main__&#39;:
 &lt;li&gt;app 包里是主要业务代码，其中 tasks 里定义里一系列的 task，提供给其他模块调用。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;主要代码:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;主要代码。&lt;/h3&gt;
+&lt;h3 id=&#34;主要代码&#34;&gt;主要代码。&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;app/config.py&lt;/li&gt;
@@ -295,14 +295,14 @@ app.app_context().push()
 
 &lt;p&gt;&lt;code&gt;app.app_context().push()&lt;/code&gt; 会推入一个 application context，后续所有操作都会在这个环境里执行，直到进程退出。因此，如果在 tasks 里用到了 &lt;code&gt;current_app&lt;/code&gt; 或其它需要 application context 的东西，就一定需要这样做。（默认情况下 Celery 的 pool 是 prefork，也就是多进程，现在这种写法没有问题；但是如果指定使用 gevent，是没用的。这种情况下有别的解决方案，以后会写文章讨论。）&lt;/p&gt;
 
-&lt;h3 id=&#34;运行:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;运行&lt;/h3&gt;
+&lt;h3 id=&#34;运行&#34;&gt;运行&lt;/h3&gt;
 
 &lt;p&gt;在项目的根路径下启动 Celery worker:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -l INFO
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:189b2b2b7ede750816eef2f2c404a30a&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
 </description>
@@ -316,9 +316,9 @@ app.app_context().push()
       <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
       <description>
 
-&lt;h2 id=&#34;introduction:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Introduction&lt;/h2&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
-&lt;h3 id=&#34;分布式任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;分布式任务队列&lt;/h3&gt;
+&lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个分布式任务队列，下面是 &lt;a href=&#34;http://www.celeryproject.org/&#34;&gt;官网&lt;/a&gt; 的一段描述：&lt;/p&gt;
 
@@ -328,7 +328,7 @@ app.app_context().push()
 
 &lt;p&gt;Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。&lt;/p&gt;
 
-&lt;h3 id=&#34;何为任务队列:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;何为任务队列？&lt;/h3&gt;
+&lt;h3 id=&#34;何为任务队列&#34;&gt;何为任务队列？&lt;/h3&gt;
 
 &lt;p&gt;摘自 Celery 官方文档的 &lt;a href=&#34;http://docs.jinkan.org/docs/celery/getting-started/introduction.html&#34;&gt;中文翻译&lt;/a&gt;：&lt;/p&gt;
 
@@ -342,7 +342,7 @@ app.app_context().push()
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&#34;适用场景:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;适用场景&lt;/h3&gt;
+&lt;h3 id=&#34;适用场景&#34;&gt;适用场景&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;可以在 Request-Response 循环之外执行的操作：发送邮件、推送消息&lt;/li&gt;
@@ -350,11 +350,11 @@ app.app_context().push()
 &lt;li&gt;周期性任务：取代 crontab&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&#34;simple-tutorial:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;Simple Tutorial&lt;/h2&gt;
+&lt;h2 id=&#34;simple-tutorial&#34;&gt;Simple Tutorial&lt;/h2&gt;
 
 &lt;p&gt;主要参考了官网文档：&lt;a href=&#34;http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html&#34;&gt;First Steps with Celery&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;选择-broker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;选择 Broker&lt;/h3&gt;
+&lt;h3 id=&#34;选择-broker&#34;&gt;选择 Broker&lt;/h3&gt;
 
 &lt;p&gt;下图描述了 Celery 的基本架构和工作流程。&lt;/p&gt;
 
@@ -374,7 +374,7 @@ app.app_context().push()
 
 &lt;p&gt;我们在这里选择使用 Reids.&lt;/p&gt;
 
-&lt;h3 id=&#34;安装:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;p&gt;Celery 是一个 Python 的应用，而且已经上传到了 PyPi，所以可以使用 &lt;code&gt;pip&lt;/code&gt; 或 &lt;code&gt;easy_install&lt;/code&gt; 安装：&lt;/p&gt;
 
@@ -383,7 +383,7 @@ app.app_context().push()
 
 &lt;p&gt;安装完成后会在 PATH （或 virtualenv 的 bin 目录）添加几个命令：celery, celerybeat, celeryd 和 celeryd-multi. 我们这里只使用 celery 命令。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-application-和-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
+&lt;h3 id=&#34;创建-application-和-task&#34;&gt;创建 Application 和 Task&lt;/h3&gt;
 
 &lt;p&gt;Celery 的使用方法和 Flask 很像，实例化一个 Celery 对象 &lt;code&gt;app&lt;/code&gt;，然后通过 &lt;code&gt;@app.task&lt;/code&gt; 装饰器注册一个 task. 下面是一个简单的例子 tasks.py：&lt;/p&gt;
 
@@ -397,7 +397,7 @@ def add(x, y):
     return x + y
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;运行-worker:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;运行 worker&lt;/h3&gt;
+&lt;h3 id=&#34;运行-worker&#34;&gt;运行 worker&lt;/h3&gt;
 
 &lt;p&gt;在 tasks.py 文件所在目录运行&lt;/p&gt;
 
@@ -424,7 +424,7 @@ def add(x, y):
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker --help
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;调用-task:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;调用 task&lt;/h3&gt;
+&lt;h3 id=&#34;调用-task&#34;&gt;调用 task&lt;/h3&gt;
 
 &lt;p&gt;有些 Task 可以当作一个普通的函数同步调用，这里讨论异步的方式：&lt;/p&gt;
 
@@ -436,11 +436,11 @@ add.apply_async(1, 2)
 
 &lt;p&gt;上面两种调用方式等价，&lt;code&gt;delay()&lt;/code&gt; 方法是 &lt;code&gt;apply_async()&lt;/code&gt; 方法的简写。这个调用会把 &lt;code&gt;add&lt;/code&gt; 操作放入到队列里，然后立即返回一个 &lt;code&gt;AsyncResult&lt;/code&gt; 对象。如果关心处理结果，需要给 &lt;code&gt;app&lt;/code&gt; 配置 &lt;code&gt;CELERY_RESULT_BACKEND&lt;/code&gt;，指定一个存储后端保存任务的返回值。&lt;/p&gt;
 
-&lt;h3 id=&#34;配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置&lt;/h3&gt;
+&lt;h3 id=&#34;配置&#34;&gt;配置&lt;/h3&gt;
 
 &lt;p&gt;前文说过 Celery 与 Flask 的使用很像，配置也是如此。一般情况下，使用 Celery 的默认配置就已经足够，但 Celery 也提供了很灵活的配置。下面是两种配置方式，&lt;a href=&#34;http://docs.celeryproject.org/en/latest/configuration.html&#34;&gt;官方文档&lt;/a&gt; 可以查看所有的配置项及默认值。&lt;/p&gt;
 
-&lt;h4 id=&#34;直接修改配置:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;直接修改配置&lt;/h4&gt;
+&lt;h4 id=&#34;直接修改配置&#34;&gt;直接修改配置&lt;/h4&gt;
 
 &lt;p&gt;单个：&lt;/p&gt;
 
@@ -458,7 +458,7 @@ add.apply_async(1, 2)
 )
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置模块:d2146fb3793abd4f6cbfeada8f10d4fd&#34;&gt;配置模块&lt;/h4&gt;
+&lt;h4 id=&#34;配置模块&#34;&gt;配置模块&lt;/h4&gt;
 
 &lt;p&gt;类似 Flask，对于比较大的 Celery 项目，配置模块（configuration module）是更好的选择。Celery 对象有个 &lt;code&gt;config_from_object&lt;/code&gt; 方法，读取一个 object (py 文件或 class)来更新配置。&lt;/p&gt;
 
@@ -500,7 +500,7 @@ CELERY_ENABLE_UTC = True
 
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;
 
-&lt;h2 id=&#34;基本思想:a2bd452655e299f799e36f1a03619c2b&#34;&gt;基本思想&lt;/h2&gt;
+&lt;h2 id=&#34;基本思想&#34;&gt;基本思想&lt;/h2&gt;
 
 &lt;p&gt;“一码胜千言”，直接上代码描述一下：&lt;/p&gt;
 
@@ -515,7 +515,7 @@ CELERY_ENABLE_UTC = True
 
 &lt;p&gt;实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。&lt;/p&gt;
 
-&lt;h2 id=&#34;tornado-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Tornado 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;tornado-的实现&#34;&gt;Tornado 的实现&lt;/h2&gt;
 
 &lt;p&gt;Tornado 的 &lt;code&gt;tornado.web.RequestHandler&lt;/code&gt; 有两个方法：&lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt;。前者会在执行业务代码前执行，后者用于写入响应结果。所以可以在 &lt;code&gt;prepare&lt;/code&gt; 里查询缓存，如果命中就直接返回。没有命中的请求会执行业务代码，然后在 &lt;code&gt;write&lt;/code&gt; 里顺便写入缓存。&lt;/p&gt;
 
@@ -587,7 +587,7 @@ def set_cache_timeout(expiration=300):
         self.write(&amp;quot;Hello world!&amp;quot;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;flask-的实现:a2bd452655e299f799e36f1a03619c2b&#34;&gt;Flask 的实现&lt;/h2&gt;
+&lt;h2 id=&#34;flask-的实现&#34;&gt;Flask 的实现&lt;/h2&gt;
 
 &lt;p&gt;Flask 里可以用 &lt;code&gt;before_request&lt;/code&gt; 和 &lt;code&gt;after_request&lt;/code&gt; 这两个 hooks 实现 Tornado 里覆盖 &lt;code&gt;prepare&lt;/code&gt; 和 &lt;code&gt;write&lt;/code&gt; 来缓存所有请求，具体实现大同小异。也可以用装饰器来获得更好的灵活性。&lt;/p&gt;
 
@@ -659,7 +659,7 @@ def hello():
     return &amp;quot;Hello, world!&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;结语:a2bd452655e299f799e36f1a03619c2b&#34;&gt;结语&lt;/h2&gt;
+&lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
 
 &lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;
 </description>
@@ -830,7 +830,7 @@ def register():
 
 &lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;
 
-&lt;h2 id=&#34;缩进:ff97f3d358883b516471cd3d03b40704&#34;&gt;缩进&lt;/h2&gt;
+&lt;h2 id=&#34;缩进&#34;&gt;缩进&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不要使用 tab 缩进&lt;/li&gt;
@@ -838,7 +838,7 @@ def register():
 &lt;li&gt;绝对不要混用 tab 和空格，否则容易出现 &lt;code&gt;IndentationError&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;空格:ff97f3d358883b516471cd3d03b40704&#34;&gt;空格&lt;/h2&gt;
+&lt;h2 id=&#34;空格&#34;&gt;空格&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;在 list, dict, tuple, set, 参数列表的 &lt;code&gt;,&lt;/code&gt; 后面加一个空格&lt;/li&gt;
@@ -849,7 +849,7 @@ def register():
 &lt;li&gt;括号（&lt;code&gt;()&lt;/code&gt;, &lt;code&gt;{}&lt;/code&gt;, &lt;code&gt;[]&lt;/code&gt;）内的两端不需要空格&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;空行:ff97f3d358883b516471cd3d03b40704&#34;&gt;空行&lt;/h2&gt;
+&lt;h2 id=&#34;空行&#34;&gt;空行&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;function 和 class 顶上两个空行&lt;/li&gt;
@@ -859,7 +859,7 @@ def register():
 &lt;li&gt;if/for/while 语句中，即使执行语句只有一句，也要另起一行&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;换行:ff97f3d358883b516471cd3d03b40704&#34;&gt;换行&lt;/h2&gt;
+&lt;h2 id=&#34;换行&#34;&gt;换行&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;每一行代码控制在 80 字符以内&lt;/li&gt;
@@ -872,13 +872,12 @@ def register():
         .skip(100).limit(100) \
         .all()
 
-
 text = (&#39;Long strings can be made up &#39;
         &#39;of several shorter strings.&#39;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;命名:ff97f3d358883b516471cd3d03b40704&#34;&gt;命名&lt;/h2&gt;
+&lt;h2 id=&#34;命名&#34;&gt;命名&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用有意义的，英文单词或词组，绝对不要使用汉语拼音&lt;/li&gt;
@@ -965,7 +964,7 @@ text = (&#39;Long strings can be made up &#39;
 &lt;/table&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;import:ff97f3d358883b516471cd3d03b40704&#34;&gt;import&lt;/h2&gt;
+&lt;h2 id=&#34;import&#34;&gt;import&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面&lt;/li&gt;
@@ -998,7 +997,7 @@ from flask import Flask, render_template, jsonify
 &lt;li&gt;&lt;p&gt;不要出现循环导入(cyclic import)&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;注释:ff97f3d358883b516471cd3d03b40704&#34;&gt;注释&lt;/h2&gt;
+&lt;h2 id=&#34;注释&#34;&gt;注释&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;文档字符串 &lt;code&gt;docstring&lt;/code&gt;, 是 package, module, class, method, function 级别的注释，可以通过 &lt;code&gt;__doc__&lt;/code&gt; 成员访问到，注释内容在一对 &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; 符号之间&lt;/li&gt;
@@ -1016,7 +1015,7 @@ x = x - 1       # increase x by 1
 &lt;li&gt;&lt;p&gt;优先使用英文写注释，英文不好全部写中文，否则更加看不懂&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;异常:ff97f3d358883b516471cd3d03b40704&#34;&gt;异常&lt;/h2&gt;
+&lt;h2 id=&#34;异常&#34;&gt;异常&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;不要轻易使用 &lt;code&gt;try/except&lt;/code&gt;&lt;/li&gt;
@@ -1033,7 +1032,6 @@ try:
     user.age = int(age) # 可能抛出异常
     user.created_at = datetime.datetime.utcnow()
 
-
     db.session.add(user)
     db.session.commit() # 可能抛出异常
 except:
@@ -1045,13 +1043,11 @@ try:
 except (TypeError, ValueError):
     return # 或别的操作
 
-
 user = User()
 user.name = &amp;quot;leon&amp;quot;
 user.age = age
 user.created_at = datetime.datetime.utcnow()
 db.session.add(user)
-
 
 try:
     db.session.commit()
@@ -1064,7 +1060,7 @@ finally:
 &lt;li&gt;&lt;p&gt;从 &lt;code&gt;Exception&lt;/code&gt; 而不是 &lt;code&gt;BaseException&lt;/code&gt; 继承自定义的异常类&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;class-类:ff97f3d358883b516471cd3d03b40704&#34;&gt;Class（类）&lt;/h2&gt;
+&lt;h2 id=&#34;class-类&#34;&gt;Class（类）&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;显示的写明父类，如果不是继承自别的类，就继承自 &lt;code&gt;object&lt;/code&gt; 类&lt;/li&gt;
@@ -1072,9 +1068,9 @@ finally:
 &lt;li&gt;支持多继承，即同时有多个父类，建议使用 Mixin&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;编码建议:ff97f3d358883b516471cd3d03b40704&#34;&gt;编码建议&lt;/h2&gt;
+&lt;h2 id=&#34;编码建议&#34;&gt;编码建议&lt;/h2&gt;
 
-&lt;h3 id=&#34;字符串:ff97f3d358883b516471cd3d03b40704&#34;&gt;字符串&lt;/h3&gt;
+&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用字符串的 &lt;code&gt;join&lt;/code&gt; 方法拼接字符串&lt;/li&gt;
@@ -1083,7 +1079,7 @@ finally:
 &lt;li&gt;使用 &lt;code&gt;format&lt;/code&gt; 方法格式化字符串&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;比较:ff97f3d358883b516471cd3d03b40704&#34;&gt;比较&lt;/h3&gt;
+&lt;h3 id=&#34;比较&#34;&gt;比较&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;空的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;str&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, &lt;code&gt;dict&lt;/code&gt; 和 &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;0.0&lt;/code&gt;, &lt;code&gt;None&lt;/code&gt; 都是 &lt;code&gt;False&lt;/code&gt;&lt;/li&gt;
@@ -1111,7 +1107,7 @@ if k in d:
 &lt;/ol&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;其他:ff97f3d358883b516471cd3d03b40704&#34;&gt;其他&lt;/h3&gt;
+&lt;h3 id=&#34;其他&#34;&gt;其他&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;使用列表表达式（&lt;a href=&#34;https://www.python.org/dev/peps/pep-0202/&#34;&gt;list comprehension&lt;/a&gt;），字典表达式(&lt;a href=&#34;https://www.python.org/dev/peps/pep-0274/&#34;&gt;dict comprehension&lt;/a&gt;, Python 2.7+) 和生成器(generator)&lt;/li&gt;
@@ -1165,7 +1161,7 @@ if k in d:
 
 &lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;
 
-&lt;h2 id=&#34;安装:be4f35f0576547f0cd881725d8efc31a&#34;&gt;安装&lt;/h2&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
 &lt;p&gt;Fabric 是 Python 编写的工具，所以可以用 pip 来安装：&lt;/p&gt;
 
@@ -1179,7 +1175,7 @@ if k in d:
 
 &lt;p&gt;安装完成后，会生成一个 &lt;code&gt;fab&lt;/code&gt; 命令，这个命令会读取当前路径在的 fabfile.py 并执行相应的任务。&lt;/p&gt;
 
-&lt;h2 id=&#34;hello-world:be4f35f0576547f0cd881725d8efc31a&#34;&gt;Hello, world!&lt;/h2&gt;
+&lt;h2 id=&#34;hello-world&#34;&gt;Hello, world!&lt;/h2&gt;
 
 &lt;p&gt;先来看一个简单的例子，用 &lt;code&gt;fab&lt;/code&gt; 命令执行一个输出 &lt;code&gt;Hello, world!&lt;/code&gt; 的任务。&lt;/p&gt;
 
@@ -1224,7 +1220,7 @@ Done.
 
 &lt;p&gt;这个例子除了展示 fab 运行任务和传递参数之外，没有什么实际意义，接下来用一个接近真实的场景来展示如何用 Fabric 部署。&lt;/p&gt;
 
-&lt;h2 id=&#34;部署应用:be4f35f0576547f0cd881725d8efc31a&#34;&gt;部署应用&lt;/h2&gt;
+&lt;h2 id=&#34;部署应用&#34;&gt;部署应用&lt;/h2&gt;
 
 &lt;p&gt;假设这样一个场景，有个 Python 项目取名 usercenter，用 git 做版本控制，用 supervisor 做进程管理。一次完整的部署过程可能包括这些流程：&lt;/p&gt;
 
@@ -1298,7 +1294,7 @@ $ fab staging deploy
 
 &lt;p&gt;执行过程中可能会有些交互，按提示输入相应信息，然后等着执行完成就好了。如果一切顺利（应该是这样），就完成了 usercenter 的部署了，整个过程只需要敲一行命令，是不是非常方便？&lt;/p&gt;
 
-&lt;h2 id=&#34;more:be4f35f0576547f0cd881725d8efc31a&#34;&gt;More&amp;hellip;&lt;/h2&gt;
+&lt;h2 id=&#34;more&#34;&gt;More&amp;hellip;&lt;/h2&gt;
 
 &lt;p&gt;上面的例子基本上是可以在实际环境中使用的，不过还是有很多内容没有覆盖到，比如错误处理，多服务器部署，并行等。Fabric 默认是串行执行的，如果有多个远程服务器，是一个一个顺序执行。执行过程中如果发生异常，任务会直接中断，所以可能需要有错误处理。&lt;/p&gt;
 
@@ -1323,7 +1319,7 @@ $ fab staging deploy
 
 &lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
 
-&lt;h1 id=&#34;1-what:6e1d883f88cf13596243023295e5bb32&#34;&gt;1. What&lt;/h1&gt;
+&lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
 
 &lt;p&gt;原题在这里：&lt;a href=&#34;http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/&#34;&gt;How to validate integer range in Flask routing (Werkzeug)?&lt;/a&gt;&lt;/p&gt;
 
@@ -1340,13 +1336,13 @@ def foo_id(id):
 
 &lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h1 id=&#34;2-how:6e1d883f88cf13596243023295e5bb32&#34;&gt;2. How&lt;/h1&gt;
+&lt;h1 id=&#34;2-how&#34;&gt;2. How&lt;/h1&gt;
 
 &lt;p&gt;这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。&lt;/p&gt;
 
 &lt;p&gt;虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 &lt;a href=&#34;http://werkzeug.pocoo.org/&#34;&gt;WSGI Utility Library: Werkzeug&lt;/a&gt; 和 &lt;a href=&#34;http://jinja.pocoo.org&#34;&gt;模板引擎 Jinja2&lt;/a&gt;，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-1-builtin-converters:6e1d883f88cf13596243023295e5bb32&#34;&gt;2.1 Builtin Converters&lt;/h2&gt;
+&lt;h2 id=&#34;2-1-builtin-converters&#34;&gt;2.1 Builtin Converters&lt;/h2&gt;
 
 &lt;p&gt;如前所述，Werkzeug 提供了几种 &lt;a href=&#34;http://werkzeug.pocoo.org/docs/routing/#builtin-converters&#34;&gt;builtin converters&lt;/a&gt;，分别是：&lt;/p&gt;
 
@@ -1360,7 +1356,7 @@ def foo_id(id):
 
 &lt;p&gt;从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（&lt;code&gt;minlength&lt;/code&gt;）、最大长度（&lt;code&gt;maxlength&lt;/code&gt;）或者指定长度（&lt;code&gt;length&lt;/code&gt;）。IntergerConverter 和 FloatConverter 都可以指定最小值（&lt;code&gt;min&lt;/code&gt;）和最大值（&lt;code&gt;max&lt;/code&gt;）。所以看完这些，就可以解决最开始的问题了。&lt;/p&gt;
 
-&lt;h2 id=&#34;2-2-solution:6e1d883f88cf13596243023295e5bb32&#34;&gt;2.2 Solution&lt;/h2&gt;
+&lt;h2 id=&#34;2-2-solution&#34;&gt;2.2 Solution&lt;/h2&gt;
 
 &lt;p&gt;回到原题，是需要对 &lt;code&gt;id&lt;/code&gt; 做范围限制（&lt;code&gt;1～300&lt;/code&gt;），因此路由就可以这样写了（&lt;a href=&#34;http://stackoverflow.com/a/19076418/1461780&#34;&gt;我的回答&lt;/a&gt;）：&lt;/p&gt;
 
@@ -1373,7 +1369,7 @@ def foo_id(id):
 
 &lt;p&gt;这个路由就限定了 &lt;code&gt;id&lt;/code&gt; 的范围，对于超出范围的请求，如 &lt;code&gt;/foo/1024/&lt;/code&gt;，就会找不到对应的路由，因此会返回 &lt;code&gt;404&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h1 id=&#34;3-end:6e1d883f88cf13596243023295e5bb32&#34;&gt;3. End&lt;/h1&gt;
+&lt;h1 id=&#34;3-end&#34;&gt;3. End&lt;/h1&gt;
 
 &lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;
 </description>
@@ -1387,7 +1383,7 @@ def foo_id(id):
       <guid>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</guid>
       <description>
 
-&lt;h2 id=&#34;note:5cd98240460e7b5c77708168d0565250&#34;&gt;Note&lt;/h2&gt;
+&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
 
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
 
@@ -1397,7 +1393,7 @@ def foo_id(id):
 
 &lt;hr /&gt;
 
-&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects:5cd98240460e7b5c77708168d0565250&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
+&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
 
 &lt;p&gt;要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。&lt;/p&gt;
 
@@ -1457,7 +1453,7 @@ except NameError, e:
     #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;2-函数引用-functions-references:5cd98240460e7b5c77708168d0565250&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
+&lt;h1 id=&#34;2-函数引用-functions-references&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
 
 &lt;p&gt;OK，还在吧？！现在到了有趣的部分，你刚刚已经知道了，python的函数也是对象，因此：&lt;/p&gt;
 
@@ -1517,7 +1513,7 @@ doSomethingBefore(scream)
 
 &lt;p&gt;那好，你现在已经具备了理解装饰器的所有基础知识了。你看，装饰器也就是一种包装材料，&lt;strong&gt;它们可以让你在执行被装饰的函数之前或之后执行其他代码，而且不需要修改函数本身&lt;/strong&gt;。（原句比较长：You see, decorators are wrappers which means that they let you execute code before and after the function they decorate without the need to modify the function itself.）&lt;/p&gt;
 
-&lt;h1 id=&#34;3-手工制作装饰器-handcrafted-decorators:5cd98240460e7b5c77708168d0565250&#34;&gt;3. 手工制作装饰器（Handcrafted decorators）&lt;/h1&gt;
+&lt;h1 id=&#34;3-手工制作装饰器-handcrafted-decorators&#34;&gt;3. 手工制作装饰器（Handcrafted decorators）&lt;/h1&gt;
 
 &lt;p&gt;你可以像这样来定制：&lt;/p&gt;
 
@@ -1575,7 +1571,7 @@ a_stand_alone_function()
 # And guess what? That&#39;s EXACTLY what decorators do!
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;4-揭秘装饰器-decorators-demystified:5cd98240460e7b5c77708168d0565250&#34;&gt;4. 揭秘装饰器(Decorators demystified)&lt;/h1&gt;
+&lt;h1 id=&#34;4-揭秘装饰器-decorators-demystified&#34;&gt;4. 揭秘装饰器(Decorators demystified)&lt;/h1&gt;
 
 &lt;p&gt;我们用装饰器的语法来重写一下前面的例子：&lt;/p&gt;
 
@@ -1659,9 +1655,9 @@ strange_sandwich()
 # ~salad~
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;5-回答题主问题-略:5cd98240460e7b5c77708168d0565250&#34;&gt;5. 回答题主问题，略&lt;/h1&gt;
+&lt;h1 id=&#34;5-回答题主问题-略&#34;&gt;5. 回答题主问题，略&lt;/h1&gt;
 
-&lt;h1 id=&#34;6-给装饰器函数传参-passing-arguments-to-the-decorated-function:5cd98240460e7b5c77708168d0565250&#34;&gt;6. 给装饰器函数传参（Passing arguments to the decorated function）&lt;/h1&gt;
+&lt;h1 id=&#34;6-给装饰器函数传参-passing-arguments-to-the-decorated-function&#34;&gt;6. 给装饰器函数传参（Passing arguments to the decorated function）&lt;/h1&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# 这不是什么黑色魔法(black magic)，你只是必须让wrapper传递参数:
  
@@ -1684,7 +1680,7 @@ print_full_name(&amp;quot;Peter&amp;quot;, &amp;quot;Venkman&amp;quot;)
 #My name is Peter 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;7-装饰方法-decorating-methods:5cd98240460e7b5c77708168d0565250&#34;&gt;7. 装饰方法（Decorating methods）&lt;/h1&gt;
+&lt;h1 id=&#34;7-装饰方法-decorating-methods&#34;&gt;7. 装饰方法（Decorating methods）&lt;/h1&gt;
 
 &lt;p&gt;Python的一个伟大之处在于：方法和函数几乎是一样的(methods and functions are really the same)，除了方法的第一个参数应该是当前对象的引用(也就是 self)。这也就意味着只要记住把 self 考虑在内，你就可以用同样的方法给方法创建装饰器了：&lt;/p&gt;
 
@@ -1775,7 +1771,7 @@ m.sayYourAge()
 #I am 28, what did you think?
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;8-给装饰器传参-passing-arguments-to-the-decorator:5cd98240460e7b5c77708168d0565250&#34;&gt;8. 给装饰器传参（Passing arguments to the decorator）&lt;/h1&gt;
+&lt;h1 id=&#34;8-给装饰器传参-passing-arguments-to-the-decorator&#34;&gt;8. 给装饰器传参（Passing arguments to the decorator）&lt;/h1&gt;
 
 &lt;p&gt;太棒了，那么现在对于给装饰器本身传参数，你有什么看法呢？好吧，这样说有点绕，因为装饰器必须接受一个函数作为参数，所以就不能把被装饰的函数的参数，直接传给装饰器（you cannot pass the decorated function arguments directly to the decorator.）&lt;/p&gt;
 
@@ -1962,7 +1958,7 @@ decorated_function_with_arguments(c2, &amp;quot;Howard&amp;quot;)
 
 &lt;p&gt;如你所见，你可以给装饰器传递参数，就好像其他任意一个使用了这种把戏的函数一样（you can pass arguments to the decorator like any function using this trick. ）。如果你愿意，甚至可以使用 &lt;code&gt;*args&lt;/code&gt;, &lt;code&gt;**kwargs&lt;/code&gt;。但是，记住，装置器只调用一次，仅当python导入这个脚本时。你不能在之后动态的设置参数（You can&amp;rsquo;t dynamically set the arguments afterwards.）。当你执行 &lt;code&gt;import x&lt;/code&gt; 时，这个函数已经被装饰了，因此你不能修改任何东西。&lt;/p&gt;
 
-&lt;h1 id=&#34;9-实践-装饰器装饰一个装饰器-let-s-practice-a-decorator-to-decorate-a-decorator:5cd98240460e7b5c77708168d0565250&#34;&gt;9. 实践：装饰器装饰一个装饰器（Let&amp;rsquo;s practice: a decorator to decorate a decorator）&lt;/h1&gt;
+&lt;h1 id=&#34;9-实践-装饰器装饰一个装饰器-let-s-practice-a-decorator-to-decorate-a-decorator&#34;&gt;9. 实践：装饰器装饰一个装饰器（Let&amp;rsquo;s practice: a decorator to decorate a decorator）&lt;/h1&gt;
 
 &lt;p&gt;OK，作为一个福利，我将展示一段能用来创建能接受通用的任意参数的装饰器的代码（I&amp;rsquo;ll give you a snippet to make any decorator accept generically any argument. ）。毕竟，为了能接受参数，我们用了另一个函数来创建我们的装饰器。我们包装了装饰器。在我们刚刚看到的东西里，还有用来包装函数的吗？是的，就是装饰器。让我们给装饰器写一个装饰器来玩玩：&lt;/p&gt;
 
@@ -2019,7 +2015,7 @@ decorated_function(&amp;quot;Universe and&amp;quot;, &amp;quot;everything&amp;qu
 
 &lt;p&gt;我知道，你上一次有这种感觉，是在听一个人说“在理解递归之前，你必须先理解递归”之后。但是现在，掌握之后，你不觉得很爽吗？&lt;/p&gt;
 
-&lt;h1 id=&#34;10-装饰器最佳实践-best-practices-while-using-decorators:5cd98240460e7b5c77708168d0565250&#34;&gt;10. 装饰器最佳实践（Best practices while using decorators）&lt;/h1&gt;
+&lt;h1 id=&#34;10-装饰器最佳实践-best-practices-while-using-decorators&#34;&gt;10. 装饰器最佳实践（Best practices while using decorators）&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;装饰器是在 python 2.4 之后才有的，所以先确定你的代码运行时；&lt;/li&gt;
@@ -2065,7 +2061,7 @@ def bar(func):
     return wrapper
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;11-装饰器如何才能有用-how-can-the-decorators-be-useful:5cd98240460e7b5c77708168d0565250&#34;&gt;11. 装饰器如何才能有用（How can the decorators be useful?）&lt;/h1&gt;
+&lt;h1 id=&#34;11-装饰器如何才能有用-how-can-the-decorators-be-useful&#34;&gt;11. 装饰器如何才能有用（How can the decorators be useful?）&lt;/h1&gt;
 
 &lt;p&gt;现在问题来了：我能用装饰器来干嘛？看起来很酷也很强大，但是来一个实际例子才更好。好吧，有1000中可能性（Well, there are 1000 possibilities.）。一个典型的用途是，用来扩展一个外部导入的函数（你不能修改）的行为，或者为了调试（你不想修改这个函数，因为只是暂时的）。你也可以用装饰器实现只用一段相同的代码来扩展成几个不同的函数，而且你不需要每次都重写这段代码。这样就是常说的 DRY。比如：&lt;/p&gt;
 
@@ -2171,7 +2167,7 @@ print get_random_furturama_quote()
 
 &lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;
 
-&lt;h1 id=&#34;1-安装:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;1. 安装&lt;/h1&gt;
+&lt;h1 id=&#34;1-安装&#34;&gt;1. 安装&lt;/h1&gt;
 
 &lt;p&gt;可以在这里下载openpyxl的代码包，然后从源代码安装即可。最新版本是 1.6.1.&lt;/p&gt;
 
@@ -2179,7 +2175,7 @@ print get_random_furturama_quote()
 &lt;p&gt;&lt;a href=&#34;https://pypi.python.org/pypi/openpyxl&#34;&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h1 id=&#34;2-读:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;2. 读&lt;/h1&gt;
+&lt;h1 id=&#34;2-读&#34;&gt;2. 读&lt;/h1&gt;
 
 &lt;p&gt;用openpyxl读一个xlsx文件很简单：&lt;/p&gt;
 
@@ -2208,7 +2204,7 @@ print ws.cell(row=12, column=2).value
 
 &lt;p&gt;当调用 &lt;code&gt;get_sheet_by_name(&#39;sheet_name&#39;)&lt;/code&gt; 方法获取表格时，如果名字为 &lt;code&gt;sheet_name&lt;/code&gt; 的表格不存在，不会报错或抛出异常，而只是返回 &lt;code&gt;None&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h1 id=&#34;3-写:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;3. 写&lt;/h1&gt;
+&lt;h1 id=&#34;3-写&#34;&gt;3. 写&lt;/h1&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from openpyxl import Workbook
  
@@ -2232,7 +2228,7 @@ for row in range(100):
 wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h1 id=&#34;4-文档:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;4. 文档&lt;/h1&gt;
+&lt;h1 id=&#34;4-文档&#34;&gt;4. 文档&lt;/h1&gt;
 
 &lt;p&gt;对于常规的小文件的操作，以上的一些介绍基本是够了。有时候需要处理大文件，就需要用到更高级一些的方法。更详细的用法、教程和API文档请参考这里：&lt;/p&gt;
 
@@ -2240,7 +2236,7 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;p&gt;&lt;a href=&#34;http://pythonhosted.org/openpyxl/&#34;&gt;http://pythonhosted.org/openpyxl/&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h1 id=&#34;5-references:aebfe74b7cb46f66dc1d78cd9abadd46&#34;&gt;5. References&lt;/h1&gt;
+&lt;h1 id=&#34;5-references&#34;&gt;5. References&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;下载 openpyxl：&lt;a href=&#34;https://pypi.python.org/pypi/openpyxl&#34;&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/li&gt;

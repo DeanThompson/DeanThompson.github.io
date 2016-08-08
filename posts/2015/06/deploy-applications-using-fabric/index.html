@@ -26,6 +26,8 @@
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -169,7 +171,7 @@
 
 <p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
 
-<h2 id="安装:be4f35f0576547f0cd881725d8efc31a">安装</h2>
+<h2 id="安装">安装</h2>
 
 <p>Fabric 是 Python 编写的工具，所以可以用 pip 来安装：</p>
 
@@ -183,7 +185,7 @@
 
 <p>安装完成后，会生成一个 <code>fab</code> 命令，这个命令会读取当前路径在的 fabfile.py 并执行相应的任务。</p>
 
-<h2 id="hello-world:be4f35f0576547f0cd881725d8efc31a">Hello, world!</h2>
+<h2 id="hello-world">Hello, world!</h2>
 
 <p>先来看一个简单的例子，用 <code>fab</code> 命令执行一个输出 <code>Hello, world!</code> 的任务。</p>
 
@@ -228,7 +230,7 @@ Done.
 
 <p>这个例子除了展示 fab 运行任务和传递参数之外，没有什么实际意义，接下来用一个接近真实的场景来展示如何用 Fabric 部署。</p>
 
-<h2 id="部署应用:be4f35f0576547f0cd881725d8efc31a">部署应用</h2>
+<h2 id="部署应用">部署应用</h2>
 
 <p>假设这样一个场景，有个 Python 项目取名 usercenter，用 git 做版本控制，用 supervisor 做进程管理。一次完整的部署过程可能包括这些流程：</p>
 
@@ -302,7 +304,7 @@ $ fab staging deploy
 
 <p>执行过程中可能会有些交互，按提示输入相应信息，然后等着执行完成就好了。如果一切顺利（应该是这样），就完成了 usercenter 的部署了，整个过程只需要敲一行命令，是不是非常方便？</p>
 
-<h2 id="more:be4f35f0576547f0cd881725d8efc31a">More&hellip;</h2>
+<h2 id="more">More&hellip;</h2>
 
 <p>上面的例子基本上是可以在实际环境中使用的，不过还是有很多内容没有覆盖到，比如错误处理，多服务器部署，并行等。Fabric 默认是串行执行的，如果有多个远程服务器，是一个一个顺序执行。执行过程中如果发生异常，任务会直接中断，所以可能需要有错误处理。</p>
 

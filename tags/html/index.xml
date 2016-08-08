@@ -23,7 +23,7 @@
 
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-document-对象:b21917a396369c0669213bf730deae3f&#34;&gt;创建 Document 对象&lt;/h3&gt;
+&lt;h3 id=&#34;创建-document-对象&#34;&gt;创建 Document 对象&lt;/h3&gt;
 
 &lt;p&gt;goquery 暴露了两个结构体：&lt;code&gt;Document&lt;/code&gt; 和 &lt;code&gt;Selection&lt;/code&gt;. &lt;code&gt;Document&lt;/code&gt; 表示一个 HTML 文档，&lt;code&gt;Selection&lt;/code&gt; 用于像 jQuery 一样操作，支持链式调用。goquery 需要指定一个 HTML 文档才能继续后续的操作，有以下几个构造方式：&lt;/p&gt;
 
@@ -43,7 +43,7 @@
 
 &lt;p&gt;为了方便举例说明，下文采用这个定义: &lt;code&gt;var doc *goquery.Document&lt;/code&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;查找到指定节点:b21917a396369c0669213bf730deae3f&#34;&gt;查找到指定节点&lt;/h3&gt;
+&lt;h3 id=&#34;查找到指定节点&#34;&gt;查找到指定节点&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;Selection&lt;/code&gt; 有一系列类似 jQuery 的方法，&lt;code&gt;Document&lt;/code&gt; 结构体内嵌了 &lt;code&gt;*Selection&lt;/code&gt;，因此也能直接调用这些方法。主要的方法是 &lt;code&gt;Selection.Find(selector string)&lt;/code&gt;，传入一个选择器，返回一个新的，匹配到的 &lt;code&gt;*Selection&lt;/code&gt;，所以能够链式调用。&lt;/p&gt;
 
@@ -77,7 +77,7 @@
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;doc.Find(&amp;quot;div.profile-navbar&amp;quot;).Find(&amp;quot;span.num&amp;quot;).Eq(1)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;属性操作:b21917a396369c0669213bf730deae3f&#34;&gt;属性操作&lt;/h3&gt;
+&lt;h3 id=&#34;属性操作&#34;&gt;属性操作&lt;/h3&gt;
 
 &lt;p&gt;经常需要获取一个标签的内容和某些属性值，使用 goquery 可以很容易做到。&lt;/p&gt;
 
@@ -102,7 +102,7 @@
 
 &lt;p&gt;还有其他设置属性、操作 class 的方法，就不展开讨论了。&lt;/p&gt;
 
-&lt;h3 id=&#34;迭代:b21917a396369c0669213bf730deae3f&#34;&gt;迭代&lt;/h3&gt;
+&lt;h3 id=&#34;迭代&#34;&gt;迭代&lt;/h3&gt;
 
 &lt;p&gt;很多场景需要返回列表数据，比如问题的关注者列表、所有回答，某个答案的点赞的用户列表等。这种情况下一般需要用到迭代，遍历所有的同类节点，做某些操作。&lt;/p&gt;
 
@@ -132,7 +132,7 @@
 
 &lt;p&gt;&lt;code&gt;EachWithBreak&lt;/code&gt; 在 zhihu-go 中也有用到，可以参见 &lt;code&gt;Answer.GetVotersN 方法&lt;/code&gt;：&lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go&#34;&gt;zhihu-go/answer.go&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h3 id=&#34;删除节点-插入-html-导出-html:b21917a396369c0669213bf730deae3f&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
+&lt;h3 id=&#34;删除节点-插入-html-导出-html&#34;&gt;删除节点、插入 HTML、导出 HTML&lt;/h3&gt;
 
 &lt;p&gt;有一个需求是把回答内容输出到 HTML，说白了其实就是修复和清洗 HTML，具体的细节可以看 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go/blob/master/answer.go#L222&#34;&gt;answer.go 里的 answerSelectionToHtml 函数&lt;/a&gt;. 其中用到了一些需要修改文档的操作。&lt;/p&gt;
 
@@ -171,7 +171,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;html, err := doc.Html()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;总结:b21917a396369c0669213bf730deae3f&#34;&gt;总结&lt;/h2&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
 &lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
 </description>
