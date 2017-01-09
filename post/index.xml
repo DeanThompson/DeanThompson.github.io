@@ -729,7 +729,7 @@ def add(x, y):
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from tasks import add
 
 add.delay(1, 2)
-add.apply_async(1, 2)
+add.apply_async(args=(1, 2))
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;上面两种调用方式等价，&lt;code&gt;delay()&lt;/code&gt; 方法是 &lt;code&gt;apply_async()&lt;/code&gt; 方法的简写。这个调用会把 &lt;code&gt;add&lt;/code&gt; 操作放入到队列里，然后立即返回一个 &lt;code&gt;AsyncResult&lt;/code&gt; 对象。如果关心处理结果，需要给 &lt;code&gt;app&lt;/code&gt; 配置 &lt;code&gt;CELERY_RESULT_BACKEND&lt;/code&gt;，指定一个存储后端保存任务的返回值。&lt;/p&gt;
