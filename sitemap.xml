@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</loc>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
   </url>
@@ -149,13 +154,13 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/cache/</loc>
+    <loc>http://deanthompson.github.io/categories/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/cache/</loc>
+    <loc>http://deanthompson.github.io/tags/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -166,13 +171,13 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/celery/</loc>
+    <loc>http://deanthompson.github.io/categories/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/celery/</loc>
+    <loc>http://deanthompson.github.io/tags/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -232,13 +237,13 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/flask/</loc>
+    <loc>http://deanthompson.github.io/categories/flask/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/flask/</loc>
+    <loc>http://deanthompson.github.io/tags/flask/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -262,25 +267,25 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/go/</loc>
-    <lastmod>2016-03-30T23:02:51+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://deanthompson.github.io/categories/go/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/golang/</loc>
-    <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <loc>http://deanthompson.github.io/tags/go/</loc>
+    <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/categories/golang/</loc>
+    <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/golang/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -322,13 +327,13 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/linux/</loc>
+    <loc>http://deanthompson.github.io/categories/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/linux/</loc>
+    <loc>http://deanthompson.github.io/tags/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -340,37 +345,43 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/mongodb/</loc>
-    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://deanthompson.github.io/categories/mongodb/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/mysql/</loc>
-    <lastmod>2014-03-02T16:16:04+08:00</lastmod>
+    <loc>http://deanthompson.github.io/tags/mongodb/</loc>
+    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/multiprocessing/</loc>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/categories/mysql/</loc>
-    <lastmod>2014-03-02T16:16:04+08:00</lastmod>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/nginx/</loc>
-    <lastmod>2016-04-14T15:33:52+08:00</lastmod>
+    <loc>http://deanthompson.github.io/tags/mysql/</loc>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/categories/nginx/</loc>
+    <lastmod>2016-04-14T15:33:52+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/nginx/</loc>
     <lastmod>2016-04-14T15:33:52+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -383,7 +394,7 @@
   
   <url>
     <loc>http://deanthompson.github.io/post/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -394,25 +405,25 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/python/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://deanthompson.github.io/categories/python/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/shadowsocks/</loc>
-    <lastmod>2015-05-24T22:27:49+08:00</lastmod>
+    <loc>http://deanthompson.github.io/tags/python/</loc>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/categories/shadowsocks/</loc>
+    <lastmod>2015-05-24T22:27:49+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/shadowsocks/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -459,25 +470,25 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/tools/</loc>
-    <lastmod>2015-06-09T17:30:20+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://deanthompson.github.io/categories/tools/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/tornado/</loc>
-    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
+    <loc>http://deanthompson.github.io/tags/tools/</loc>
+    <lastmod>2015-06-09T17:30:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/categories/tornado/</loc>
+    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/tornado/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -495,13 +506,13 @@
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/vpn/</loc>
+    <loc>http://deanthompson.github.io/categories/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/vpn/</loc>
+    <loc>http://deanthompson.github.io/tags/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -532,7 +543,7 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   

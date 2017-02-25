@@ -7,7 +7,185 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 17 May 2016 16:42:37 CST</updated>
+    <updated>Sat, 25 Feb 2017 16:16:14 CST</updated>
+    
+    <item>
+      <title>Python 多进程导入数据到 MySQL</title>
+      <link>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</link>
+      <pubDate>Sat, 25 Feb 2017 16:16:14 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</guid>
+      <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
+分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
+会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;批量插入而不是逐条插入&lt;/li&gt;
+&lt;li&gt;为了加快插入速度，先不要建索引&lt;/li&gt;
+&lt;li&gt;生产者和消费者模型，主进程读文件，多个 worker 进程执行插入&lt;/li&gt;
+&lt;li&gt;注意控制 worker 的数量，避免对 MySQL 造成太大的压力&lt;/li&gt;
+&lt;li&gt;注意处理脏数据导致的异常&lt;/li&gt;
+&lt;li&gt;原始数据是 GBK 编码，所以还要注意转换成 UTF-8&lt;/li&gt;
+&lt;li&gt;用 &lt;a href=&#34;http://click.pocoo.org/5/&#34;&gt;click&lt;/a&gt; 封装命令行工具&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;具体的代码实现如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import codecs
+import csv
+import logging
+import multiprocessing
+import os
+import warnings
+
+import click
+import MySQLdb
+import sqlalchemy
+
+warnings.filterwarnings(&#39;ignore&#39;, category=MySQLdb.Warning)
+
+# 批量插入的记录数量
+BATCH = 5000
+
+DB_URI = &#39;mysql://root@localhost:3306/example?charset=utf8&#39;
+
+engine = sqlalchemy.create_engine(DB_URI)
+
+
+def get_table_cols(table):
+    sql = &#39;SELECT * FROM `{table}` LIMIT 0&#39;.format(table=table)
+    res = engine.execute(sql)
+    return res.keys()
+
+
+def insert_many(table, cols, rows, cursor):
+    sql = &#39;INSERT INTO `{table}` ({cols}) VALUES ({marks})&#39;.format(
+            table=table,
+            cols=&#39;, &#39;.join(cols),
+            marks=&#39;, &#39;.join([&#39;%s&#39;] * len(cols)))
+    cursor.execute(sql, *rows)
+    logging.info(&#39;process %s inserted %s rows into table %s&#39;, os.getpid(), len(rows), table)
+
+
+def insert_worker(table, cols, queue):
+    rows = []
+    # 每个子进程创建自己的 engine 对象
+    cursor = sqlalchemy.create_engine(DB_URI)
+    while True:
+        row = queue.get()
+        if row is None:
+            if rows:
+                insert_many(table, cols, rows, cursor)
+            break
+
+        rows.append(row)
+        if len(rows) == BATCH:
+            insert_many(table, cols, rows, cursor)
+            rows = []
+
+
+def insert_parallel(table, reader, w=10):
+    cols = get_table_cols(table)
+
+    # 数据队列，主进程读文件并往里写数据，worker 进程从队列读数据
+    # 注意一下控制队列的大小，避免消费太慢导致堆积太多数据，占用过多内存
+    queue = multiprocessing.Queue(maxsize=w*BATCH*2)
+    workers = []
+    for i in range(w):
+        p = multiprocessing.Process(target=insert_worker, args=(table, cols, queue))
+        p.start()
+        workers.append(p)
+        logging.info(&#39;starting # %s worker process, pid: %s...&#39;, i + 1, p.pid)
+
+    dirty_data_file = &#39;./{}_dirty_rows.csv&#39;.format(table)
+    xf = open(dirty_data_file, &#39;w&#39;)
+    writer = csv.writer(xf, delimiter=reader.dialect.delimiter)
+
+    for line in reader:
+        # 记录并跳过脏数据: 键值数量不一致
+        if len(line) != len(cols):
+            writer.writerow(line)
+            continue
+
+        # 把 None 值替换为 &#39;NULL&#39;
+        clean_line = [None if x == &#39;NULL&#39; else x for x in line]
+
+        # 往队列里写数据
+        queue.put(tuple(clean_line))
+        if reader.line_num % 500000 == 0:
+            logging.info(&#39;put %s tasks into queue.&#39;, reader.line_num)
+
+    xf.close()
+
+    # 给每个 worker 发送任务结束的信号
+    logging.info(&#39;send close signal to worker processes&#39;)
+    for i in range(w):
+        queue.put(None)
+
+    for p in workers:
+        p.join()
+
+
+def convert_file_to_utf8(f, rv_file=None):
+    if not rv_file:
+        name, ext = os.path.splitext(f)
+        if isinstance(name, unicode):
+            name = name.encode(&#39;utf8&#39;)
+        rv_file = &#39;{}_utf8{}&#39;.format(name, ext)
+    logging.info(&#39;start to process file %s&#39;, f)
+    with open(f) as infd:
+        with open(rv_file, &#39;w&#39;) as outfd:
+            lines = []
+            loop = 0
+            chunck = 200000
+            first_line = infd.readline().strip(codecs.BOM_UTF8).strip() + &#39;\n&#39;
+            lines.append(first_line)
+            for line in infd:
+                clean_line = line.decode(&#39;gb18030&#39;).encode(&#39;utf8&#39;)
+                clean_line = clean_line.rstrip() + &#39;\n&#39;
+                lines.append(clean_line)
+                if len(lines) == chunck:
+                    outfd.writelines(lines)
+                    lines = []
+                    loop += 1
+                    logging.info(&#39;processed %s lines.&#39;, loop * chunck)
+
+            outfd.writelines(lines)
+            logging.info(&#39;processed %s lines.&#39;, loop * chunck + len(lines))
+
+
+@click.group()
+def cli():
+    logging.basicConfig(level=logging.INFO,
+                        format=&#39;%(asctime)s - %(levelname)s - %(name)s - %(message)s&#39;)
+
+
+@cli.command(&#39;gbk_to_utf8&#39;)
+@click.argument(&#39;f&#39;)
+def convert_gbk_to_utf8(f):
+    convert_file_to_utf8(f)
+
+
+@cli.command(&#39;load&#39;)
+@click.option(&#39;-t&#39;, &#39;--table&#39;, required=True, help=&#39;表名&#39;)
+@click.option(&#39;-i&#39;, &#39;--filename&#39;, required=True, help=&#39;输入文件&#39;)
+@click.option(&#39;-w&#39;, &#39;--workers&#39;, default=10, help=&#39;worker 数量，默认 10&#39;)
+def load_fac_day_pro_nos_sal_table(table, filename, workers):
+    with open(filename) as fd:
+        fd.readline()   # skip header
+        reader = csv.reader(fd)
+        insert_parallel(table, reader, w=workers)
+
+
+if __name__ == &#39;__main__&#39;:
+    cli()
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
@@ -1882,39 +2060,6 @@ forward         127.*.*.*/      .
 &lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
 
 &lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>重用 SSH 连接</title>
-      <link>http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection</link>
-      <pubDate>Sun, 15 Mar 2015 13:31:49 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection</guid>
-      <description>&lt;p&gt;平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 &lt;code&gt;git pull&lt;/code&gt; 和 &lt;code&gt;git push&lt;/code&gt;，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。&lt;/p&gt;
-
-&lt;p&gt;实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。&lt;/p&gt;
-
-&lt;p&gt;修改 &lt;code&gt;~/.ssh/config&lt;/code&gt; 文件，添加如下配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34;&gt;Host *
-    ControlMaster auto
-    ControlPath /tmp/ssh_mux_%h_%p_%r
-    ControlPersist 600
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;意思也很好理解：&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;Host *&lt;/code&gt; 这一行表示下面这些配置和规则影响到的 host，&lt;code&gt;*&lt;/code&gt; 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 &lt;code&gt;Host *.example.com&lt;/code&gt; 的配置。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;ControlMaster auto&lt;/code&gt; 这个选项告诉 SSH 客户端尝试重用现有的连接（master connection）。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;ControlPath&lt;/code&gt; 指定了这个连接的 socket 保存的路径，这里配置的是在 /tmp 目录，实际上可以在任何有读写权限的路径下。&lt;code&gt;/tmp/ssh_mux_%h_%p_%r&lt;/code&gt; 配置了 socket 文件名，&lt;code&gt;%h&lt;/code&gt; 表示远程主机名（host），&lt;code&gt;%p&lt;/code&gt; 表示远程 SSH 服务器的端口（port），&lt;code&gt;%r&lt;/code&gt; 表示登录的远程用户名（remote user name）。这些 socket 可以随时删掉（&lt;code&gt;rm&lt;/code&gt;），删除后首次会话又会创建新的 master 连接。曾经遇到过这种情况，本地断网了，打开的几个远程终端都卡死，网络恢复后也一直这样，甚至打开新的终端也登录不上。这个时候只需要把之前的 socket 文件都删掉，重新登录就可以了。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;ControlPersist&lt;/code&gt; 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。&lt;/p&gt;
-
-&lt;p&gt;只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。&lt;/p&gt;</description>
     </item>
     
   </channel>

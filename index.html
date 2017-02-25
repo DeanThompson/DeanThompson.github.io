@@ -123,6 +123,53 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Feb 25, 2017' data-updated="true" itemprop="datePublished">Sat, Feb 25, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/mysql"> mysql </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing" itemprop="url">Python 多进程导入数据到 MySQL</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
+分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
+会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：</p>
+
+<ul>
+<li>批量插入而不是逐条插入</li>
+<li>为了加快插入速度，先不要建索引</li>
+<li>生产者和消费者模型，主进程读文件，多个 worker 进程执行插入</li>
+<li>注意控制 worker 的数量，避免对 MySQL 造成太大的压力</li>
+<li>注意处理脏数据导致的异常</li>
+<li>原始数据是 GBK 编码，所以还要注意转换成 UTF-8</li>
+<li>用 <a href="http://click.pocoo.org/5/">click</a> 封装命令行工具</li>
+</ul>
+
+<p>具体的代码实现如下：</p>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Tue, May 17, 2016' data-updated="true" itemprop="datePublished">Tue, May 17, 2016</time>
 </div>
 		<div class="tags">
@@ -505,41 +552,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p></p>
 		<a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Oct 31, 2015' data-updated="true" itemprop="datePublished">Sat, Oct 31, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/flask"> flask </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
-
-<p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
 	</div>
 </article>
 

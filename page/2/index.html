@@ -123,6 +123,41 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Oct 31, 2015' data-updated="true" itemprop="datePublished">Sat, Oct 31, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/flask"> flask </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
+
+<p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
 </div>
 		<div class="tags">
@@ -598,46 +633,6 @@ func Sort(data Interface) {
 
 <p></p>
 		<a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, Mar 2, 2014' data-updated="true" itemprop="datePublished">Sun, Mar 2, 2014</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/mysql"> mysql </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
-
-<h2 id="1-innodb-flush-log-at-trx-commit">1. innodb_flush_log_at_trx_commit</h2>
-
-<p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
-
-<ol>
-<li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
-<li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
-<li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
-</ol>
-
-<p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" class="more-link">Read on →</a>
 	</div>
 </article>
 
