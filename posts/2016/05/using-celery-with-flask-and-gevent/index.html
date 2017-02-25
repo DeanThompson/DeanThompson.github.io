@@ -148,9 +148,7 @@
 						</div>
 						
     <h1 class="title" itemprop="name">在 Flask 项目的 celery 中使用 gevent</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
+	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
 
 <h2 id="1-使用-gevent-并发模型">1. 使用 gevent 并发模型</h2>
 
@@ -160,6 +158,8 @@
 </code></pre>
 
 <p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
+
+<p></p>
 
 <h2 id="2-引用-flask-的-application-context">2. 引用 Flask 的 application context</h2>
 
@@ -225,8 +225,7 @@
 def add(x, y):
     print app.config.get('SOME_CONFIG_KEY')
     return x + y
-</code></pre>
-</div>
+</code></pre></div>
 					</article>
 					
 					<section id="comment">

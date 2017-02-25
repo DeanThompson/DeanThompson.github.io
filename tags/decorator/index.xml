@@ -3,11 +3,11 @@
   <channel>
       <title>Decorator on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/decorator/</link>
+    <link>http://deanthompson.github.io/tags/decorator/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 31 Oct 2015 01:46:10 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
@@ -18,6 +18,8 @@
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;以一个注册的应用场景为例，用户输入用户名、邮箱、密码、确认密码，服务程序先检查参数然后处理登录逻辑。这几个字段都是必填的，此外还有一些额外的限制：&lt;/p&gt;
 
@@ -141,8 +143,7 @@ def register():
 
 &lt;p&gt;实现了一个叫 &lt;code&gt;validate_form&lt;/code&gt; 的装饰器，指定一个 Form 类，处理统一的参数获取、校验和错误处理，如果一切正确，再把 Form 对象保存到全局变量 &lt;code&gt;g&lt;/code&gt; 里面，这样就可以在 view 函数里取出来用了。现在的 &lt;code&gt;register&lt;/code&gt; 方法变得更加简洁，甚至都看不到检查参数的那些代码，只需要关心具体的和注册相关的逻辑本身就好。&lt;/p&gt;
 
-&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;
-</description>
+&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -151,9 +152,7 @@ def register():
       <pubDate>Wed, 13 Mar 2013 00:26:58 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</guid>
-      <description>
-
-&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
 
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
 
@@ -222,6 +221,8 @@ except NameError, e:
     print e
     #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;2-函数引用-functions-references&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
 
@@ -921,8 +922,7 @@ print get_random_furturama_quote()
 #Curse you, merciful Poseidon!
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Python 语言本身也提供了一些装饰器：&lt;code&gt;property&lt;/code&gt;、&lt;code&gt;staticmethod&lt;/code&gt; 等。Django 用装饰器来管理换成和视图权限。Twisted 用来伪装 内联异步函数调用（Twisted to fake inlining asynchronous functions calls. ）。这确实是一片广阔的天地。（This really is a large playground.）&lt;/p&gt;
-</description>
+&lt;p&gt;Python 语言本身也提供了一些装饰器：&lt;code&gt;property&lt;/code&gt;、&lt;code&gt;staticmethod&lt;/code&gt; 等。Django 用装饰器来管理换成和视图权限。Twisted 用来伪装 内联异步函数调用（Twisted to fake inlining asynchronous functions calls. ）。这确实是一片广阔的天地。（This really is a large playground.）&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -3,11 +3,11 @@
   <channel>
       <title>Html on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/html/</link>
+    <link>http://deanthompson.github.io/tags/html/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Wed, 30 Mar 2016 23:02:51 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
@@ -15,13 +15,13 @@
       <pubDate>Wed, 30 Mar 2016 23:02:51 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
 
 &lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;创建-document-对象&#34;&gt;创建 Document 对象&lt;/h3&gt;
 
@@ -173,8 +173,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
-</description>
+&lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;</description>
     </item>
     
   </channel>

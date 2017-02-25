@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title> on 李林克斯 </title>
+      <title>李林克斯 on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/</link>
+    <link>http://deanthompson.github.io/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -15,9 +15,7 @@
       <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
@@ -27,6 +25,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
@@ -92,8 +92,7 @@
 def add(x, y):
     print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
     return x + y
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -114,6 +113,8 @@ def add(x, y):
 &lt;li&gt;如何修复？&lt;/li&gt;
 &lt;/ol&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;当务之急是先修复集群，这一点官方文档有说明：&lt;a href=&#34;https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/&#34;&gt;Resync a Member of a Replica Set&lt;/a&gt;. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：&lt;/p&gt;
 
 &lt;ol&gt;
@@ -124,8 +125,7 @@ def add(x, y):
 &lt;p&gt;考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。&lt;/p&gt;
 
 &lt;p&gt;遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，&lt;code&gt;history&lt;/code&gt; 也没发现有 &lt;code&gt;kill&lt;/code&gt; 的记录。
-幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;
-</description>
+幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -154,6 +154,8 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
     proxy_pass http://name.of.elb.aws.com;
 }
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。&lt;/p&gt;
 
@@ -185,8 +187,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 &lt;li&gt;&lt;a href=&#34;http://tenzer.dk/nginx-with-dynamic-upstreams/&#34;&gt;Nginx with dynamic upstreams&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers&#34;&gt;nginx AWS ELB name resolution with resolvers&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day&#34;&gt;serverfault - Some nginx reverse proxy configs stops working once a day&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -195,13 +196,13 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
       <pubDate>Wed, 30 Mar 2016 23:02:51 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
 
 &lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;创建-document-对象&#34;&gt;创建 Document 对象&lt;/h3&gt;
 
@@ -353,8 +354,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;
-</description>
+&lt;p&gt;上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -365,12 +365,13 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
       <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go</guid>
       <description>&lt;p&gt;我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 &lt;a href=&#34;https://github.com/egrcc/zhihu-python&#34;&gt;zhihu-python&lt;/a&gt;. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。&lt;/p&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;恰巧我也是一个 &lt;a href=&#34;http://golang.org/&#34;&gt;Go 语言&lt;/a&gt; 爱好者，在之前的工作中也用 Go 写过项目。语法简单，开发效率高，性能很好。GitHub 上搜了一下，zhihu-python 或同类项目，并没有一个 Go 实现的版本。于是就想动手造个轮子，把 zhihu-python 移植到 Go，所以就有了标题里提到的 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt;. 主要是出于练手的目的，最近一年都在做 Python 开发，Go 还有点生疏了。因为是移植，最初的设计和实现思路很大程度上参考或模仿了 zhihu-python，后来在开发过程中，新增了一些 API，也删除了少数几个我认为没什么用的 API. 开发过程中又看到了一个 Python 3 版本的实现 &lt;a href=&#34;https://github.com/7sDream/zhihu-py3&#34;&gt;zhihu-py3&lt;/a&gt;，这个库也是受启发于 zhihu-python，代码质量也要更好，而且实现了更丰富的 API，尤其是关于操作类的，如点赞、收藏答案等。zhihu-go 也参考了 zhihu-py3 的一些 API 设计。截止到现在，zhihu-go 的完成度应该和 zhihu-python 差不多，还多了一些 API；比 zhihu-py3 少了活动、评论及操作类的 API，这些在 TODO list 都列了出来。&lt;/p&gt;
 
 &lt;p&gt;前几天在 V2EX 发了一个 &lt;a href=&#34;http://v2ex.com/t/266372&#34;&gt;推广的帖子&lt;/a&gt;，没想到反响还不错，收到不少支持和鼓励，GitHub 也在一两天内收获了 50 来个 star （个人最高）. 其实在这之前，还在 StuduGolang 发了 &lt;a href=&#34;http://studygolang.com/topics/1528&#34;&gt;一个主题&lt;/a&gt;，然而并没有人回复，带到 GitHub 的流量也很少，好像只有 1 个 star. golangtc 也发了，流量就更少了，可以忽略不计。&lt;/p&gt;
 
-&lt;p&gt;后续有时间简单分析一下源码，分享一下开发过程和心得。&lt;/p&gt;
-</description>
+&lt;p&gt;后续有时间简单分析一下源码，分享一下开发过程和心得。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -391,7 +392,8 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;/ul&gt;
 
 &lt;p&gt;欢迎使用，并 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/issues&#34;&gt;反馈 issues&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/pulls&#34;&gt;创建 pull request&lt;/a&gt;.&lt;/p&gt;
-</description>
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -400,9 +402,7 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
       <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
 
@@ -410,6 +410,8 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
@@ -532,7 +534,7 @@ def create_app():
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from flask import current_app
-from celery.util.log import get_task_logger
+from celery.utils.log import get_task_logger
 
 from app import celery
 
@@ -545,7 +547,6 @@ def send_email(to, subject, content):
     subject = app.config[&#39;EMAIL_SUBJECT_PREFIX&#39;] + subject
     logger.info(&#39;send message &amp;quot;%s&amp;quot; to %s&#39;, content, to)
     return do_send_email(to, subject, content)
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -602,8 +603,7 @@ app.app_context().push()
 
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
-</description>
+&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -612,9 +612,7 @@ app.app_context().push()
       <pubDate>Sat, 14 Nov 2015 16:44:34 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
-      <description>
-
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
 &lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
 
@@ -639,6 +637,8 @@ app.app_context().push()
 
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;适用场景&#34;&gt;适用场景&lt;/h3&gt;
 
@@ -772,8 +772,7 @@ CELERY_ENABLE_UTC = True
 &lt;p&gt;把上面的内容保存为 &lt;code&gt;celeryconfig.py&lt;/code&gt; 文件，然后：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;app.config_from_object(&#39;celeryconfig&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -782,9 +781,7 @@ CELERY_ENABLE_UTC = True
       <pubDate>Thu, 05 Nov 2015 16:52:12 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</guid>
-      <description>
-
-&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
+      <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
 
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
 
@@ -797,6 +794,8 @@ CELERY_ENABLE_UTC = True
 &lt;/ul&gt;
 
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;基本思想&#34;&gt;基本思想&lt;/h2&gt;
 
@@ -959,8 +958,7 @@ def hello():
 
 &lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
 
-&lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;
-</description>
+&lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -972,6 +970,8 @@ def hello():
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;以一个注册的应用场景为例，用户输入用户名、邮箱、密码、确认密码，服务程序先检查参数然后处理登录逻辑。这几个字段都是必填的，此外还有一些额外的限制：&lt;/p&gt;
 
@@ -1095,8 +1095,7 @@ def register():
 
 &lt;p&gt;实现了一个叫 &lt;code&gt;validate_form&lt;/code&gt; 的装饰器，指定一个 Form 类，处理统一的参数获取、校验和错误处理，如果一切正确，再把 Form 对象保存到全局变量 &lt;code&gt;g&lt;/code&gt; 里面，这样就可以在 view 函数里取出来用了。现在的 &lt;code&gt;register&lt;/code&gt; 方法变得更加简洁，甚至都看不到检查参数的那些代码，只需要关心具体的和注册相关的逻辑本身就好。&lt;/p&gt;
 
-&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;
-</description>
+&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -1105,9 +1104,7 @@ def register():
       <pubDate>Mon, 10 Aug 2015 22:36:42 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</guid>
-      <description>
-
-&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
+      <description>&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
 
 &lt;p&gt;网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：&lt;/p&gt;
 
@@ -1127,6 +1124,8 @@ def register():
 &lt;/ul&gt;
 
 &lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;缩进&#34;&gt;缩进&lt;/h2&gt;
 
@@ -1421,8 +1420,7 @@ if k in d:
 &lt;li&gt;了解 Python 的 Magic Method：&lt;a href=&#34;http://www.rafekettler.com/magicmethods.html&#34;&gt;A Guide to Python&amp;rsquo;s Magic Methods&lt;/a&gt;, &lt;a href=&#34;http://pycoders-weekly-chinese.readthedocs.org/en/latest/issue6/a-guide-to-pythons-magic-methods.html&#34;&gt;Python 魔术方法指南&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;阅读优秀的开源代码，如 &lt;a href=&#34;https://github.com/mitsuhiko/flask&#34;&gt;Flask 框架&lt;/a&gt;, &lt;a href=&#34;https://github.com/kennethreitz/requests&#34;&gt;Requests for Humans&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;不要重复造轮子，查看标准库、PyPi、Github、Google 等使用现有的优秀的解决方案&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -1431,9 +1429,7 @@ if k in d:
       <pubDate>Fri, 12 Jun 2015 14:00:13 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</guid>
-      <description>
-
-&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
+      <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
 
 &lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
 
@@ -1458,6 +1454,8 @@ if k in d:
 &lt;p&gt;很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
@@ -1603,8 +1601,7 @@ $ fab staging deploy
 &lt;li&gt;Overview and Tutorial: &lt;a href=&#34;Overview and Tutorial&#34;&gt;http://docs.fabfile.org/en/1.10/tutorial.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Fabric 文档: &lt;a href=&#34;http://docs.fabfile.org/en/1.10/index.html&#34;&gt;http://docs.fabfile.org/en/1.10/index.html&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Python fabric实现远程操作和部署（By wklken）: &lt;a href=&#34;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&#34;&gt;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -1613,9 +1610,7 @@ $ fab staging deploy
       <pubDate>Tue, 09 Jun 2015 17:30:20 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/06/using-supervisor</guid>
-      <description>
-
-&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
+      <description>&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
 
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
@@ -1625,6 +1620,8 @@ $ fab staging deploy
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;supervisord-配置&#34;&gt;supervisord 配置&lt;/h2&gt;
 
@@ -1755,8 +1752,7 @@ $ supervisorctl update
 
 &lt;p&gt;经常查看日志文件，包括 supervisord 的日志和各个 pragram 的日志文件，程序 crash 或抛出异常的信息一半会输出到 stderr，可以查看相应的日志文件来查找问题。&lt;/p&gt;
 
-&lt;p&gt;Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：&lt;a href=&#34;http://supervisord.org/index.html&#34;&gt;http://supervisord.org/index.html&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：&lt;a href=&#34;http://supervisord.org/index.html&#34;&gt;http://supervisord.org/index.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -1765,9 +1761,7 @@ $ supervisorctl update
       <pubDate>Sun, 24 May 2015 22:27:49 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</guid>
-      <description>
-
-&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
 
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
 
@@ -1782,6 +1776,8 @@ $ supervisorctl update
 &lt;/ol&gt;
 
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;购买-vps&#34;&gt;购买 VPS&lt;/h2&gt;
 
@@ -1885,8 +1881,7 @@ forward         127.*.*.*/      .
 
 &lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
 
-&lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;
-</description>
+&lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -1907,6 +1902,8 @@ forward         127.*.*.*/      .
     ControlPersist 600
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;意思也很好理解：&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;Host *&lt;/code&gt; 这一行表示下面这些配置和规则影响到的 host，&lt;code&gt;*&lt;/code&gt; 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 &lt;code&gt;Host *.example.com&lt;/code&gt; 的配置。&lt;/p&gt;
@@ -1917,8 +1914,7 @@ forward         127.*.*.*/      .
 
 &lt;p&gt;&lt;code&gt;ControlPersist&lt;/code&gt; 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。&lt;/p&gt;
 
-&lt;p&gt;只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。&lt;/p&gt;
-</description>
+&lt;p&gt;只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。&lt;/p&gt;</description>
     </item>
     
   </channel>

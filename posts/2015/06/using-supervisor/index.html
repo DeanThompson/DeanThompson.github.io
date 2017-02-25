@@ -148,9 +148,7 @@
 						</div>
 						
     <h1 class="title" itemprop="name">使用 supervisor 管理进程</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+	<div class="entry-content" itemprop="articleBody"><p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
 
 <h2 id="安装">安装</h2>
 
@@ -160,6 +158,8 @@
 </code></pre>
 
 <p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
+
+<p></p>
 
 <h2 id="supervisord-配置">supervisord 配置</h2>
 
@@ -290,8 +290,7 @@ $ supervisorctl update
 
 <p>经常查看日志文件，包括 supervisord 的日志和各个 pragram 的日志文件，程序 crash 或抛出异常的信息一半会输出到 stderr，可以查看相应的日志文件来查找问题。</p>
 
-<p>Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：<a href="http://supervisord.org/index.html">http://supervisord.org/index.html</a></p>
-</div>
+<p>Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：<a href="http://supervisord.org/index.html">http://supervisord.org/index.html</a></p></div>
 					</article>
 					
 					<section id="comment">

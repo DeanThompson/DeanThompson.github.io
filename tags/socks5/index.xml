@@ -3,11 +3,11 @@
   <channel>
       <title>Socks5 on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/socks5/</link>
+    <link>http://deanthompson.github.io/tags/socks5/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sun, 24 May 2015 22:27:49 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>使用 shadowsocks 实现科学上网</title>
@@ -15,9 +15,7 @@
       <pubDate>Sun, 24 May 2015 22:27:49 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</guid>
-      <description>
-
-&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
 
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
 
@@ -32,6 +30,8 @@
 &lt;/ol&gt;
 
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;购买-vps&#34;&gt;购买 VPS&lt;/h2&gt;
 
@@ -135,8 +135,7 @@ forward         127.*.*.*/      .
 
 &lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
 
-&lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;
-</description>
+&lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;</description>
     </item>
     
   </channel>

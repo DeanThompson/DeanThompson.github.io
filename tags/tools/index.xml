@@ -3,11 +3,11 @@
   <channel>
       <title>Tools on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/tools/</link>
+    <link>http://deanthompson.github.io/tags/tools/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 09 Jun 2015 17:30:20 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>使用 supervisor 管理进程</title>
@@ -15,9 +15,7 @@
       <pubDate>Tue, 09 Jun 2015 17:30:20 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/06/using-supervisor</guid>
-      <description>
-
-&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
+      <description>&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
 
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
 
@@ -27,6 +25,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;supervisord-配置&#34;&gt;supervisord 配置&lt;/h2&gt;
 
@@ -157,8 +157,7 @@ $ supervisorctl update
 
 &lt;p&gt;经常查看日志文件，包括 supervisord 的日志和各个 pragram 的日志文件，程序 crash 或抛出异常的信息一半会输出到 stderr，可以查看相应的日志文件来查找问题。&lt;/p&gt;
 
-&lt;p&gt;Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：&lt;a href=&#34;http://supervisord.org/index.html&#34;&gt;http://supervisord.org/index.html&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：&lt;a href=&#34;http://supervisord.org/index.html&#34;&gt;http://supervisord.org/index.html&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

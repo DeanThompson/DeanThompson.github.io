@@ -159,6 +159,8 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 }
 </code></pre>
 
+<p></p>
+
 <p>文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。</p>
 
 <p>后来 Google 了一番，发现确实是 DNS 的问题。Nginx 会在启动的时候进行域名查找，然后把 IP 地址缓存起来，后续就直接使用这些 IP 地址。而 AWS 的 ELB 所指向的 IP 地址是不固定的，会经常更新；所以这会导致 Nginx 缓存的 IP 地址实际上已经失效。定位出了问题，也参考网上的做法，把 API 的 Nginx 配置稍作修改：</p>
@@ -189,8 +191,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <li><a href="http://tenzer.dk/nginx-with-dynamic-upstreams/">Nginx with dynamic upstreams</a></li>
 <li><a href="http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers">nginx AWS ELB name resolution with resolvers</a></li>
 <li><a href="http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day">serverfault - Some nginx reverse proxy configs stops working once a day</a></li>
-</ul>
-</div>
+</ul></div>
 					</article>
 					
 					<section id="comment">

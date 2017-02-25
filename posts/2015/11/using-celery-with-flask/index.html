@@ -148,9 +148,7 @@
 						</div>
 						
     <h1 class="title" itemprop="name">在 Flask 项目中使用 Celery</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
+	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
 
 <p>注意，这篇 Blog 严重参考了这两篇文章：</p>
 
@@ -158,6 +156,8 @@
 <li><a href="http://blog.miguelgrinberg.com/post/using-celery-with-flask">Using Celery With Flask</a>: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.</li>
 <li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
 </ol>
+
+<p></p>
 
 <h2 id="minimum-example">Minimum Example</h2>
 
@@ -280,7 +280,7 @@ def create_app():
 </ul>
 
 <pre><code class="language-python">from flask import current_app
-from celery.util.log import get_task_logger
+from celery.utils.log import get_task_logger
 
 from app import celery
 
@@ -293,7 +293,6 @@ def send_email(to, subject, content):
     subject = app.config['EMAIL_SUBJECT_PREFIX'] + subject
     logger.info('send message &quot;%s&quot; to %s', content, to)
     return do_send_email(to, subject, content)
-
 </code></pre>
 
 <ul>
@@ -350,8 +349,7 @@ app.app_context().push()
 
 <h2 id="总结">总结</h2>
 
-<p>上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。</p>
-</div>
+<p>上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。</p></div>
 					</article>
 					
 					<section id="comment">

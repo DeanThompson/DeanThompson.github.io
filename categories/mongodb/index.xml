@@ -3,11 +3,11 @@
   <channel>
       <title>Mongodb on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/mongodb/</link>
+    <link>http://deanthompson.github.io/categories/mongodb/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Fri, 15 Apr 2016 11:47:00 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>MongoDB Replica Set 重新同步</title>
@@ -27,6 +27,8 @@
 &lt;li&gt;如何修复？&lt;/li&gt;
 &lt;/ol&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;当务之急是先修复集群，这一点官方文档有说明：&lt;a href=&#34;https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/&#34;&gt;Resync a Member of a Replica Set&lt;/a&gt;. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：&lt;/p&gt;
 
 &lt;ol&gt;
@@ -37,8 +39,7 @@
 &lt;p&gt;考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。&lt;/p&gt;
 
 &lt;p&gt;遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，&lt;code&gt;history&lt;/code&gt; 也没发现有 &lt;code&gt;kill&lt;/code&gt; 的记录。
-幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;
-</description>
+幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.16" />
+	<meta name="generator" content="Hugo 0.18.1" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
@@ -162,6 +162,7 @@
 
 <p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/08/simple-python-style-guide" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -218,6 +219,7 @@
 
 <p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -264,6 +266,7 @@
 
 <p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/06/using-supervisor" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -310,6 +313,7 @@
 
 <p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -347,6 +351,7 @@
     ControlPersist 600
 </code></pre>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -393,6 +398,7 @@
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -455,6 +461,7 @@
 }
 </code></pre>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2014/12/defer-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -521,6 +528,7 @@ func main() {
 strconv.FormatInt taken: 1.057318ms
 </code></pre>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -588,6 +596,7 @@ func Sort(data Interface) {
 }
 </code></pre>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2014/06/sort-in-golang" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -627,6 +636,7 @@ func Sort(data Interface) {
 
 <p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" class="more-link">Read on →</a>
 	</div>
 </article>

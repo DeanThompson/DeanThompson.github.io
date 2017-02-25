@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.16" />
+	<meta name="generator" content="Hugo 0.18.1" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
@@ -162,6 +162,7 @@
 
 <p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -199,6 +200,7 @@
 <li>如何修复？</li>
 </ol>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -245,6 +247,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 }
 </code></pre>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -276,6 +279,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -303,6 +307,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 	<div class="entry-content" itemprop="articleBody">
 		<p>我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 <a href="https://github.com/egrcc/zhihu-python">zhihu-python</a>. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2016/03/zhihu-go" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -341,7 +346,8 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
 
-		
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -385,6 +391,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
 </ol>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/11/using-celery-with-flask" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -441,6 +448,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
 </blockquote>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -495,6 +503,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask" class="more-link">Read on →</a>
 	</div>
 </article>
@@ -529,6 +538,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
 
+<p></p>
 		<a href="http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
 	</div>
 </article>

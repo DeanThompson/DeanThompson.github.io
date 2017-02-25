@@ -3,11 +3,11 @@
   <channel>
       <title>Type Conversion on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/type-conversion/</link>
+    <link>http://deanthompson.github.io/tags/type-conversion/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Wed, 11 Jun 2014 15:50:41 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
@@ -15,9 +15,7 @@
       <pubDate>Wed, 11 Jun 2014 15:50:41 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
-      <description>
-
-&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
+      <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
 
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
 
@@ -57,6 +55,8 @@ func main() {
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;多次运行结果都类似，结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 的 3 倍。&lt;/p&gt;
 
@@ -116,8 +116,7 @@ hex.EncodeToString taken: 2.080457ms
 
 &lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
 
-&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;
-</description>
+&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>

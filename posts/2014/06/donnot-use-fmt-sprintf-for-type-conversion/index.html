@@ -138,9 +138,7 @@
 						</div>
 						
     <h1 class="title" itemprop="name">不要用 fmt.Sprintf 做类型转换</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
+	<div class="entry-content" itemprop="articleBody"><p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
 
 <h2 id="int-to-string">int to string</h2>
 
@@ -180,6 +178,8 @@ func main() {
 <pre><code>fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 </code></pre>
+
+<p></p>
 
 <p>多次运行结果都类似，结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatInt</code> 的 3 倍。</p>
 
@@ -239,8 +239,7 @@ hex.EncodeToString taken: 2.080457ms
 
 <p>多次运行结果都类似，可以得到一个结论：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>hex.EncodeToString</code> 的 5 倍。</p>
 
-<p>这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 <code>fmt.Sprintf</code>。</p>
-</div>
+<p>这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 <code>fmt.Sprintf</code>。</p></div>
 					</article>
 					
 					<section id="comment">

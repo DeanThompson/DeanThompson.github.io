@@ -3,11 +3,11 @@
   <channel>
       <title>Stackoverflow on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/stackoverflow/</link>
+    <link>http://deanthompson.github.io/tags/stackoverflow/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Wed, 13 Mar 2013 00:26:58 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>【翻译】理解 Python 装饰器</title>
@@ -15,9 +15,7 @@
       <pubDate>Wed, 13 Mar 2013 00:26:58 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</guid>
-      <description>
-
-&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
 
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
 
@@ -86,6 +84,8 @@ except NameError, e:
     print e
     #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;2-函数引用-functions-references&#34;&gt;2. 函数引用（Functions references）&lt;/h1&gt;
 
@@ -785,8 +785,7 @@ print get_random_furturama_quote()
 #Curse you, merciful Poseidon!
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Python 语言本身也提供了一些装饰器：&lt;code&gt;property&lt;/code&gt;、&lt;code&gt;staticmethod&lt;/code&gt; 等。Django 用装饰器来管理换成和视图权限。Twisted 用来伪装 内联异步函数调用（Twisted to fake inlining asynchronous functions calls. ）。这确实是一片广阔的天地。（This really is a large playground.）&lt;/p&gt;
-</description>
+&lt;p&gt;Python 语言本身也提供了一些装饰器：&lt;code&gt;property&lt;/code&gt;、&lt;code&gt;staticmethod&lt;/code&gt; 等。Django 用装饰器来管理换成和视图权限。Twisted 用来伪装 内联异步函数调用（Twisted to fake inlining asynchronous functions calls. ）。这确实是一片广阔的天地。（This really is a large playground.）&lt;/p&gt;</description>
     </item>
     
   </channel>

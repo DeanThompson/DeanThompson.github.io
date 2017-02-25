@@ -3,11 +3,11 @@
   <channel>
       <title>Celery on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/celery/</link>
+    <link>http://deanthompson.github.io/categories/celery/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 17 May 2016 16:42:37 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
@@ -15,9 +15,7 @@
       <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
@@ -27,6 +25,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
@@ -92,8 +92,7 @@
 def add(x, y):
     print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
     return x + y
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -102,9 +101,7 @@ def add(x, y):
       <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
 
@@ -112,6 +109,8 @@ def add(x, y):
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
@@ -234,7 +233,7 @@ def create_app():
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from flask import current_app
-from celery.util.log import get_task_logger
+from celery.utils.log import get_task_logger
 
 from app import celery
 
@@ -247,7 +246,6 @@ def send_email(to, subject, content):
     subject = app.config[&#39;EMAIL_SUBJECT_PREFIX&#39;] + subject
     logger.info(&#39;send message &amp;quot;%s&amp;quot; to %s&#39;, content, to)
     return do_send_email(to, subject, content)
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -304,8 +302,7 @@ app.app_context().push()
 
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
-</description>
+&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -314,9 +311,7 @@ app.app_context().push()
       <pubDate>Sat, 14 Nov 2015 16:44:34 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
-      <description>
-
-&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
 &lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
 
@@ -341,6 +336,8 @@ app.app_context().push()
 
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;适用场景&#34;&gt;适用场景&lt;/h3&gt;
 
@@ -474,8 +471,7 @@ CELERY_ENABLE_UTC = True
 &lt;p&gt;把上面的内容保存为 &lt;code&gt;celeryconfig.py&lt;/code&gt; 文件，然后：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;app.config_from_object(&#39;celeryconfig&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

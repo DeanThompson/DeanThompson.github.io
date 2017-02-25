@@ -3,11 +3,11 @@
   <channel>
       <title>Web on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/web/</link>
+    <link>http://deanthompson.github.io/tags/web/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Wed, 26 Feb 2014 23:15:42 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Flask 路由做范围限制</title>
@@ -15,9 +15,7 @@
       <pubDate>Wed, 26 Feb 2014 23:15:42 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing</guid>
-      <description>
-
-&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
+      <description>&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
 
 &lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
 
@@ -35,6 +33,8 @@ def foo_id(id):
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;2-how&#34;&gt;2. How&lt;/h1&gt;
 
@@ -71,8 +71,7 @@ def foo_id(id):
 
 &lt;h1 id=&#34;3-end&#34;&gt;3. End&lt;/h1&gt;
 
-&lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;
-</description>
+&lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;</description>
     </item>
     
   </channel>

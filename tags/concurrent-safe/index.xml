@@ -3,11 +3,11 @@
   <channel>
       <title>Concurrent Safe on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/concurrent-safe/</link>
+    <link>http://deanthompson.github.io/tags/concurrent-safe/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Mon, 12 Jan 2015 15:01:15 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
@@ -15,9 +15,7 @@
       <pubDate>Mon, 12 Jan 2015 15:01:15 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang</guid>
-      <description>
-
-&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
+      <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
 
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
 
@@ -37,6 +35,8 @@
 &lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;分表&#34;&gt;「分表」&lt;/h2&gt;
 
@@ -74,8 +74,7 @@ func (m *SyncMap) locate(key string) *syncMap {
 
 &lt;p&gt;&lt;code&gt;locate&lt;/code&gt; 方法调用 &lt;code&gt;bkdrHash&lt;/code&gt; 函数计算一个 &lt;code&gt;key&lt;/code&gt; 的哈希值，然后用该值对分表量取模得到在 slice 的 &lt;code&gt;index&lt;/code&gt;，之后就能定位到对应的 &lt;code&gt;syncMap&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 &lt;code&gt;Get&lt;/code&gt;、&lt;code&gt;Set&lt;/code&gt;、&lt;code&gt;Delete&lt;/code&gt; 等基本操作之外，迭代（&lt;code&gt;range&lt;/code&gt;）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href=&#34;https://github.com/DeanThompson/syncmap&#34;&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;
-</description>
+&lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 &lt;code&gt;Get&lt;/code&gt;、&lt;code&gt;Set&lt;/code&gt;、&lt;code&gt;Delete&lt;/code&gt; 等基本操作之外，迭代（&lt;code&gt;range&lt;/code&gt;）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href=&#34;https://github.com/DeanThompson/syncmap&#34;&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
     
   </channel>

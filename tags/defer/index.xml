@@ -3,11 +3,11 @@
   <channel>
       <title>Defer on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/defer/</link>
+    <link>http://deanthompson.github.io/tags/defer/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Thu, 18 Dec 2014 15:35:38 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Golang 的 defer 语句</title>
@@ -52,6 +52,8 @@
 }
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 语句配合 &lt;code&gt;panic&lt;/code&gt; 和 &lt;code&gt;recover&lt;/code&gt; 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，&lt;code&gt;defer&lt;/code&gt; 也是有些额外的开销的。&lt;/p&gt;
@@ -80,8 +82,7 @@ BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;
-</description>
+&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;</description>
     </item>
     
   </channel>

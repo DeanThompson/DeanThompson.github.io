@@ -3,11 +3,11 @@
   <channel>
       <title>Jpush on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/jpush/</link>
+    <link>http://deanthompson.github.io/tags/jpush/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 28 Nov 2015 22:32:35 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>极光推送 Go SDK</title>
@@ -27,7 +27,8 @@
 &lt;/ul&gt;
 
 &lt;p&gt;欢迎使用，并 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/issues&#34;&gt;反馈 issues&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/pulls&#34;&gt;创建 pull request&lt;/a&gt;.&lt;/p&gt;
-</description>
+
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

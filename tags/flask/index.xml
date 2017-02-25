@@ -3,11 +3,11 @@
   <channel>
       <title>Flask on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/flask/</link>
+    <link>http://deanthompson.github.io/tags/flask/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 17 May 2016 16:42:37 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
@@ -15,9 +15,7 @@
       <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
@@ -27,6 +25,8 @@
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
@@ -92,8 +92,7 @@
 def add(x, y):
     print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
     return x + y
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -102,9 +101,7 @@ def add(x, y):
       <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
 
@@ -112,6 +109,8 @@ def add(x, y):
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;minimum-example&#34;&gt;Minimum Example&lt;/h2&gt;
 
@@ -234,7 +233,7 @@ def create_app():
 &lt;/ul&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from flask import current_app
-from celery.util.log import get_task_logger
+from celery.utils.log import get_task_logger
 
 from app import celery
 
@@ -247,7 +246,6 @@ def send_email(to, subject, content):
     subject = app.config[&#39;EMAIL_SUBJECT_PREFIX&#39;] + subject
     logger.info(&#39;send message &amp;quot;%s&amp;quot; to %s&#39;, content, to)
     return do_send_email(to, subject, content)
-
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ul&gt;
@@ -304,8 +302,7 @@ app.app_context().push()
 
 &lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 
-&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;
-</description>
+&lt;p&gt;上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -314,9 +311,7 @@ app.app_context().push()
       <pubDate>Thu, 05 Nov 2015 16:52:12 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</guid>
-      <description>
-
-&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
+      <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
 
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
 
@@ -329,6 +324,8 @@ app.app_context().push()
 &lt;/ul&gt;
 
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;基本思想&#34;&gt;基本思想&lt;/h2&gt;
 
@@ -491,8 +488,7 @@ def hello():
 
 &lt;h2 id=&#34;结语&#34;&gt;结语&lt;/h2&gt;
 
-&lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;
-</description>
+&lt;p&gt;上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -504,6 +500,8 @@ def hello():
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;以一个注册的应用场景为例，用户输入用户名、邮箱、密码、确认密码，服务程序先检查参数然后处理登录逻辑。这几个字段都是必填的，此外还有一些额外的限制：&lt;/p&gt;
 
@@ -627,8 +625,7 @@ def register():
 
 &lt;p&gt;实现了一个叫 &lt;code&gt;validate_form&lt;/code&gt; 的装饰器，指定一个 Form 类，处理统一的参数获取、校验和错误处理，如果一切正确，再把 Form 对象保存到全局变量 &lt;code&gt;g&lt;/code&gt; 里面，这样就可以在 view 函数里取出来用了。现在的 &lt;code&gt;register&lt;/code&gt; 方法变得更加简洁，甚至都看不到检查参数的那些代码，只需要关心具体的和注册相关的逻辑本身就好。&lt;/p&gt;
 
-&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;
-</description>
+&lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -637,9 +634,7 @@ def register():
       <pubDate>Wed, 26 Feb 2014 23:15:42 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing</guid>
-      <description>
-
-&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
+      <description>&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
 
 &lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
 
@@ -657,6 +652,8 @@ def foo_id(id):
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;2-how&#34;&gt;2. How&lt;/h1&gt;
 
@@ -693,8 +690,7 @@ def foo_id(id):
 
 &lt;h1 id=&#34;3-end&#34;&gt;3. End&lt;/h1&gt;
 
-&lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;
-</description>
+&lt;p&gt;题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 &lt;code&gt;404&lt;/code&gt;，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。&lt;/p&gt;</description>
     </item>
     
   </channel>

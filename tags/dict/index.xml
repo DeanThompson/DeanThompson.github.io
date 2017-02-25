@@ -3,11 +3,11 @@
   <channel>
       <title>Dict on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/dict/</link>
+    <link>http://deanthompson.github.io/tags/dict/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 01 Dec 2012 15:09:08 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Python字典切片</title>
@@ -26,6 +26,8 @@
         dict_slice[k] = adict[k]
     return dict_slice
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -64,8 +66,7 @@
 {5: 5, 6: 5, 7: 5, 8: 5}
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。&lt;/p&gt;
-</description>
+&lt;p&gt;在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。&lt;/p&gt;</description>
     </item>
     
   </channel>

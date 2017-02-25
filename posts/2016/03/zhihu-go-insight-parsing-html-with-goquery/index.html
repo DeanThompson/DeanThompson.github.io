@@ -138,13 +138,13 @@
 						</div>
 						
     <h1 class="title" itemprop="name">zhihu-go 源码解析：用 goquery 解析 HTML</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p><a href="/posts/2016/03/zhihu-go/">上一篇博客</a> 简单介绍了 <a href="https://github.com/DeanThompson/zhihu-go">zhihu-go</a> 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。</p>
+	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2016/03/zhihu-go/">上一篇博客</a> 简单介绍了 <a href="https://github.com/DeanThompson/zhihu-go">zhihu-go</a> 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。</p>
 
 <p>因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 <a href="https://github.com/PuerkitoBio/goquery">goquery</a>.</p>
 
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
+
+<p></p>
 
 <h3 id="创建-document-对象">创建 Document 对象</h3>
 
@@ -296,8 +296,7 @@ doc.Find(&quot;body&quot;).AppendSelection(sel)
 
 <h2 id="总结">总结</h2>
 
-<p>上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。</p>
-</div>
+<p>上面的例子基本涵盖了 zhihu-go 中关于 HTML 操作的场景，得益于 goquery 和 jQuery 的 API 风格，实现起来还是非常简单的。</p></div>
 					</article>
 					
 					<section id="comment">

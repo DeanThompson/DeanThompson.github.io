@@ -150,6 +150,8 @@
     ControlPersist 600
 </code></pre>
 
+<p></p>
+
 <p>意思也很好理解：</p>
 
 <p><code>Host *</code> 这一行表示下面这些配置和规则影响到的 host，<code>*</code> 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 <code>Host *.example.com</code> 的配置。</p>
@@ -160,8 +162,7 @@
 
 <p><code>ControlPersist</code> 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。</p>
 
-<p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p>
-</div>
+<p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p></div>
 					</article>
 					
 					<section id="comment">

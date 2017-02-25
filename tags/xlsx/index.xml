@@ -3,11 +3,11 @@
   <channel>
       <title>Xlsx on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/xlsx/</link>
+    <link>http://deanthompson.github.io/tags/xlsx/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Mon, 25 Feb 2013 16:39:55 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>用 openpyxl 处理 xlsx 文件</title>
@@ -15,11 +15,11 @@
       <pubDate>Mon, 25 Feb 2013 16:39:55 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</guid>
-      <description>
-
-&lt;p&gt;久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。&lt;/p&gt;
+      <description>&lt;p&gt;久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;1-安装&#34;&gt;1. 安装&lt;/h1&gt;
 
@@ -95,8 +95,7 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;ul&gt;
 &lt;li&gt;下载 openpyxl：&lt;a href=&#34;https://pypi.python.org/pypi/openpyxl&#34;&gt;https://pypi.python.org/pypi/openpyxl&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;openpyxl 文档：&lt;a href=&#34;http://pythonhosted.org/openpyxl/&#34;&gt;http://pythonhosted.org/openpyxl/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

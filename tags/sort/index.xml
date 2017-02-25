@@ -3,11 +3,11 @@
   <channel>
       <title>Sort on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/sort/</link>
+    <link>http://deanthompson.github.io/tags/sort/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 03 Jun 2014 16:50:50 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Golang 排序</title>
@@ -15,9 +15,7 @@
       <pubDate>Tue, 03 Jun 2014 16:50:50 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/06/sort-in-golang</guid>
-      <description>
-
-&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
 
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
 
@@ -58,6 +56,8 @@ func Sort(data Interface) {
     quickSort(data, 0, n, maxDepth)
 }
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。&lt;/p&gt;
 
@@ -197,8 +197,7 @@ if __name__ == &amp;quot;__main__&amp;quot;:
 &lt;pre&gt;&lt;code&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt;
 
 &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

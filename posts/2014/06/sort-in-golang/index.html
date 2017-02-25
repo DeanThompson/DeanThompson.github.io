@@ -138,9 +138,7 @@
 						</div>
 						
     <h1 class="title" itemprop="name">Golang 排序</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<h2 id="interface-接口">Interface 接口</h2>
+	<div class="entry-content" itemprop="articleBody"><h2 id="interface-接口">Interface 接口</h2>
 
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 
@@ -181,6 +179,8 @@ func Sort(data Interface) {
     quickSort(data, 0, n, maxDepth)
 }
 </code></pre>
+
+<p></p>
 
 <p>这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。</p>
 
@@ -320,8 +320,7 @@ if __name__ == &quot;__main__&quot;:
 <pre><code>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt;
 
 &lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt;
-</code></pre>
-</div>
+</code></pre></div>
 					</article>
 					
 					<section id="comment">

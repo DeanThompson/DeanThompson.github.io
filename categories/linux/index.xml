@@ -3,11 +3,11 @@
   <channel>
       <title>Linux on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/linux/</link>
+    <link>http://deanthompson.github.io/categories/linux/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sun, 15 Mar 2015 13:31:49 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>重用 SSH 连接</title>
@@ -27,6 +27,8 @@
     ControlPersist 600
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;意思也很好理解：&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;Host *&lt;/code&gt; 这一行表示下面这些配置和规则影响到的 host，&lt;code&gt;*&lt;/code&gt; 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 &lt;code&gt;Host *.example.com&lt;/code&gt; 的配置。&lt;/p&gt;
@@ -37,8 +39,7 @@
 
 &lt;p&gt;&lt;code&gt;ControlPersist&lt;/code&gt; 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。&lt;/p&gt;
 
-&lt;p&gt;只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。&lt;/p&gt;
-</description>
+&lt;p&gt;只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -47,9 +48,7 @@
       <pubDate>Sun, 03 Nov 2013 00:30:00 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number</guid>
-      <description>
-
-&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
+      <description>&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;less is more&lt;/p&gt;
@@ -77,6 +76,8 @@ export LESS=&amp;quot; -R &amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h1 id=&#34;2-why&#34;&gt;2. Why&lt;/h1&gt;
 
@@ -142,8 +143,7 @@ export LESS=&amp;quot; -R &amp;quot;
 &lt;ul&gt;
 &lt;li&gt;GNU Source-highlight: &lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;http://www.gnu.org/software/src-highlite/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Powering Less to Highlight Syntax and Display Line Numbers:  &lt;a href=&#34;http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/&#34;&gt;http://greyblake.com/blog/2011/09/23/powering-less-to-highlight-syntax-and-display-line-numbers/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

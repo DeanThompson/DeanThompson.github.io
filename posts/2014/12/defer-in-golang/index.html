@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Golang 的 defer 语句 - 李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -175,6 +175,8 @@
 }
 </code></pre>
 
+<p></p>
+
 <p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
 
 <p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
@@ -203,8 +205,7 @@ BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 </code></pre>
 
-<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p>
-</div>
+<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p></div>
 					</article>
 					
 					<section id="comment">

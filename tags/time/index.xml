@@ -3,11 +3,11 @@
   <channel>
       <title>Time on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/time/</link>
+    <link>http://deanthompson.github.io/tags/time/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sun, 21 Oct 2012 18:53:51 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Python 时间戳和日期相互转换</title>
@@ -22,6 +22,8 @@
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93&#34;&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;在Python里，时间戳可以通过 &lt;code&gt;time&lt;/code&gt; 模块里的 &lt;code&gt;time()&lt;/code&gt; 方法获得，比如:&lt;/p&gt;
 
@@ -70,8 +72,7 @@ Out[14]: 1350816710.0
 &lt;ul&gt;
 &lt;li&gt;Python中时间戳与时间字符串互相转化: &lt;a href=&#34;http://www.coder4.com/archives/2239&#34;&gt;http://www.coder4.com/archives/2239&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Python中time模块详解（很好）:&lt;a href=&#34;http://qinxuye.me/article/details-about-time-module-in-python/&#34;&gt;http://qinxuye.me/article/details-about-time-module-in-python/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>

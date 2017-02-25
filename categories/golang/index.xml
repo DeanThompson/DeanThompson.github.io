@@ -3,11 +3,11 @@
   <channel>
       <title>Golang on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/golang/</link>
+    <link>http://deanthompson.github.io/categories/golang/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Mon, 12 Jan 2015 15:01:15 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
@@ -15,9 +15,7 @@
       <pubDate>Mon, 12 Jan 2015 15:01:15 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang</guid>
-      <description>
-
-&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
+      <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
 
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
 
@@ -37,6 +35,8 @@
 &lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
 &lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h2 id=&#34;分表&#34;&gt;「分表」&lt;/h2&gt;
 
@@ -74,8 +74,7 @@ func (m *SyncMap) locate(key string) *syncMap {
 
 &lt;p&gt;&lt;code&gt;locate&lt;/code&gt; 方法调用 &lt;code&gt;bkdrHash&lt;/code&gt; 函数计算一个 &lt;code&gt;key&lt;/code&gt; 的哈希值，然后用该值对分表量取模得到在 slice 的 &lt;code&gt;index&lt;/code&gt;，之后就能定位到对应的 &lt;code&gt;syncMap&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 &lt;code&gt;Get&lt;/code&gt;、&lt;code&gt;Set&lt;/code&gt;、&lt;code&gt;Delete&lt;/code&gt; 等基本操作之外，迭代（&lt;code&gt;range&lt;/code&gt;）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href=&#34;https://github.com/DeanThompson/syncmap&#34;&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;
-</description>
+&lt;p&gt;这种实现足够简单，而且也有不错的性能表现。除了基本的 &lt;code&gt;Get&lt;/code&gt;、&lt;code&gt;Set&lt;/code&gt;、&lt;code&gt;Delete&lt;/code&gt; 等基本操作之外，迭代（&lt;code&gt;range&lt;/code&gt;）功能也非常有用。更多的功能和细节，都可以在源码里找到答案： &lt;a href=&#34;https://github.com/DeanThompson/syncmap&#34;&gt;https://github.com/DeanThompson/syncmap&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -121,6 +120,8 @@ func (m *SyncMap) locate(key string) *syncMap {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 语句配合 &lt;code&gt;panic&lt;/code&gt; 和 &lt;code&gt;recover&lt;/code&gt; 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;defer&lt;/code&gt; 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，&lt;code&gt;defer&lt;/code&gt; 也是有些额外的开销的。&lt;/p&gt;
@@ -149,8 +150,7 @@ BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;
-</description>
+&lt;p&gt;可以看出，&lt;code&gt;defer&lt;/code&gt; 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -159,9 +159,7 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
       <pubDate>Wed, 11 Jun 2014 15:50:41 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
-      <description>
-
-&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
+      <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
 
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
 
@@ -201,6 +199,8 @@ func main() {
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;多次运行结果都类似，结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 的 3 倍。&lt;/p&gt;
 
@@ -260,8 +260,7 @@ hex.EncodeToString taken: 2.080457ms
 
 &lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
 
-&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;
-</description>
+&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -270,9 +269,7 @@ hex.EncodeToString taken: 2.080457ms
       <pubDate>Tue, 03 Jun 2014 16:50:50 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://deanthompson.github.io/posts/2014/06/sort-in-golang</guid>
-      <description>
-
-&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
+      <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
 
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
 
@@ -313,6 +310,8 @@ func Sort(data Interface) {
     quickSort(data, 0, n, maxDepth)
 }
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。&lt;/p&gt;
 
@@ -452,8 +451,7 @@ if __name__ == &amp;quot;__main__&amp;quot;:
 &lt;pre&gt;&lt;code&gt;&amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(4, 193)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt;
 
 &amp;lt;Item(2, 959)&amp;gt; &amp;lt;Item(6, 884)&amp;gt; &amp;lt;Item(7, 849)&amp;gt; &amp;lt;Item(1, 819)&amp;gt; &amp;lt;Item(3, 812)&amp;gt; &amp;lt;Item(5, 408)&amp;gt; &amp;lt;Item(4, 193)&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

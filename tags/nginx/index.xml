@@ -3,11 +3,11 @@
   <channel>
       <title>Nginx on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/nginx/</link>
+    <link>http://deanthompson.github.io/tags/nginx/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Thu, 14 Apr 2016 15:33:52 CST</updated>
+    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
@@ -35,6 +35,8 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
     proxy_pass http://name.of.elb.aws.com;
 }
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。&lt;/p&gt;
 
@@ -66,8 +68,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 &lt;li&gt;&lt;a href=&#34;http://tenzer.dk/nginx-with-dynamic-upstreams/&#34;&gt;Nginx with dynamic upstreams&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers&#34;&gt;nginx AWS ELB name resolution with resolvers&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day&#34;&gt;serverfault - Some nginx reverse proxy configs stops working once a day&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
     </item>
     
   </channel>
