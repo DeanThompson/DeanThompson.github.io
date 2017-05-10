@@ -123,6 +123,202 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/flask"> flask </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/flask-i18n#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2017/05/flask-i18n" itemprop="url">Flask 应用国际化</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="babel">Babel</h2>
+
+<blockquote>
+<p>Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.</p>
+</blockquote>
+
+<ul>
+<li>文档：<a href="http://babel.pocoo.org/en/latest/">http://babel.pocoo.org/en/latest/</a></li>
+<li>代码：<a href="https://github.com/python-babel/babel">https://github.com/python-babel/babel</a></li>
+</ul>
+
+<h2 id="flask-babel">Flask-Babel</h2>
+
+<p>Flask 的 i18n 扩展，集成 babel、pytz 等。</p>
+
+<ul>
+<li>文档：<a href="https://pythonhosted.org/Flask-Babel/">https://pythonhosted.org/Flask-Babel/</a></li>
+<li>代码：<a href="https://github.com/python-babel/flask-babel">https://github.com/python-babel/flask-babel</a></li>
+</ul>
+
+<h2 id="使用">使用</h2>
+
+<ul>
+<li><p>安装：<code>pip install Flask-Babel</code></p></li>
+
+<li><p>babel 配置文件：babel.cfg</p></li>
+</ul>
+
+<pre><code class="language-ini">[python: **.py]
+[jinja2: **.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
+</code></pre>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2017/05/flask-i18n" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/aws"> aws </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2" itemprop="url">EC2 挂载 EBS</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。</p>
+
+<p>详情见 <a href="http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html">EBS 的文档</a></p>
+
+<h2 id="用-lsblk-命令查看所有可用的磁盘及其安装点">用 <code>lsblk</code> 命令查看所有可用的磁盘及其安装点</h2>
+
+<pre><code>$ lsblk
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   8G  0 disk
+`-xvda1 202:1    0   8G  0 part /
+xvdb    202:16   0  30G  0 disk
+</code></pre>
+
+<p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/aws"> aws </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift" itemprop="url">MySQL 数据导入到 Redshift</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="设计表">设计表</h2>
+
+<p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
+
+<ul>
+<li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
+<li>FLOAT 类型改成 REAL 或 FLOAT4</li>
+<li>把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。</li>
+<li>Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型</li>
+<li>有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.</li>
+</ul>
+
+<p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/aws"> aws </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/tableau"> tableau </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2" itemprop="url">在 AWS 上安装 Tableau Server</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="启动-ec2-实例">启动 EC2 实例</h2>
+
+<p>先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。</p>
+
+<ul>
+<li>AMI: Microsoft Windows Server 2012 R2 Base（简体中文）</li>
+<li>类型: m4.4xlarge</li>
+</ul>
+
+<p>启动、配置步骤略去不表，有两点需要注意：</p>
+
+<ul>
+<li>VPC 需要开启 3389 端口用于远程登录（RDP）</li>
+<li>密钥对会用于解密登录密码</li>
+</ul>
+
+<h2 id="安装-tableau-server">安装 Tableau Server</h2>
+
+<p>从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。</p>
+
+<p></p>
+		<a href="http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sat, Feb 25, 2017' data-updated="true" itemprop="datePublished">Sat, Feb 25, 2017</time>
 </div>
 		<div class="tags">
@@ -356,202 +552,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p></p>
 		<a href="http://deanthompson.github.io/posts/2016/03/zhihu-go" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Nov 28, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 28, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/go"> go </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client" itemprop="url">极光推送 Go SDK</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
-
-<p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
-
-<p>啰嗦了一大推，差点忘了最重要的东西，下面给出链接：</p>
-
-<ul>
-<li>源代码和示例：<a href="https://github.com/DeanThompson/jpush-api-go-client">https://github.com/DeanThompson/jpush-api-go-client</a></li>
-<li>官方文档：<a href="http://docs.jpush.io/server/rest_api_v3_push/">http://docs.jpush.io/server/rest_api_v3_push/</a></li>
-</ul>
-
-<p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2015/11/jpush-api-go-client" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/python"> python </a>,
-	
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/flask"> flask </a>,
-	
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/celery"> celery </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/11/using-celery-with-flask#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/using-celery-with-flask" itemprop="url">在 Flask 项目中使用 Celery</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
-
-<p>注意，这篇 Blog 严重参考了这两篇文章：</p>
-
-<ol>
-<li><a href="http://blog.miguelgrinberg.com/post/using-celery-with-flask">Using Celery With Flask</a>: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.</li>
-<li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
-</ol>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2015/11/using-celery-with-flask" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/celery"> celery </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery" itemprop="url">Celery 使用简介</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="introduction">Introduction</h2>
-
-<h3 id="分布式任务队列">分布式任务队列</h3>
-
-<p>Celery 是一个分布式任务队列，下面是 <a href="http://www.celeryproject.org/">官网</a> 的一段描述：</p>
-
-<blockquote>
-<p>Celery is an asynchronous task queue/job queue based on distributed message passing.  It is focused on real-time operation, but supports scheduling as well.</p>
-</blockquote>
-
-<p>Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。</p>
-
-<h3 id="何为任务队列">何为任务队列？</h3>
-
-<p>摘自 Celery 官方文档的 <a href="http://docs.jinkan.org/docs/celery/getting-started/introduction.html">中文翻译</a>：</p>
-
-<blockquote>
-<p>任务队列是一种在线程或机器间分发任务的机制。</p>
-
-<p>消息队列的输入是工作的一个单元，称为任务，独立的职程（Worker）进程持续监视队列中是否有需要处理的新任务。</p>
-
-<p>Celery 用消息通信，通常使用中间人（Broker）在客户端和职程间斡旋。这个过程从客户端向队列添加消息开始，之后中间人把消息派送给职程。</p>
-
-<p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
-</blockquote>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Thu, Nov 5, 2015' data-updated="true" itemprop="datePublished">Thu, Nov 5, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/python"> python </a>,
-	
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/flask"> flask </a>,
-	
-
-	
-	
-		<a href="http://deanthompson.github.io/categories/tornado"> tornado </a>,
-	
-
-	
-	
-	    <a href="http://deanthompson.github.io/categories/cache"> cache </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask" itemprop="url">Tornado 和 Flask 应用缓存响应结果</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。</p>
-
-<p>如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。</p>
-
-<p>对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：</p>
-
-<ul>
-<li>GET 查询</li>
-<li>查询很耗时</li>
-<li>相同条件、不同时间（或某段时间内）的查询结果是一致的</li>
-</ul>
-
-<p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
-
-<p></p>
-		<a href="http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask" class="more-link">Read on →</a>
 	</div>
 </article>
 

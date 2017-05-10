@@ -1,0 +1,293 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>Flask 应用国际化 - 李林克斯</title>
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2017/05/flask-i18n">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
+<script>hljs.initHighlightingOnLoad();</script>
+
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+	<style media="screen">
+	article pre, article code {border-radius: 3px 3px 3px 3px; -moz-border-radius: 3px 3px 3px 3px; -webkit-border-radius: 3px 3px 3px 3px; border: 0px solid #000000;}
+	article code {background: #f8f8f8;}
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+		<a href="http://deanthompson.github.io/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/flask"> flask </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/flask-i18n#disqus_thread">Comments</a></span>
+							
+						</div>
+						
+    <h1 class="title" itemprop="name">Flask 应用国际化</h1>
+	<div class="entry-content" itemprop="articleBody"><h2 id="babel">Babel</h2>
+
+<blockquote>
+<p>Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.</p>
+</blockquote>
+
+<ul>
+<li>文档：<a href="http://babel.pocoo.org/en/latest/">http://babel.pocoo.org/en/latest/</a></li>
+<li>代码：<a href="https://github.com/python-babel/babel">https://github.com/python-babel/babel</a></li>
+</ul>
+
+<h2 id="flask-babel">Flask-Babel</h2>
+
+<p>Flask 的 i18n 扩展，集成 babel、pytz 等。</p>
+
+<ul>
+<li>文档：<a href="https://pythonhosted.org/Flask-Babel/">https://pythonhosted.org/Flask-Babel/</a></li>
+<li>代码：<a href="https://github.com/python-babel/flask-babel">https://github.com/python-babel/flask-babel</a></li>
+</ul>
+
+<h2 id="使用">使用</h2>
+
+<ul>
+<li><p>安装：<code>pip install Flask-Babel</code></p></li>
+
+<li><p>babel 配置文件：babel.cfg</p></li>
+</ul>
+
+<pre><code class="language-ini">[python: **.py]
+[jinja2: **.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
+</code></pre>
+
+<p></p>
+
+<ul>
+<li>Flask-Babel 配置：</li>
+</ul>
+
+<pre><code class="language-python">BABEL_DEFAULT_LOCALE = 'zh_CN’                  # locale 选项，默认 'en'
+BABEL_DEFAULT_TIMEZONE = 'Asia/Shanghai'        # 时区，默认 'UTC'
+BABEL_TRANSLATION_DIRECTORIES = 'translations'  # 翻译文件所在目录，默认 'translations'
+</code></pre>
+
+<ul>
+<li>生成翻译文件模版：</li>
+</ul>
+
+<pre><code>$ pybabel extract -F babel.cfg -o messages.pot .
+</code></pre>
+
+<p>如果使用了 <code>lazy_gettext()</code> 这样的函数，需要在上面的命令行参数指定：</p>
+
+<pre><code>$ pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot .
+</code></pre>
+
+<ul>
+<li>生成翻译文件:</li>
+</ul>
+
+<pre><code>$ pybabel init -i messages.pot -d translations
+</code></pre>
+
+<ul>
+<li>编辑 translations/zh_CN/LC_MESSAGES/messages.po 文件，手动翻译。po 文件内容形如：</li>
+</ul>
+
+<pre><code>#: forms.py:65 forms.py:78
+#: templates/flask_user/emails/invite_child_user_message.html:9
+msgid &quot;Username&quot;
+msgstr &quot;&quot;
+</code></pre>
+
+<p>其中：
+  - <code>#:</code> 注释内容是 ‘文件名:行号’，即所有出现过的地方
+  - <code>msgid</code> 是需要翻译的内容
+  - <code>msgstr</code> 是翻译后的内容，如果留空，则会显示原文，即 msgid</p>
+
+<ul>
+<li>更新翻译文件（一般只需要 init 一次）：</li>
+</ul>
+
+<pre><code>$ pybabel update -i messages.pot -d translations
+</code></pre>
+
+<ul>
+<li>编译</li>
+</ul>
+
+<pre><code>$ pybabel compile -d translations
+</code></pre>
+
+<h2 id="工作流">工作流</h2>
+
+<pre><code>$ pybabel extract -F babel.cfg -o messages.pot .
+$ pybabel init -i messages.pot -d translations     # 第一次
+$ pybabel update -i messages.pot -d translations   # 更新
+# 手动翻译
+$ pybabel compile -d translations
+</code></pre></div>
+					</article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2017
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>

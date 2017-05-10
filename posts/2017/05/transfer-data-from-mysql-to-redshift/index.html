@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>MySQL 数据导入到 Redshift - 李林克斯</title>
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift">
+	<link href="http://deanthompson.github.io/favicon.jpeg" rel="shortcut icon">
+	<link href="http://deanthompson.github.io/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://deanthompson.github.io/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
+<script>hljs.initHighlightingOnLoad();</script>
+
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+	<style media="screen">
+	article pre, article code {border-radius: 3px 3px 3px 3px; -moz-border-radius: 3px 3px 3px 3px; -webkit-border-radius: 3px 3px 3px 3px; border: 0px solid #000000;}
+	article code {background: #f8f8f8;}
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="http://deanthompson.github.io/categories/aws"> aws </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift#disqus_thread">Comments</a></span>
+							
+						</div>
+						
+    <h1 class="title" itemprop="name">MySQL 数据导入到 Redshift</h1>
+	<div class="entry-content" itemprop="articleBody"><h2 id="设计表">设计表</h2>
+
+<p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
+
+<ul>
+<li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
+<li>FLOAT 类型改成 REAL 或 FLOAT4</li>
+<li>把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。</li>
+<li>Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型</li>
+<li>有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.</li>
+</ul>
+
+<p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
+
+<p></p>
+
+<h2 id="加载数据">加载数据</h2>
+
+<p>因为 Redshift 推荐使用 <code>COPY</code> 命令从 S3 加载数据，所以首先得要从 MySQL 中导出数据，然后上传到 CSV.</p>
+
+<p>以导出 CSV 为例，需要注意使用 <code>&quot;</code> 符号作为转义字符，而不是 <code>\</code>. 另外最好用 <code>&quot;</code> 把每个值都 wrap 起来，免得有些多行字符串导致出错。导出后可以压缩成 gzip 格式，在上传 S3 的时候可以快一些。</p>
+
+<p>Redshift 的 <code>COPY</code> 例子：</p>
+
+<pre><code class="language-sql">COPY syns_bigdata
+FROM 's3://some-bucket/some_filename.csv.gz'
+credentials 'aws_access_key_id=&lt;aws_access_key_id&gt;;aws_secret_access_key=&lt;aws_secret_access_key&gt;'
+region 'cn-north-1' CSV GZIP NULL AS 'NULL';
+</code></pre>
+
+<p>语法很简单，需要注意的有：</p>
+
+<ul>
+<li><code>aws_access_key_id</code> 和 <code>aws_secret_access_key</code> 要有访问 S3 的权限</li>
+<li>指定 region</li>
+<li>指定文件格式，<code>CSV GZIP</code> 表示是 gzip 压缩的 CSV 文件</li>
+<li>可以用 <code>NULL AS</code> 语句指定 NULL 值</li>
+</ul></div>
+					</article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2017
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://deanthompson.github.io/js/slash.js"></script>
+<script src="http://deanthompson.github.io/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>

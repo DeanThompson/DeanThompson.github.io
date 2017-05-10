@@ -7,7 +7,322 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 25 Feb 2017 16:16:14 CST</updated>
+    <updated>Wed, 10 May 2017 17:48:17 CST</updated>
+    
+    <item>
+      <title>Flask 应用国际化</title>
+      <link>http://deanthompson.github.io/posts/2017/05/flask-i18n</link>
+      <pubDate>Wed, 10 May 2017 17:48:17 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/flask-i18n</guid>
+      <description>&lt;h2 id=&#34;babel&#34;&gt;Babel&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文档：&lt;a href=&#34;http://babel.pocoo.org/en/latest/&#34;&gt;http://babel.pocoo.org/en/latest/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/babel&#34;&gt;https://github.com/python-babel/babel&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;flask-babel&#34;&gt;Flask-Babel&lt;/h2&gt;
+
+&lt;p&gt;Flask 的 i18n 扩展，集成 babel、pytz 等。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文档：&lt;a href=&#34;https://pythonhosted.org/Flask-Babel/&#34;&gt;https://pythonhosted.org/Flask-Babel/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/flask-babel&#34;&gt;https://github.com/python-babel/flask-babel&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[python: **.py]
+[jinja2: **.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flask-Babel 配置：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;BABEL_DEFAULT_LOCALE = &#39;zh_CN’                  # locale 选项，默认 &#39;en&#39;
+BABEL_DEFAULT_TIMEZONE = &#39;Asia/Shanghai&#39;        # 时区，默认 &#39;UTC&#39;
+BABEL_TRANSLATION_DIRECTORIES = &#39;translations&#39;  # 翻译文件所在目录，默认 &#39;translations&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;生成翻译文件模版：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -o messages.pot .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果使用了 &lt;code&gt;lazy_gettext()&lt;/code&gt; 这样的函数，需要在上面的命令行参数指定：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;生成翻译文件:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel init -i messages.pot -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;编辑 translations/zh_CN/LC_MESSAGES/messages.po 文件，手动翻译。po 文件内容形如：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;#: forms.py:65 forms.py:78
+#: templates/flask_user/emails/invite_child_user_message.html:9
+msgid &amp;quot;Username&amp;quot;
+msgstr &amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中：
+  - &lt;code&gt;#:&lt;/code&gt; 注释内容是 ‘文件名:行号’，即所有出现过的地方
+  - &lt;code&gt;msgid&lt;/code&gt; 是需要翻译的内容
+  - &lt;code&gt;msgstr&lt;/code&gt; 是翻译后的内容，如果留空，则会显示原文，即 msgid&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;更新翻译文件（一般只需要 init 一次）：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel update -i messages.pot -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;编译&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel compile -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;工作流&#34;&gt;工作流&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -o messages.pot .
+$ pybabel init -i messages.pot -d translations     # 第一次
+$ pybabel update -i messages.pot -d translations   # 更新
+# 手动翻译
+$ pybabel compile -d translations
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>EC2 挂载 EBS</title>
+      <link>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</link>
+      <pubDate>Wed, 10 May 2017 17:41:54 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</guid>
+      <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
+
+&lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;用-lsblk-命令查看所有可用的磁盘及其安装点&#34;&gt;用 &lt;code&gt;lsblk&lt;/code&gt; 命令查看所有可用的磁盘及其安装点&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ lsblk
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   8G  0 disk
+`-xvda1 202:1    0   8G  0 part /
+xvdb    202:16   0  30G  0 disk
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;确定是否需要在卷上创建文件系统&#34;&gt;确定是否需要在卷上创建文件系统。&lt;/h2&gt;
+
+&lt;p&gt;如果是新的 EBS，是一个原始的块存储设备，需要先创建文件系统才能安装使用。从快照还原的卷可能已经含有文件系统。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo file -s /dev/xvdb
+/dev/xvdb: data
+
+$ sudo file -s /dev/xvda1
+/dev/xvda1: Linux rev 1.0 ext4 filesystem data, UUID=9fbb7c51-0409-4b50-ad40-068dcfe4bc89, volume name &amp;quot;cloudimg-rootfs&amp;quot; (needs journal recovery) (extents) (large files) (huge files)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到 &lt;code&gt;/dev/xvdb&lt;/code&gt; 上面还没有文件系统，需要手动创建:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkfs -t ext4 /dev/xvdb
+mke2fs 1.42.13 (17-May-2015)
+Creating filesystem with 7864320 4k blocks and 1966080 inodes
+Filesystem UUID: 2a0dae23-7b6e-42ec-95e1-df58f29520a4
+Superblock backups stored on blocks:
+     32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+     4096000
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+$ sudo file -s /dev/xvdb
+/dev/xvdb: Linux rev 1.0 ext4 filesystem data, UUID=2a0dae23-7b6e-42ec-95e1-df58f29520a4 (extents) (large files) (huge files)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意：&lt;code&gt;mkfs&lt;/code&gt; 会格式化卷，删除所有数据。&lt;/p&gt;
+
+&lt;h2 id=&#34;创建安装点-也就是要挂载的位置&#34;&gt;创建安装点，也就是要挂载的位置:&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /data
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;挂载&#34;&gt;挂载&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo mount /dev/xvdb /data/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;用-df-命令磁盘空间&#34;&gt;用 &lt;code&gt;df&lt;/code&gt; 命令磁盘空间&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            489M     0  489M   0% /dev
+tmpfs           100M  3.1M   97M   4% /run
+/dev/xvda1      7.8G  1.9G  5.5G  26% /
+tmpfs           496M     0  496M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           496M     0  496M   0% /sys/fs/cgroup
+tmpfs           100M     0  100M   0% /run/user/1000
+/dev/xvdb        30G   44M   28G   1% /data
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>MySQL 数据导入到 Redshift</title>
+      <link>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</link>
+      <pubDate>Wed, 10 May 2017 17:36:29 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</guid>
+      <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
+
+&lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。&lt;/li&gt;
+&lt;li&gt;FLOAT 类型改成 REAL 或 FLOAT4&lt;/li&gt;
+&lt;li&gt;把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。&lt;/li&gt;
+&lt;li&gt;Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型&lt;/li&gt;
+&lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;加载数据&#34;&gt;加载数据&lt;/h2&gt;
+
+&lt;p&gt;因为 Redshift 推荐使用 &lt;code&gt;COPY&lt;/code&gt; 命令从 S3 加载数据，所以首先得要从 MySQL 中导出数据，然后上传到 CSV.&lt;/p&gt;
+
+&lt;p&gt;以导出 CSV 为例，需要注意使用 &lt;code&gt;&amp;quot;&lt;/code&gt; 符号作为转义字符，而不是 &lt;code&gt;\&lt;/code&gt;. 另外最好用 &lt;code&gt;&amp;quot;&lt;/code&gt; 把每个值都 wrap 起来，免得有些多行字符串导致出错。导出后可以压缩成 gzip 格式，在上传 S3 的时候可以快一些。&lt;/p&gt;
+
+&lt;p&gt;Redshift 的 &lt;code&gt;COPY&lt;/code&gt; 例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;COPY syns_bigdata
+FROM &#39;s3://some-bucket/some_filename.csv.gz&#39;
+credentials &#39;aws_access_key_id=&amp;lt;aws_access_key_id&amp;gt;;aws_secret_access_key=&amp;lt;aws_secret_access_key&amp;gt;&#39;
+region &#39;cn-north-1&#39; CSV GZIP NULL AS &#39;NULL&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;语法很简单，需要注意的有：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;aws_access_key_id&lt;/code&gt; 和 &lt;code&gt;aws_secret_access_key&lt;/code&gt; 要有访问 S3 的权限&lt;/li&gt;
+&lt;li&gt;指定 region&lt;/li&gt;
+&lt;li&gt;指定文件格式，&lt;code&gt;CSV GZIP&lt;/code&gt; 表示是 gzip 压缩的 CSV 文件&lt;/li&gt;
+&lt;li&gt;可以用 &lt;code&gt;NULL AS&lt;/code&gt; 语句指定 NULL 值&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>在 AWS 上安装 Tableau Server</title>
+      <link>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</link>
+      <pubDate>Wed, 10 May 2017 17:23:55 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
+      <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
+
+&lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;AMI: Microsoft Windows Server 2012 R2 Base（简体中文）&lt;/li&gt;
+&lt;li&gt;类型: m4.4xlarge&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;启动、配置步骤略去不表，有两点需要注意：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;VPC 需要开启 3389 端口用于远程登录（RDP）&lt;/li&gt;
+&lt;li&gt;密钥对会用于解密登录密码&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
+
+&lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;可选-安装-mysql-驱动&#34;&gt;（可选）安装 MySQL 驱动&lt;/h2&gt;
+
+&lt;p&gt;在 &lt;a href=&#34;https://www.tableau.com/zh-cn/support/drivers&#34;&gt;这个页面&lt;/a&gt;可以找到所有数据源需要的驱动程序.&lt;/p&gt;
+
+&lt;p&gt;下载好驱动程序，如 mysql-connector-odbc-5.3.7-winx64.msi，双击安装，提示错误。搜索了一番，应该是缺少 Visual C++ 的运行库。试过 Visual C++ Redistributable for Visual Studio 2012 Update 4 和 Visual C++ Redistributable Packages for Visual Studio 2013，最后发现后者才有用。&lt;/p&gt;
+
+&lt;p&gt;安装完 &lt;a href=&#34;https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784&#34;&gt;Visual C++ Redistributable Packages for Visual Studio 2013&lt;/a&gt; 之后，可以成功安装mysql-connector-odbc-5.3.7-winx64.msi 。&lt;/p&gt;
+
+&lt;h2 id=&#34;安装-aws-命令行程序&#34;&gt;安装 AWS 命令行程序&lt;/h2&gt;
+
+&lt;p&gt;从这里下载：&lt;a href=&#34;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&#34;&gt;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;安装完后打开 cmd，运行 &lt;code&gt;aws configure&lt;/code&gt; 进行配置，要有上传 S3 的权限。完成后可以运行 &lt;code&gt;aws s3 ls&lt;/code&gt; 验证。&lt;/p&gt;
+
+&lt;h2 id=&#34;编写备份脚本&#34;&gt;编写备份脚本&lt;/h2&gt;
+
+&lt;p&gt;自动备份并且把备份文件上传到 S3。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@echo OFF
+set Binpath=&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin&amp;quot;
+set Backuppath=&amp;quot;C:\Backups\Tablea Server\nightly&amp;quot;
+echo %date% %time%: *** Housekeeping started ***
+
+rmdir %Backuppath% /S /Q
+
+%Binpath%\tabadmin backup %Backuppath%\ts_backup -d --no-config
+timeout 5
+
+%Binpath%\tabadmin cleanup
+
+echo %date% %time%: Uploading to S3
+
+aws s3 cp %Backuppath% s3://marspet-tableau-backup/ --recursive --exclude &amp;quot;*&amp;quot; --include &amp;quot;ts_backup-*.tsbak&amp;quot;
+
+echo %date% %time%: *** Housekeeping completed ***
+timeout 5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;从备份恢复&#34;&gt;从备份恢复&lt;/h2&gt;
+
+&lt;p&gt;如果是从其他的 Tableau Server 迁移过来，可以使用备份文件迁移数据。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;C:\Users\Administrator&amp;gt;&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin\tabadmi
+n.bat&amp;quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;restore 操作会关闭 Tableau Server，恢复完成后需要手动开启。&lt;/p&gt;
+
+&lt;h2 id=&#34;自动备份&#34;&gt;自动备份&lt;/h2&gt;
+
+&lt;p&gt;使用 Task Scheduler 实现，详情见官方文档：&lt;a href=&#34;http://technet.microsoft.com/en-us/library/cc766428.aspx&#34;&gt;http://technet.microsoft.com/en-us/library/cc766428.aspx&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Python 多进程导入数据到 MySQL</title>
@@ -1274,792 +1589,6 @@ def register():
 &lt;p&gt;实现了一个叫 &lt;code&gt;validate_form&lt;/code&gt; 的装饰器，指定一个 Form 类，处理统一的参数获取、校验和错误处理，如果一切正确，再把 Form 对象保存到全局变量 &lt;code&gt;g&lt;/code&gt; 里面，这样就可以在 view 函数里取出来用了。现在的 &lt;code&gt;register&lt;/code&gt; 方法变得更加简洁，甚至都看不到检查参数的那些代码，只需要关心具体的和注册相关的逻辑本身就好。&lt;/p&gt;
 
 &lt;p&gt;这个装饰器的可重用性非常好，其他的接口只要定义一个 Form 类，然后调用一下装饰器，再从 &lt;code&gt;g&lt;/code&gt; 获取 Form 对象。不仅省了很多心思和体力劳动，代码也变得更加清晰优雅和 Pythonic.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Python 编码规范</title>
-      <link>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</link>
-      <pubDate>Mon, 10 Aug 2015 22:36:42 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</guid>
-      <description>&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
-
-&lt;p&gt;网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.python.org/dev/peps/pep-0008/&#34;&gt;PEP 0008 &amp;ndash; Style Guide for Python Code&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/&#34;&gt;Google 的 Python 风格指南&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://docs.python-guide.org/en/latest/writing/style/&#34;&gt;Python Guide - Code Style&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://flask.pocoo.org/docs/0.10/styleguide/&#34;&gt;Pocoo Styleguide&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;除了在编码时主动遵循规范，还有很多有用的工具：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;IntelliJ IDEA 和 PyCharm 的格式化代码功能&lt;/li&gt;
-&lt;li&gt;Google 开源的 Python 文件格式化工具：&lt;a href=&#34;https://github.com/google/yapf&#34;&gt;github.com/google/yapf&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;pyflakes, pylint 等工具及各种编辑器的插件&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;缩进&#34;&gt;缩进&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;不要使用 tab 缩进&lt;/li&gt;
-&lt;li&gt;使用任何编辑器写 Python，请把一个 tab 展开为 4 个空格&lt;/li&gt;
-&lt;li&gt;绝对不要混用 tab 和空格，否则容易出现 &lt;code&gt;IndentationError&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;空格&#34;&gt;空格&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;在 list, dict, tuple, set, 参数列表的 &lt;code&gt;,&lt;/code&gt; 后面加一个空格&lt;/li&gt;
-&lt;li&gt;在 dict 的 &lt;code&gt;:&lt;/code&gt; 后面加一个空格&lt;/li&gt;
-&lt;li&gt;在注释符号 &lt;code&gt;#&lt;/code&gt; 后面加一个空格，但是 &lt;code&gt;#!/usr/bin/python&lt;/code&gt; 的 &lt;code&gt;#&lt;/code&gt; 后不能有空格&lt;/li&gt;
-&lt;li&gt;操作符两端加一个空格，如 &lt;code&gt;+&lt;/code&gt;, &lt;code&gt;-&lt;/code&gt;, &lt;code&gt;*&lt;/code&gt;, &lt;code&gt;/&lt;/code&gt;, &lt;code&gt;|&lt;/code&gt;, &lt;code&gt;&amp;amp;&lt;/code&gt;, &lt;code&gt;=&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;接上一条，在参数列表里的 &lt;code&gt;=&lt;/code&gt; 两端不需要空格&lt;/li&gt;
-&lt;li&gt;括号（&lt;code&gt;()&lt;/code&gt;, &lt;code&gt;{}&lt;/code&gt;, &lt;code&gt;[]&lt;/code&gt;）内的两端不需要空格&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;空行&#34;&gt;空行&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;function 和 class 顶上两个空行&lt;/li&gt;
-&lt;li&gt;class 的 method 之间一个空行&lt;/li&gt;
-&lt;li&gt;函数内逻辑无关的段落之间空一行，不要过度使用空行&lt;/li&gt;
-&lt;li&gt;不要把多个语句写在一行，然后用 &lt;code&gt;;&lt;/code&gt; 隔开&lt;/li&gt;
-&lt;li&gt;if/for/while 语句中，即使执行语句只有一句，也要另起一行&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;换行&#34;&gt;换行&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;每一行代码控制在 80 字符以内&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;使用 &lt;code&gt;\&lt;/code&gt; 或 &lt;code&gt;()&lt;/code&gt; 控制换行，举例：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def foo(first, second, third, fourth, fifth,
-        sixth, and_some_other_very_long_param):
-    user = User.objects.filter_by(first=first, second=second, third=third) \
-        .skip(100).limit(100) \
-        .all()
-
-text = (&#39;Long strings can be made up &#39;
-        &#39;of several shorter strings.&#39;)
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;命名&#34;&gt;命名&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;使用有意义的，英文单词或词组，绝对不要使用汉语拼音&lt;/li&gt;
-&lt;li&gt;package/module 名中不要出现 &lt;code&gt;-&lt;/code&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;各种类型的命名规范：&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Type&lt;/th&gt;
-&lt;th&gt;Public&lt;/th&gt;
-&lt;th&gt;Internal&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;Modules&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Packages&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Classes&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;CapWords&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_CapWords&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Exceptions&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;CapWords&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Functions&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under()&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_lower_with_under()&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Global/Class Constants&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;CAPS_WITH_UNDER&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_CAPS_WITH_UNDER&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Global/Class Variables&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Instance Variables&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_lower_with_under&lt;/code&gt; (protected) or &lt;code&gt;__lower_with_under&lt;/code&gt; (private)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Method Names&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under()&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;_lower_with_under()&lt;/code&gt; (protected) or &lt;code&gt;__lower_with_under()&lt;/code&gt; (private)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Function/Method Parameters&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;Local Variables&lt;/td&gt;
-&lt;td&gt;&lt;code&gt;lower_with_under&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;import&#34;&gt;import&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面&lt;/li&gt;
-&lt;li&gt;不要使用 &lt;code&gt;from foo imort *&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;import 需要分组，每组之间一个空行，每个分组内的顺序尽量采用字典序，分组顺序是：
-
-&lt;ol&gt;
-&lt;li&gt;标准库&lt;/li&gt;
-&lt;li&gt;第三方库&lt;/li&gt;
-&lt;li&gt;本项目的 package 和 module&lt;/li&gt;
-&lt;/ol&gt;&lt;/li&gt;
-&lt;li&gt;不要使用隐式的相对导入（implicit relative imports），可是使用显示的相对导入（explicit relative imports），如 &lt;code&gt;from ..utils import validator&lt;/code&gt;，最好使用全路径导入（absolute imports）&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;对于不同的 package，一个 import 单独一行，同一个 package/module 下的内容可以写一起：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
-import sys, os, time
-
-# good
-import os
-import sys
-import time
-
-# ok
-from flask import Flask, render_template, jsonify
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;为了避免可能出现的命名冲突，可以使用 &lt;code&gt;as&lt;/code&gt; 或导入上一级命名空间&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;不要出现循环导入(cyclic import)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;注释&#34;&gt;注释&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;文档字符串 &lt;code&gt;docstring&lt;/code&gt;, 是 package, module, class, method, function 级别的注释，可以通过 &lt;code&gt;__doc__&lt;/code&gt; 成员访问到，注释内容在一对 &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; 符号之间&lt;/li&gt;
-&lt;li&gt;function, method 的文档字符串应当描述其功能、输入参数、返回值，如果有复杂的算法和实现，也需要写清楚&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;不要写错误的注释，不要无谓的注释&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad 无谓的注释
-x = x + 1       # increase x by 1
-
-# bad 错误的注释
-x = x - 1       # increase x by 1
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;优先使用英文写注释，英文不好全部写中文，否则更加看不懂&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;异常&#34;&gt;异常&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;不要轻易使用 &lt;code&gt;try/except&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;except&lt;/code&gt; 后面需要指定捕捉的异常，裸露的 &lt;code&gt;except&lt;/code&gt; 会捕捉所有异常，意味着会隐藏潜在的问题&lt;/li&gt;
-&lt;li&gt;可以有多个 &lt;code&gt;except&lt;/code&gt; 语句，捕捉多种异常，分别做异常处理&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;finally&lt;/code&gt; 子句来处理一些收尾操作&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;code&gt;try/except&lt;/code&gt; 里的内容不要太多，只在可能抛出异常的地方使用，如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
-try:
-    user = User()
-    user.name = &amp;quot;leon&amp;quot;
-    user.age = int(age) # 可能抛出异常
-    user.created_at = datetime.datetime.utcnow()
-
-    db.session.add(user)
-    db.session.commit() # 可能抛出异常
-except:
-    db.session.rollback()
-
-# better
-try:
-    age = int(age)
-except (TypeError, ValueError):
-    return # 或别的操作
-
-user = User()
-user.name = &amp;quot;leon&amp;quot;
-user.age = age
-user.created_at = datetime.datetime.utcnow()
-db.session.add(user)
-
-try:
-    db.session.commit()
-except sqlalchemy.exc.SQLAlchemyError: # 或者更具体的异常
-    db.session.rollback()
-finally:
-    db.session.close()
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;从 &lt;code&gt;Exception&lt;/code&gt; 而不是 &lt;code&gt;BaseException&lt;/code&gt; 继承自定义的异常类&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;class-类&#34;&gt;Class（类）&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;显示的写明父类，如果不是继承自别的类，就继承自 &lt;code&gt;object&lt;/code&gt; 类&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;super&lt;/code&gt; 调用父类的方法&lt;/li&gt;
-&lt;li&gt;支持多继承，即同时有多个父类，建议使用 Mixin&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;编码建议&#34;&gt;编码建议&lt;/h2&gt;
-
-&lt;h3 id=&#34;字符串&#34;&gt;字符串&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;使用字符串的 &lt;code&gt;join&lt;/code&gt; 方法拼接字符串&lt;/li&gt;
-&lt;li&gt;使用字符串类型的方法，而不是 &lt;code&gt;string&lt;/code&gt; 模块的方法&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;startswith&lt;/code&gt; 和 &lt;code&gt;endswith&lt;/code&gt; 方法比较前缀和后缀&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;format&lt;/code&gt; 方法格式化字符串&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;比较&#34;&gt;比较&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;空的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;str&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt;, &lt;code&gt;set&lt;/code&gt;, &lt;code&gt;dict&lt;/code&gt; 和 &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;0.0&lt;/code&gt;, &lt;code&gt;None&lt;/code&gt; 都是 &lt;code&gt;False&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;if some_list&lt;/code&gt; 而不是 &lt;code&gt;if len(some_list)&lt;/code&gt; 判断某个 &lt;code&gt;list&lt;/code&gt; 是否为空，其他类型同理&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;is&lt;/code&gt; 和 &lt;code&gt;is not&lt;/code&gt; 与单例（如 &lt;code&gt;None&lt;/code&gt;）进行比较，而不是用 &lt;code&gt;==&lt;/code&gt; 和 &lt;code&gt;!=&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;if a is not None&lt;/code&gt; 而不是 &lt;code&gt;if not a is None&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;用 &lt;code&gt;isinstance&lt;/code&gt; 而不是 &lt;code&gt;type&lt;/code&gt; 判断类型&lt;/li&gt;
-&lt;li&gt;不要用 &lt;code&gt;==&lt;/code&gt; 和 &lt;code&gt;!=&lt;/code&gt; 与 &lt;code&gt;True&lt;/code&gt; 和 &lt;code&gt;False&lt;/code&gt; 比较（除非有特殊情况，如在 sqlalchemy 中可能用到）&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;使用 &lt;code&gt;in&lt;/code&gt; 操作：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;用 &lt;code&gt;key in dict&lt;/code&gt; 而不是 &lt;code&gt;dict.has_key()&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# bad
-if d.has_key(k):
-    do_something()
-
-# good
-if k in d:
-    do_something()
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;用 &lt;code&gt;set&lt;/code&gt; 加速 “存在性” 检查，&lt;code&gt;list&lt;/code&gt; 的查找是线性的，复杂度 O(n)，&lt;code&gt;set&lt;/code&gt; 底层是 hash table, 复杂度 O(1)，但用 &lt;code&gt;set&lt;/code&gt; 需要比 &lt;code&gt;list&lt;/code&gt; 更多内存空间&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&#34;其他&#34;&gt;其他&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;使用列表表达式（&lt;a href=&#34;https://www.python.org/dev/peps/pep-0202/&#34;&gt;list comprehension&lt;/a&gt;），字典表达式(&lt;a href=&#34;https://www.python.org/dev/peps/pep-0274/&#34;&gt;dict comprehension&lt;/a&gt;, Python 2.7+) 和生成器(generator)&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dict&lt;/code&gt; 的 &lt;code&gt;get&lt;/code&gt; 方法可以指定默认值，但有些时候应该用 &lt;code&gt;[]&lt;/code&gt; 操作，使得可以抛出 &lt;code&gt;KeyError&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;for item in list&lt;/code&gt; 迭代 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;for index, item in enumerate(list)&lt;/code&gt; 迭代 &lt;code&gt;list&lt;/code&gt; 并获取下标&lt;/li&gt;
-&lt;li&gt;使用内建函数 &lt;code&gt;sorted&lt;/code&gt; 和 &lt;code&gt;list.sort&lt;/code&gt; 进行排序&lt;/li&gt;
-&lt;li&gt;适量使用 &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;reduce&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt; 和 &lt;code&gt;lambda&lt;/code&gt;，使用内建的 &lt;code&gt;all&lt;/code&gt;, &lt;code&gt;any&lt;/code&gt; 处理多个条件的判断&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;defaultdict&lt;/code&gt; (Python 2.5+), &lt;code&gt;Counter&lt;/code&gt;(Python 2.7+) 等 “冷门” 但好用的标准库算法和数据结构&lt;/li&gt;
-&lt;li&gt;使用装饰器(decorator)&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;with&lt;/code&gt; 语句处理上下文&lt;/li&gt;
-&lt;li&gt;有些时候不要对类型做太过严格的限制，利用 Python 的鸭子类型（Duck Type）特性&lt;/li&gt;
-&lt;li&gt;使用 &lt;code&gt;logging&lt;/code&gt; 记录日志，配置好格式和级别&lt;/li&gt;
-&lt;li&gt;了解 Python 的 Magic Method：&lt;a href=&#34;http://www.rafekettler.com/magicmethods.html&#34;&gt;A Guide to Python&amp;rsquo;s Magic Methods&lt;/a&gt;, &lt;a href=&#34;http://pycoders-weekly-chinese.readthedocs.org/en/latest/issue6/a-guide-to-pythons-magic-methods.html&#34;&gt;Python 魔术方法指南&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;阅读优秀的开源代码，如 &lt;a href=&#34;https://github.com/mitsuhiko/flask&#34;&gt;Flask 框架&lt;/a&gt;, &lt;a href=&#34;https://github.com/kennethreitz/requests&#34;&gt;Requests for Humans&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;不要重复造轮子，查看标准库、PyPi、Github、Google 等使用现有的优秀的解决方案&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>用 Fabric 实现自动化部署</title>
-      <link>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</link>
-      <pubDate>Fri, 12 Jun 2015 14:00:13 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</guid>
-      <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
-
-&lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
-
-&lt;p&gt;上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
-
-&lt;ul&gt;
-&lt;li&gt;配置复杂，命令行参数多&lt;/li&gt;
-&lt;li&gt;需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
-
-&lt;ul&gt;
-&lt;li&gt;不能增量更新，每次都是全部传输&lt;/li&gt;
-&lt;li&gt;不能配置忽略文件（.git 怎么办？）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
-
-&lt;p&gt;Fabric 是 Python 编写的工具，所以可以用 pip 来安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo pip install fabric
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果是 Ubuntu 系统，还可以用 apt-get 安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install fabric
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;安装完成后，会生成一个 &lt;code&gt;fab&lt;/code&gt; 命令，这个命令会读取当前路径在的 fabfile.py 并执行相应的任务。&lt;/p&gt;
-
-&lt;h2 id=&#34;hello-world&#34;&gt;Hello, world!&lt;/h2&gt;
-
-&lt;p&gt;先来看一个简单的例子，用 &lt;code&gt;fab&lt;/code&gt; 命令执行一个输出 &lt;code&gt;Hello, world!&lt;/code&gt; 的任务。&lt;/p&gt;
-
-&lt;p&gt;新建一个文件，fabfile.py:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def hello():
-	print &#39;Hello, world!&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在 fabfile.py 所在的路径执行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;fab hello
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以看到有这样的输出：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Hello, world!
-
-Done.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以给任务传递参数，修改 fabfile.py:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def hello(name=&amp;quot;world&amp;quot;):
-    print &amp;quot;Hello, %s!&amp;quot; % name
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;用 &lt;code&gt;fab&lt;/code&gt; 命令执行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ fab hello
-
-Hello, world!
-
-Done.
-
-$ fab hello:name=leon
-
-Hello, leon!
-
-Done.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个例子除了展示 fab 运行任务和传递参数之外，没有什么实际意义，接下来用一个接近真实的场景来展示如何用 Fabric 部署。&lt;/p&gt;
-
-&lt;h2 id=&#34;部署应用&#34;&gt;部署应用&lt;/h2&gt;
-
-&lt;p&gt;假设这样一个场景，有个 Python 项目取名 usercenter，用 git 做版本控制，用 supervisor 做进程管理。一次完整的部署过程可能包括这些流程：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 本地
-$ cd /path/to/userenter
-$ git pull
-$ git add -A
-$ git commit -m &amp;quot;commit message&amp;quot;
-$ git push
-
-# 远程
-$ cd /path/to/usercenter
-$ workon usercenter		# virtualenv
-$ git pull				# 更新代码
-$ pip install -r requirements.txt		# 安装依赖
-$ python manage.py db migrate			# 数据库迁移
-$ supervisorctl restart usercenter	# 重启服务
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;我们现在用 Fabric 来一次性完成上面所有操作（假设第一次部署是手工执行的，现在只处理更新／升级的任务）。在 usercenter 项目的根目录下新建 fabfile.py 文件：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# -*- coding: utf-8 -*-
-
-from fabric.api import env, local, cd, run
-from fabric.context_managers import prefix
-
-
-def production():
-	&amp;quot;&amp;quot;&amp;quot; 设置 production 环境 &amp;quot;&amp;quot;&amp;quot;
-	env.hosts = [&amp;quot;production@123.123.123.123:22&amp;quot;]
-	env.key_filename = &amp;quot;/path/to/key_file&amp;quot;
-	# env.password = &amp;quot;123456&amp;quot;	# password 和 keyfile 两者只需要一个就可以
-
-
-def staging():
-	&amp;quot;&amp;quot;&amp;quot; 设置 staging 环境 &amp;quot;&amp;quot;&amp;quot;
-	env.hosts = [&amp;quot;staging@111.111.111.111:22&amp;quot;]
-	env.password = &amp;quot;123456&amp;quot;		# 如果不写密码，会在 fab 执行时有交互提示输入密码
-
-
-def prepare():
-    &amp;quot;&amp;quot;&amp;quot; 本地提交代码，准备部署 &amp;quot;&amp;quot;&amp;quot;
-	local(&amp;quot;git pull&amp;quot;)	# local 用于执行本地命令
-	local(&amp;quot;pip freeze &amp;gt; requirements.txt&amp;quot;)
-	local(&amp;quot;git add -p &amp;amp;&amp;amp; git commit&amp;quot;)	＃ 会有交互输入 commit message
-	local(&amp;quot;git push&amp;quot;)
-
-
-def update():
-	&amp;quot;&amp;quot;&amp;quot; 服务器上更新代码、依赖和迁移 &amp;quot;&amp;quot;&amp;quot;
-	# cd 用于在服务器上执行 cd 命令，本地环境对应的 api 是 lcd (local cd)
-	with cd(&amp;quot;/path/to/usercenter&amp;quot;), prefix(&amp;quot;workon usercenter&amp;quot;):
-		run(&amp;quot;git pull&amp;quot;)			# run 用于服务器上执行命令
-		run(&amp;quot;pip install -r requirements.txt&amp;quot;)
-		run(&amp;quot;python manage.py db migrate&amp;quot;)
-		run(&amp;quot;supervisorctl restart usercenter&amp;quot;)
-
-def deploy():
-	prepare()
-	update()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;OK, 完成。具体的意义代码里面都有注释，不赘述。需要注意的是 &lt;code&gt;production&lt;/code&gt; 和 &lt;code&gt;staging&lt;/code&gt; 分别设置了两种不同的环境。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 部署到 production 环境
-$ fab production deploy
-
-# 部署到 staging 环境
-$ fab staging deploy
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;执行过程中可能会有些交互，按提示输入相应信息，然后等着执行完成就好了。如果一切顺利（应该是这样），就完成了 usercenter 的部署了，整个过程只需要敲一行命令，是不是非常方便？&lt;/p&gt;
-
-&lt;h2 id=&#34;more&#34;&gt;More&amp;hellip;&lt;/h2&gt;
-
-&lt;p&gt;上面的例子基本上是可以在实际环境中使用的，不过还是有很多内容没有覆盖到，比如错误处理，多服务器部署，并行等。Fabric 默认是串行执行的，如果有多个远程服务器，是一个一个顺序执行。执行过程中如果发生异常，任务会直接中断，所以可能需要有错误处理。&lt;/p&gt;
-
-&lt;p&gt;上面这些（还有很多）内容都可以在 Fabric 的文档上（非常详细）找到相应的内容，下面给出一些参考链接，结合文档和自己的实际情况，多用几次就能定制出能满足自己需求的 Fabric 任务：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Fabric 官网: &lt;a href=&#34;http://www.fabfile.org/&#34;&gt;http://www.fabfile.org/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Overview and Tutorial: &lt;a href=&#34;Overview and Tutorial&#34;&gt;http://docs.fabfile.org/en/1.10/tutorial.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Fabric 文档: &lt;a href=&#34;http://docs.fabfile.org/en/1.10/index.html&#34;&gt;http://docs.fabfile.org/en/1.10/index.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Python fabric实现远程操作和部署（By wklken）: &lt;a href=&#34;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&#34;&gt;http://wklken.me/posts/2013/03/25/python-tool-fabric.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>使用 supervisor 管理进程</title>
-      <link>http://deanthompson.github.io/posts/2015/06/using-supervisor</link>
-      <pubDate>Tue, 09 Jun 2015 17:30:20 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/06/using-supervisor</guid>
-      <description>&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
-
-&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
-
-&lt;p&gt;Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo pip install supervisor
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;supervisord-配置&#34;&gt;supervisord 配置&lt;/h2&gt;
-
-&lt;p&gt;Supervisor 相当强大，提供了很丰富的功能，不过我们可能只需要用到其中一小部分。安装完成之后，可以编写配置文件，来满足自己的需求。为了方便，我们把配置分成两部分：supervisord（supervisor 是一个 C/S 模型的程序，这是 server 端，对应的有 client 端：supervisorctl）和应用程序（即我们要管理的程序）。&lt;/p&gt;
-
-&lt;p&gt;首先来看 supervisord 的配置文件。安装完 supervisor 之后，可以运行&lt;code&gt;echo_supervisord_conf&lt;/code&gt; 命令输出默认的配置项，也可以重定向到一个配置文件里：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo_supervisord_conf &amp;gt; /etc/supervisord.conf
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;去除里面大部分注释和“不相关”的部分，我们可以先看这些配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[unix_http_server]
-file=/tmp/supervisor.sock   ; UNIX socket 文件，supervisorctl 会使用
-;chmod=0700                 ; socket 文件的 mode，默认是 0700
-;chown=nobody:nogroup       ; socket 文件的 owner，格式： uid:gid
-
-;[inet_http_server]         ; HTTP 服务器，提供 web 管理界面
-;port=127.0.0.1:9001        ; Web 管理后台运行的 IP 和端口，如果开放到公网，需要注意安全性
-;username=user              ; 登录管理后台的用户名
-;password=123               ; 登录管理后台的密码
-
-[supervisord]
-logfile=/tmp/supervisord.log ; 日志文件，默认是 $CWD/supervisord.log
-logfile_maxbytes=50MB        ; 日志文件大小，超出会 rotate，默认 50MB
-logfile_backups=10           ; 日志文件保留备份数量默认 10
-loglevel=info                ; 日志级别，默认 info，其它: debug,warn,trace
-pidfile=/tmp/supervisord.pid ; pid 文件
-nodaemon=false               ; 是否在前台启动，默认是 false，即以 daemon 的方式启动
-minfds=1024                  ; 可以打开的文件描述符的最小值，默认 1024
-minprocs=200                 ; 可以打开的进程数的最小值，默认 200
-
-; the below section must remain in the config file for RPC
-; (supervisorctl/web interface) to work, additional interfaces may be
-; added by defining them in separate rpcinterface: sections
-[rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
-
-[supervisorctl]
-serverurl=unix:///tmp/supervisor.sock ; 通过 UNIX socket 连接 supervisord，路径与 unix_http_server 部分的 file 一致
-;serverurl=http://127.0.0.1:9001 ; 通过 HTTP 的方式连接 supervisord
-
-; 包含其他的配置文件
-[include]
-files = relative/directory/*.ini    ; 可以是 *.conf 或 *.ini
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;我们把上面这部分配置保存到 /etc/supervisord.conf（或其他任意有权限访问的文件），然后启动 supervisord（通过 -c 选项指定配置文件路径，如果不指定会按照这个顺序查找配置文件：$CWD/supervisord.conf, $CWD/etc/supervisord.conf, /etc/supervisord.conf）：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;supervisord -c /etc/supervisord.conf
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;查看 supervisord 是否在运行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ps aux | grep supervisord
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;program-配置&#34;&gt;program 配置&lt;/h2&gt;
-
-&lt;p&gt;上面我们已经把 supervisrod 运行起来了，现在可以添加我们要管理的进程的配置文件。可以把所有配置项都写到 supervisord.conf 文件里，但并不推荐这样做，而是通过 include 的方式把不同的程序（组）写到不同的配置文件里。&lt;/p&gt;
-
-&lt;p&gt;为了举例，我们新建一个目录 /etc/supervisor/ 用于存放这些配置文件，相应的，把 /etc/supervisord.conf 里 include 部分的的配置修改一下：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[include]
-files = /etc/supervisor/*.conf
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;假设有个用 Python 和 Flask 框架编写的用户中心系统，取名 usercenter，用 gunicorn (&lt;a href=&#34;http://gunicorn.org/&#34;&gt;http://gunicorn.org/&lt;/a&gt;) 做 web 服务器。项目代码位于 &lt;code&gt;/home/leon/projects/usercenter&lt;/code&gt;，gunicorn 配置文件为 &lt;code&gt;gunicorn.py&lt;/code&gt;，WSGI callable 是 wsgi.py 里的 app 属性。所以直接在命令行启动的方式可能是这样的：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /home/leon/projects/usercenter
-gunicorn -c gunicorn.py wsgi:app
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;现在编写一份配置文件来管理这个进程（&lt;strong&gt;需要注意：用 supervisord 管理时，gunicorn 的 daemon 选项需要设置为 False&lt;/strong&gt;）：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[program:usercenter]
-directory = /home/leon/projects/usercenter ; 程序的启动目录
-command = gunicorn -c gunicorn.py wsgi:app  ; 启动命令，可以看出与手动在命令行启动的命令是一样的
-autostart = true     ; 在 supervisord 启动的时候也自动启动
-startsecs = 5        ; 启动 5 秒后没有异常退出，就当作已经正常启动了
-autorestart = true   ; 程序异常退出后自动重启
-startretries = 3     ; 启动失败自动重试次数，默认是 3
-user = leon          ; 用哪个用户启动
-redirect_stderr = true  ; 把 stderr 重定向到 stdout，默认 false
-stdout_logfile_maxbytes = 20MB  ; stdout 日志文件大小，默认 50MB
-stdout_logfile_backups = 20     ; stdout 日志文件备份数
-; stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
-stdout_logfile = /data/logs/usercenter_stdout.log
-
-; 可以通过 environment 来添加需要的环境变量，一种常见的用法是修改 PYTHONPATH
-; environment=PYTHONPATH=$PYTHONPATH:/path/to/somewhere
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;一份配置文件至少需要一个 &lt;code&gt;[program:x]&lt;/code&gt; 部分的配置，来告诉 supervisord 需要管理那个进程。&lt;code&gt;[program:x]&lt;/code&gt; 语法中的 &lt;code&gt;x&lt;/code&gt; 表示 program name，会在客户端（supervisorctl 或 web 界面）显示，在 supervisorctl 中通过这个值来对程序进行 start、restart、stop 等操作。&lt;/p&gt;
-
-&lt;h2 id=&#34;使用-supervisorctl&#34;&gt;使用 supervisorctl&lt;/h2&gt;
-
-&lt;p&gt;Supervisorctl 是 supervisord 的一个命令行客户端工具，启动时需要指定与 supervisord 使用同一份配置文件，否则与 supervisord 一样按照顺序查找配置文件。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;supervisorctl -c /etc/supervisord.conf
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面这个命令会进入 supervisorctl 的 shell 界面，然后可以执行不同的命令了：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;&amp;gt; status    # 查看程序状态
-&amp;gt; stop usercenter   # 关闭 usercenter 程序
-&amp;gt; start usercenter  # 启动 usercenter 程序
-&amp;gt; restart usercenter    # 重启 usercenter 程序
-&amp;gt; reread    ＃ 读取有更新（增加）的配置文件，不会启动新添加的程序
-&amp;gt; update    ＃ 重启配置文件修改过的程序
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面这些命令都有相应的输出，除了进入 supervisorctl 的 shell 界面，也可以直接在 bash 终端运行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ supervisorctl status
-$ supervisorctl stop usercenter
-$ supervisorctl start usercenter
-$ supervisorctl restart usercenter
-$ supervisorctl reread
-$ supervisorctl update 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;其它&#34;&gt;其它&lt;/h2&gt;
-
-&lt;p&gt;除了 supervisorctl 之外，还可以配置 supervisrod 启动 web 管理界面，这个 web 后台使用 Basic Auth 的方式进行身份认证。&lt;/p&gt;
-
-&lt;p&gt;除了单个进程的控制，还可以配置 group，进行分组管理。&lt;/p&gt;
-
-&lt;p&gt;经常查看日志文件，包括 supervisord 的日志和各个 pragram 的日志文件，程序 crash 或抛出异常的信息一半会输出到 stderr，可以查看相应的日志文件来查找问题。&lt;/p&gt;
-
-&lt;p&gt;Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：&lt;a href=&#34;http://supervisord.org/index.html&#34;&gt;http://supervisord.org/index.html&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>使用 shadowsocks 实现科学上网</title>
-      <link>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</link>
-      <pubDate>Sun, 24 May 2015 22:27:49 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</guid>
-      <description>&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
-
-&lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
-
-&lt;p&gt;我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 &lt;a href=&#34;http://fqrouter.com/&#34;&gt;fqrouter&lt;/a&gt;，然而都不是很稳定和一劳永逸的解决方案。&lt;/p&gt;
-
-&lt;p&gt;有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）&lt;/li&gt;
-&lt;li&gt;出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）&lt;/li&gt;
-&lt;li&gt;想自己折腾&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;购买-vps&#34;&gt;购买 VPS&lt;/h2&gt;
-
-&lt;p&gt;比较熟悉的是 Linode 和 DigitalOcean，两家的最低配置基本上差不多，但是 Linode 的价格（$10 每月）是后者的两倍。本来是想选择 DigitalOcean 的，但是在家折腾的时候，始终打不开 DigialOcean 的网站。。。于是就选择了 Linode 的 VPS。&lt;/p&gt;
-
-&lt;p&gt;注册过程略去不表，选择机房的时候还是需要测试一下的。网上大家都推荐东京的机房，但是我购买的时候没有这个选项，不过亚洲有新加坡的机房。不管怎样，在&lt;a href=&#34;https://www.linode.com/speedtest&#34;&gt;这个页面&lt;/a&gt; 上做一些测速就知道怎么选了。我测试后发现新加坡的速度最好（物理优势），所以就选择了新加坡的机房；不过也不用担心，如果以后想换到别的机房，也是可以迁移的。&lt;/p&gt;
-
-&lt;p&gt;选好机房就可以安装系统了，我选择的是最熟悉方便的 Ubuntu 系统，安装过程非常简单，也很快。启动机器后，可以 SSH 连接上去。&lt;/p&gt;
-
-&lt;p&gt;购买的是最低的配置（&lt;a href=&#34;https://www.linode.com/pricing&#34;&gt;https://www.linode.com/pricing&lt;/a&gt;），不过对于个人应用，尤其是目前只有搭建 VPN 的需求来说，还是很奢侈的了。&lt;/p&gt;
-
-&lt;h2 id=&#34;安装-shadowsocks&#34;&gt;安装 Shadowsocks&lt;/h2&gt;
-
-&lt;p&gt;我用的是 Python 实现的版本，安装过程非常简单，文档上也有&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks&#34;&gt;教程&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;在 VPS 和本机都安装 shadowsocks：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;pip install shadowsocks
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;编写配置文件 shadowsocks.json（把 server 和 password 替换成自己的服务器 IP 和 shadowsocks 服务器的密码）：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-    &amp;quot;server&amp;quot;:&amp;quot;my_server_ip&amp;quot;,
-    &amp;quot;server_port&amp;quot;:8388,
-    &amp;quot;local_address&amp;quot;: &amp;quot;127.0.0.1&amp;quot;,
-    &amp;quot;local_port&amp;quot;:1080,
-    &amp;quot;password&amp;quot;:&amp;quot;mypassword&amp;quot;,
-    &amp;quot;timeout&amp;quot;:300,
-    &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;,
-    &amp;quot;fast_open&amp;quot;: false
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这份配置文件是客户端和服务端通用的，&lt;code&gt;local_address&lt;/code&gt; 和 &lt;code&gt;local_port&lt;/code&gt; 是客户端用的。&lt;/p&gt;
-
-&lt;p&gt;在 VPS 上启动 shadowsocks 服务器：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ssserver -c /path/to/shadowsocks.json
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在本机启动 shadowsocks 客户端：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sslocal -c /path/to/shadowsocks.json
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;最终使用的时候，VPN 配置的是本机的 shadowsocks，即 &lt;code&gt;127.0.0.1:1080&lt;/code&gt;，而不是直接连接服务端版本。&lt;/p&gt;
-
-&lt;h2 id=&#34;chrome-使用-socks-代理&#34;&gt;Chrome 使用 socks 代理&lt;/h2&gt;
-
-&lt;p&gt;Linux 系统可以配置全局的网络代理，Chrome 可以设置使用系统默认的代理配置，也可以使用 SwitchySharp 做更灵活的配置。&lt;/p&gt;
-
-&lt;p&gt;使用过 GoAgent 的人应该都知道 SwitchySharp 这个 Chrome 插件。SwitchySharp 搭配使用 Shadowsocks 也很简单，只需要几步配置就可以实现：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;打开 SwitchySharp 的配置界面，新建一个情景模式，命名为 Shadowsocks&lt;/li&gt;
-&lt;li&gt;详细配置页面，SOCKS 代理一栏，填写 IP &lt;code&gt;127.0.0.1&lt;/code&gt; 和 端口 &lt;code&gt;1080&lt;/code&gt;，选择 &amp;ldquo;SOCKS v5&amp;rdquo;，然后保存&lt;/li&gt;
-&lt;li&gt;切换规则页面，把所有规则的情景模式从 GoAgent 改为 Shadowsocks，然后保存&lt;/li&gt;
-&lt;li&gt;更新在线规则列表，情景模式选择 Shadowsocks；也可以手动添加规则&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;OK，完成。此后访问规则列表里的网站，都会走 Shadowsocks 的代理。如果使用过 SwitchySharp + GoAgent，即使没有截图，上面的配置很容易理解。&lt;/p&gt;
-
-&lt;h2 id=&#34;命令行使用-socks-代理&#34;&gt;命令行使用 socks 代理&lt;/h2&gt;
-
-&lt;p&gt;浏览器可以自由翻墙了，终端却仍然还在墙内，使用 curl，wget 和 go get 访问墙外资源时依然失败。&lt;/p&gt;
-
-&lt;p&gt;Shadowsocks 的 wiki 上提供了&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks/wiki/Using-Shadowsocks-with-Command-Line-Tools&#34;&gt;命令行工具使用代理的教程&lt;/a&gt;，不过我没有配置成功。后来找了另一个工具：&lt;a href=&#34;http://www.privoxy.org/&#34;&gt;Privoxy&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Ubuntu 安装 Privoxy 非常简单：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install privoxy
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;安装好后会有一个 privoxy 的命令，配置文件在 /etc/privoxy/ 目录下。Privoxy 是个 web 代理工具，提供了非常复杂的配置可以用来实现很强大的功能；不过对于我来说只需要使用一小部分。&lt;/p&gt;
-
-&lt;p&gt;编辑 /etc/privoxy/config 文件，在最后添加这几行配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-conf&#34;&gt;forward-socks5  /               127.0.0.1:1080 .
-listen-address  127.0.0.1:8118
-# local network do not use proxy
-forward         192.168.*.*/    .
-forward         10.*.*.*/       .
-forward         127.*.*.*/      .
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;forward-socks5&lt;/code&gt; 这一行表示所有网络通过 socks5 代理，代理服务器是 &lt;code&gt;127.0.0.1:1080&lt;/code&gt;，即在本机启动的 Shadowsocks 客户端服务。最后三行是本地局域网不使用代理的配置。&lt;/p&gt;
-
-&lt;p&gt;重启一下 privoxy：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo service privoxy restart
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;现在就可以在命令行里愉快的上网了，用 go get 安装各种 golang package 都非常顺利。&lt;/p&gt;
-
-&lt;h2 id=&#34;android-手机使用-socks-代理&#34;&gt;Android 手机使用 socks 代理&lt;/h2&gt;
-
-&lt;p&gt;Shadowsocks 真心人类的希望，还提供了 Android 的客户端：&lt;a href=&#34;https://github.com/shadowsocks/shadowsocks-android&#34;&gt;https://github.com/shadowsocks/shadowsocks-android&lt;/a&gt;，安装和配置过程都很简单，略去不表。&lt;/p&gt;
-
-&lt;h2 id=&#34;后记&#34;&gt;后记&lt;/h2&gt;
-
-&lt;p&gt;经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。&lt;/p&gt;
-
-&lt;p&gt;感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。&lt;/p&gt;</description>
     </item>
     
   </channel>

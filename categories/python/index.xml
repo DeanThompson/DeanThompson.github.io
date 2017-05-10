@@ -10,6 +10,114 @@
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
+      <title>Flask 应用国际化</title>
+      <link>http://deanthompson.github.io/posts/2017/05/flask-i18n</link>
+      <pubDate>Wed, 10 May 2017 17:48:17 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/flask-i18n</guid>
+      <description>&lt;h2 id=&#34;babel&#34;&gt;Babel&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文档：&lt;a href=&#34;http://babel.pocoo.org/en/latest/&#34;&gt;http://babel.pocoo.org/en/latest/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/babel&#34;&gt;https://github.com/python-babel/babel&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;flask-babel&#34;&gt;Flask-Babel&lt;/h2&gt;
+
+&lt;p&gt;Flask 的 i18n 扩展，集成 babel、pytz 等。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;文档：&lt;a href=&#34;https://pythonhosted.org/Flask-Babel/&#34;&gt;https://pythonhosted.org/Flask-Babel/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/flask-babel&#34;&gt;https://github.com/python-babel/flask-babel&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[python: **.py]
+[jinja2: **.html]
+extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flask-Babel 配置：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;BABEL_DEFAULT_LOCALE = &#39;zh_CN’                  # locale 选项，默认 &#39;en&#39;
+BABEL_DEFAULT_TIMEZONE = &#39;Asia/Shanghai&#39;        # 时区，默认 &#39;UTC&#39;
+BABEL_TRANSLATION_DIRECTORIES = &#39;translations&#39;  # 翻译文件所在目录，默认 &#39;translations&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;生成翻译文件模版：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -o messages.pot .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果使用了 &lt;code&gt;lazy_gettext()&lt;/code&gt; 这样的函数，需要在上面的命令行参数指定：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;生成翻译文件:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel init -i messages.pot -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;编辑 translations/zh_CN/LC_MESSAGES/messages.po 文件，手动翻译。po 文件内容形如：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;#: forms.py:65 forms.py:78
+#: templates/flask_user/emails/invite_child_user_message.html:9
+msgid &amp;quot;Username&amp;quot;
+msgstr &amp;quot;&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中：
+  - &lt;code&gt;#:&lt;/code&gt; 注释内容是 ‘文件名:行号’，即所有出现过的地方
+  - &lt;code&gt;msgid&lt;/code&gt; 是需要翻译的内容
+  - &lt;code&gt;msgstr&lt;/code&gt; 是翻译后的内容，如果留空，则会显示原文，即 msgid&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;更新翻译文件（一般只需要 init 一次）：&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel update -i messages.pot -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;编译&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel compile -d translations
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;工作流&#34;&gt;工作流&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ pybabel extract -F babel.cfg -o messages.pot .
+$ pybabel init -i messages.pot -d translations     # 第一次
+$ pybabel update -i messages.pot -d translations   # 更新
+# 手动翻译
+$ pybabel compile -d translations
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
       <title>Python 多进程导入数据到 MySQL</title>
       <link>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</link>
       <pubDate>Sat, 25 Feb 2017 16:16:14 CST</pubDate>

@@ -10,6 +10,213 @@
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
+      <title>EC2 挂载 EBS</title>
+      <link>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</link>
+      <pubDate>Wed, 10 May 2017 17:41:54 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</guid>
+      <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
+
+&lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;用-lsblk-命令查看所有可用的磁盘及其安装点&#34;&gt;用 &lt;code&gt;lsblk&lt;/code&gt; 命令查看所有可用的磁盘及其安装点&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ lsblk
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0   8G  0 disk
+`-xvda1 202:1    0   8G  0 part /
+xvdb    202:16   0  30G  0 disk
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;确定是否需要在卷上创建文件系统&#34;&gt;确定是否需要在卷上创建文件系统。&lt;/h2&gt;
+
+&lt;p&gt;如果是新的 EBS，是一个原始的块存储设备，需要先创建文件系统才能安装使用。从快照还原的卷可能已经含有文件系统。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo file -s /dev/xvdb
+/dev/xvdb: data
+
+$ sudo file -s /dev/xvda1
+/dev/xvda1: Linux rev 1.0 ext4 filesystem data, UUID=9fbb7c51-0409-4b50-ad40-068dcfe4bc89, volume name &amp;quot;cloudimg-rootfs&amp;quot; (needs journal recovery) (extents) (large files) (huge files)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到 &lt;code&gt;/dev/xvdb&lt;/code&gt; 上面还没有文件系统，需要手动创建:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkfs -t ext4 /dev/xvdb
+mke2fs 1.42.13 (17-May-2015)
+Creating filesystem with 7864320 4k blocks and 1966080 inodes
+Filesystem UUID: 2a0dae23-7b6e-42ec-95e1-df58f29520a4
+Superblock backups stored on blocks:
+     32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+     4096000
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+$ sudo file -s /dev/xvdb
+/dev/xvdb: Linux rev 1.0 ext4 filesystem data, UUID=2a0dae23-7b6e-42ec-95e1-df58f29520a4 (extents) (large files) (huge files)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意：&lt;code&gt;mkfs&lt;/code&gt; 会格式化卷，删除所有数据。&lt;/p&gt;
+
+&lt;h2 id=&#34;创建安装点-也就是要挂载的位置&#34;&gt;创建安装点，也就是要挂载的位置:&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ sudo mkdir /data
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;挂载&#34;&gt;挂载&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo mount /dev/xvdb /data/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;用-df-命令磁盘空间&#34;&gt;用 &lt;code&gt;df&lt;/code&gt; 命令磁盘空间&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            489M     0  489M   0% /dev
+tmpfs           100M  3.1M   97M   4% /run
+/dev/xvda1      7.8G  1.9G  5.5G  26% /
+tmpfs           496M     0  496M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           496M     0  496M   0% /sys/fs/cgroup
+tmpfs           100M     0  100M   0% /run/user/1000
+/dev/xvdb        30G   44M   28G   1% /data
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>MySQL 数据导入到 Redshift</title>
+      <link>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</link>
+      <pubDate>Wed, 10 May 2017 17:36:29 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</guid>
+      <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
+
+&lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。&lt;/li&gt;
+&lt;li&gt;FLOAT 类型改成 REAL 或 FLOAT4&lt;/li&gt;
+&lt;li&gt;把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。&lt;/li&gt;
+&lt;li&gt;Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型&lt;/li&gt;
+&lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;加载数据&#34;&gt;加载数据&lt;/h2&gt;
+
+&lt;p&gt;因为 Redshift 推荐使用 &lt;code&gt;COPY&lt;/code&gt; 命令从 S3 加载数据，所以首先得要从 MySQL 中导出数据，然后上传到 CSV.&lt;/p&gt;
+
+&lt;p&gt;以导出 CSV 为例，需要注意使用 &lt;code&gt;&amp;quot;&lt;/code&gt; 符号作为转义字符，而不是 &lt;code&gt;\&lt;/code&gt;. 另外最好用 &lt;code&gt;&amp;quot;&lt;/code&gt; 把每个值都 wrap 起来，免得有些多行字符串导致出错。导出后可以压缩成 gzip 格式，在上传 S3 的时候可以快一些。&lt;/p&gt;
+
+&lt;p&gt;Redshift 的 &lt;code&gt;COPY&lt;/code&gt; 例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;COPY syns_bigdata
+FROM &#39;s3://some-bucket/some_filename.csv.gz&#39;
+credentials &#39;aws_access_key_id=&amp;lt;aws_access_key_id&amp;gt;;aws_secret_access_key=&amp;lt;aws_secret_access_key&amp;gt;&#39;
+region &#39;cn-north-1&#39; CSV GZIP NULL AS &#39;NULL&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;语法很简单，需要注意的有：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;aws_access_key_id&lt;/code&gt; 和 &lt;code&gt;aws_secret_access_key&lt;/code&gt; 要有访问 S3 的权限&lt;/li&gt;
+&lt;li&gt;指定 region&lt;/li&gt;
+&lt;li&gt;指定文件格式，&lt;code&gt;CSV GZIP&lt;/code&gt; 表示是 gzip 压缩的 CSV 文件&lt;/li&gt;
+&lt;li&gt;可以用 &lt;code&gt;NULL AS&lt;/code&gt; 语句指定 NULL 值&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>在 AWS 上安装 Tableau Server</title>
+      <link>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</link>
+      <pubDate>Wed, 10 May 2017 17:23:55 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
+      <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
+
+&lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;AMI: Microsoft Windows Server 2012 R2 Base（简体中文）&lt;/li&gt;
+&lt;li&gt;类型: m4.4xlarge&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;启动、配置步骤略去不表，有两点需要注意：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;VPC 需要开启 3389 端口用于远程登录（RDP）&lt;/li&gt;
+&lt;li&gt;密钥对会用于解密登录密码&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
+
+&lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;可选-安装-mysql-驱动&#34;&gt;（可选）安装 MySQL 驱动&lt;/h2&gt;
+
+&lt;p&gt;在 &lt;a href=&#34;https://www.tableau.com/zh-cn/support/drivers&#34;&gt;这个页面&lt;/a&gt;可以找到所有数据源需要的驱动程序.&lt;/p&gt;
+
+&lt;p&gt;下载好驱动程序，如 mysql-connector-odbc-5.3.7-winx64.msi，双击安装，提示错误。搜索了一番，应该是缺少 Visual C++ 的运行库。试过 Visual C++ Redistributable for Visual Studio 2012 Update 4 和 Visual C++ Redistributable Packages for Visual Studio 2013，最后发现后者才有用。&lt;/p&gt;
+
+&lt;p&gt;安装完 &lt;a href=&#34;https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784&#34;&gt;Visual C++ Redistributable Packages for Visual Studio 2013&lt;/a&gt; 之后，可以成功安装mysql-connector-odbc-5.3.7-winx64.msi 。&lt;/p&gt;
+
+&lt;h2 id=&#34;安装-aws-命令行程序&#34;&gt;安装 AWS 命令行程序&lt;/h2&gt;
+
+&lt;p&gt;从这里下载：&lt;a href=&#34;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&#34;&gt;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;安装完后打开 cmd，运行 &lt;code&gt;aws configure&lt;/code&gt; 进行配置，要有上传 S3 的权限。完成后可以运行 &lt;code&gt;aws s3 ls&lt;/code&gt; 验证。&lt;/p&gt;
+
+&lt;h2 id=&#34;编写备份脚本&#34;&gt;编写备份脚本&lt;/h2&gt;
+
+&lt;p&gt;自动备份并且把备份文件上传到 S3。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@echo OFF
+set Binpath=&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin&amp;quot;
+set Backuppath=&amp;quot;C:\Backups\Tablea Server\nightly&amp;quot;
+echo %date% %time%: *** Housekeeping started ***
+
+rmdir %Backuppath% /S /Q
+
+%Binpath%\tabadmin backup %Backuppath%\ts_backup -d --no-config
+timeout 5
+
+%Binpath%\tabadmin cleanup
+
+echo %date% %time%: Uploading to S3
+
+aws s3 cp %Backuppath% s3://marspet-tableau-backup/ --recursive --exclude &amp;quot;*&amp;quot; --include &amp;quot;ts_backup-*.tsbak&amp;quot;
+
+echo %date% %time%: *** Housekeeping completed ***
+timeout 5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;从备份恢复&#34;&gt;从备份恢复&lt;/h2&gt;
+
+&lt;p&gt;如果是从其他的 Tableau Server 迁移过来，可以使用备份文件迁移数据。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;C:\Users\Administrator&amp;gt;&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin\tabadmi
+n.bat&amp;quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;restore 操作会关闭 Tableau Server，恢复完成后需要手动开启。&lt;/p&gt;
+
+&lt;h2 id=&#34;自动备份&#34;&gt;自动备份&lt;/h2&gt;
+
+&lt;p&gt;使用 Task Scheduler 实现，详情见官方文档：&lt;a href=&#34;http://technet.microsoft.com/en-us/library/cc766428.aspx&#34;&gt;http://technet.microsoft.com/en-us/library/cc766428.aspx&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>MongoDB Replica Set 重新同步</title>
       <link>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</link>
       <pubDate>Fri, 15 Apr 2016 11:47:00 CST</pubDate>

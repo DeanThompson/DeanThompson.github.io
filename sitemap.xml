@@ -2,6 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://deanthompson.github.io/posts/2017/05/flask-i18n</loc>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</loc>
+    <lastmod>2017-05-10T17:41:54+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</loc>
+    <lastmod>2017-05-10T17:36:29+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</loc>
+    <lastmod>2017-05-10T17:23:55+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
   </url>
@@ -142,8 +162,14 @@
   </url>
   
   <url>
+    <loc>http://deanthompson.github.io/categories/aws/</loc>
+    <lastmod>2017-05-10T17:41:54+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://deanthompson.github.io/tags/aws/</loc>
-    <lastmod>2016-04-15T11:47:00+08:00</lastmod>
+    <lastmod>2017-05-10T17:41:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -231,6 +257,12 @@
   </url>
   
   <url>
+    <loc>http://deanthompson.github.io/tags/ec2/</loc>
+    <lastmod>2017-05-10T17:41:54+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://deanthompson.github.io/tags/fabric/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
@@ -238,13 +270,13 @@
   
   <url>
     <loc>http://deanthompson.github.io/categories/flask/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/tags/flask/</loc>
-    <lastmod>2016-05-17T16:42:37+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -394,7 +426,7 @@
   
   <url>
     <loc>http://deanthompson.github.io/post/</loc>
-    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -406,13 +438,19 @@
   
   <url>
     <loc>http://deanthompson.github.io/categories/python/</loc>
-    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://deanthompson.github.io/tags/python/</loc>
-    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/redshift/</loc>
+    <lastmod>2017-05-10T17:36:29+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -455,6 +493,18 @@
   <url>
     <loc>http://deanthompson.github.io/tags/stackoverflow/</loc>
     <lastmod>2013-03-13T00:26:58+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/categories/tableau/</loc>
+    <lastmod>2017-05-10T17:23:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://deanthompson.github.io/tags/tableau/</loc>
+    <lastmod>2017-05-10T17:23:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -543,7 +593,7 @@
   
   <url>
     <loc>http://deanthompson.github.io/</loc>
-    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
+    <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
