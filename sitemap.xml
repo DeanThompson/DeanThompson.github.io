@@ -2,597 +2,597 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2017/05/flask-i18n</loc>
+    <loc>http://liyangliang.me/posts/2017/05/flask-i18n</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</loc>
+    <loc>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2</loc>
     <lastmod>2017-05-10T17:41:54+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</loc>
+    <loc>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift</loc>
     <lastmod>2017-05-10T17:36:29+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</loc>
+    <loc>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</loc>
     <lastmod>2017-05-10T17:23:55+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</loc>
+    <loc>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</loc>
+    <loc>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</loc>
+    <loc>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution</loc>
+    <loc>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution</loc>
     <lastmod>2016-04-14T15:33:52+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</loc>
+    <loc>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2016/03/zhihu-go</loc>
+    <loc>http://liyangliang.me/posts/2016/03/zhihu-go</loc>
     <lastmod>2016-03-28T23:35:58+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/11/jpush-api-go-client</loc>
+    <loc>http://liyangliang.me/posts/2015/11/jpush-api-go-client</loc>
     <lastmod>2015-11-28T22:32:35+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</loc>
+    <loc>http://liyangliang.me/posts/2015/11/using-celery-with-flask</loc>
     <lastmod>2015-11-14T16:57:03+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</loc>
+    <loc>http://liyangliang.me/posts/2015/11/a-introduction-to-celery</loc>
     <lastmod>2015-11-14T16:44:34+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</loc>
+    <loc>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</loc>
+    <loc>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</loc>
     <lastmod>2015-10-31T01:46:10+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</loc>
+    <loc>http://liyangliang.me/posts/2015/08/simple-python-style-guide</loc>
     <lastmod>2015-08-10T22:36:42+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</loc>
+    <loc>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/06/using-supervisor</loc>
+    <loc>http://liyangliang.me/posts/2015/06/using-supervisor</loc>
     <lastmod>2015-06-09T17:30:20+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/05/bypass-gfw-with-shadowsocks</loc>
+    <loc>http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/about/</loc>
+    <loc>http://liyangliang.me/about/</loc>
     <lastmod>2015-05-19T23:52:52+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/03/reuse-ssh-connection</loc>
+    <loc>http://liyangliang.me/posts/2015/03/reuse-ssh-connection</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang</loc>
+    <loc>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2014/12/defer-in-golang</loc>
+    <loc>http://liyangliang.me/posts/2014/12/defer-in-golang</loc>
     <lastmod>2014-12-18T15:35:38+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</loc>
+    <loc>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</loc>
     <lastmod>2014-06-11T15:50:41+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2014/06/sort-in-golang</loc>
+    <loc>http://liyangliang.me/posts/2014/06/sort-in-golang</loc>
     <lastmod>2014-06-03T16:50:50+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog</loc>
+    <loc>http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog</loc>
     <lastmod>2014-03-02T16:16:04+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing</loc>
+    <loc>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing</loc>
     <lastmod>2014-02-26T23:15:42+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2013/11/less-with-syntax-highlight-and-line-number</loc>
+    <loc>http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number</loc>
     <lastmod>2013-11-03T00:30:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</loc>
+    <loc>http://liyangliang.me/posts/2013/03/understand-python-decorators</loc>
     <lastmod>2013-03-13T00:26:58+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</loc>
+    <loc>http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</loc>
     <lastmod>2013-02-25T16:39:55+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2012/12/python-dict-slice</loc>
+    <loc>http://liyangliang.me/posts/2012/12/python-dict-slice</loc>
     <lastmod>2012-12-01T15:09:08+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr</loc>
+    <loc>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</loc>
     <lastmod>2012-10-21T18:53:51+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/aws/</loc>
+    <loc>http://liyangliang.me/categories/aws/</loc>
     <lastmod>2017-05-10T17:41:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/aws/</loc>
+    <loc>http://liyangliang.me/tags/aws/</loc>
     <lastmod>2017-05-10T17:41:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/binlog/</loc>
+    <loc>http://liyangliang.me/tags/binlog/</loc>
     <lastmod>2014-03-02T16:16:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/cache/</loc>
+    <loc>http://liyangliang.me/categories/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/cache/</loc>
+    <loc>http://liyangliang.me/tags/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/</loc>
+    <loc>http://liyangliang.me/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/celery/</loc>
+    <loc>http://liyangliang.me/categories/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/celery/</loc>
+    <loc>http://liyangliang.me/tags/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/command/</loc>
+    <loc>http://liyangliang.me/tags/command/</loc>
     <lastmod>2013-11-03T00:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/concurrent-safe/</loc>
+    <loc>http://liyangliang.me/tags/concurrent-safe/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/db/</loc>
+    <loc>http://liyangliang.me/tags/db/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/decorator/</loc>
+    <loc>http://liyangliang.me/tags/decorator/</loc>
     <lastmod>2015-10-31T01:46:10+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/defer/</loc>
+    <loc>http://liyangliang.me/tags/defer/</loc>
     <lastmod>2014-12-18T15:35:38+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/deployment/</loc>
+    <loc>http://liyangliang.me/tags/deployment/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/development/</loc>
+    <loc>http://liyangliang.me/categories/development/</loc>
     <lastmod>2015-06-09T17:30:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/dict/</loc>
+    <loc>http://liyangliang.me/tags/dict/</loc>
     <lastmod>2012-12-01T15:09:08+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/ec2/</loc>
+    <loc>http://liyangliang.me/tags/ec2/</loc>
     <lastmod>2017-05-10T17:41:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/fabric/</loc>
+    <loc>http://liyangliang.me/tags/fabric/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/flask/</loc>
+    <loc>http://liyangliang.me/categories/flask/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/flask/</loc>
+    <loc>http://liyangliang.me/tags/flask/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/fmt/</loc>
+    <loc>http://liyangliang.me/tags/fmt/</loc>
     <lastmod>2014-06-11T15:50:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/gevent/</loc>
+    <loc>http://liyangliang.me/tags/gevent/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/gfw/</loc>
+    <loc>http://liyangliang.me/tags/gfw/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/go/</loc>
+    <loc>http://liyangliang.me/categories/go/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/go/</loc>
+    <loc>http://liyangliang.me/tags/go/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/golang/</loc>
+    <loc>http://liyangliang.me/categories/golang/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/golang/</loc>
+    <loc>http://liyangliang.me/tags/golang/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/hash/</loc>
+    <loc>http://liyangliang.me/tags/hash/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/html/</loc>
+    <loc>http://liyangliang.me/tags/html/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/innodb/</loc>
+    <loc>http://liyangliang.me/tags/innodb/</loc>
     <lastmod>2014-03-02T16:16:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/interface/</loc>
+    <loc>http://liyangliang.me/tags/interface/</loc>
     <lastmod>2014-06-03T16:50:50+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/jpush/</loc>
+    <loc>http://liyangliang.me/tags/jpush/</loc>
     <lastmod>2015-11-28T22:32:35+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/linode/</loc>
+    <loc>http://liyangliang.me/tags/linode/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/linux/</loc>
+    <loc>http://liyangliang.me/categories/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/linux/</loc>
+    <loc>http://liyangliang.me/tags/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/map/</loc>
+    <loc>http://liyangliang.me/tags/map/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/mongodb/</loc>
+    <loc>http://liyangliang.me/categories/mongodb/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/mongodb/</loc>
+    <loc>http://liyangliang.me/tags/mongodb/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/multiprocessing/</loc>
+    <loc>http://liyangliang.me/tags/multiprocessing/</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/mysql/</loc>
+    <loc>http://liyangliang.me/categories/mysql/</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/mysql/</loc>
+    <loc>http://liyangliang.me/tags/mysql/</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/nginx/</loc>
+    <loc>http://liyangliang.me/categories/nginx/</loc>
     <lastmod>2016-04-14T15:33:52+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/nginx/</loc>
+    <loc>http://liyangliang.me/tags/nginx/</loc>
     <lastmod>2016-04-14T15:33:52+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/openpyxl/</loc>
+    <loc>http://liyangliang.me/tags/openpyxl/</loc>
     <lastmod>2013-02-25T16:39:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/post/</loc>
+    <loc>http://liyangliang.me/post/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/progress/</loc>
+    <loc>http://liyangliang.me/tags/progress/</loc>
     <lastmod>2015-06-09T17:30:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/python/</loc>
+    <loc>http://liyangliang.me/categories/python/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/python/</loc>
+    <loc>http://liyangliang.me/tags/python/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/redshift/</loc>
+    <loc>http://liyangliang.me/tags/redshift/</loc>
     <lastmod>2017-05-10T17:36:29+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/shadowsocks/</loc>
+    <loc>http://liyangliang.me/categories/shadowsocks/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/shadowsocks/</loc>
+    <loc>http://liyangliang.me/tags/shadowsocks/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/shell/</loc>
+    <loc>http://liyangliang.me/tags/shell/</loc>
     <lastmod>2013-11-03T00:30:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/socks5/</loc>
+    <loc>http://liyangliang.me/tags/socks5/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/sort/</loc>
+    <loc>http://liyangliang.me/tags/sort/</loc>
     <lastmod>2014-06-03T16:50:50+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/ssh/</loc>
+    <loc>http://liyangliang.me/tags/ssh/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/stackoverflow/</loc>
+    <loc>http://liyangliang.me/tags/stackoverflow/</loc>
     <lastmod>2013-03-13T00:26:58+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/tableau/</loc>
+    <loc>http://liyangliang.me/categories/tableau/</loc>
     <lastmod>2017-05-10T17:23:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/tableau/</loc>
+    <loc>http://liyangliang.me/tags/tableau/</loc>
     <lastmod>2017-05-10T17:23:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/</loc>
+    <loc>http://liyangliang.me/tags/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/time/</loc>
+    <loc>http://liyangliang.me/tags/time/</loc>
     <lastmod>2012-10-21T18:53:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/tools/</loc>
+    <loc>http://liyangliang.me/categories/tools/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/tools/</loc>
+    <loc>http://liyangliang.me/tags/tools/</loc>
     <lastmod>2015-06-09T17:30:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/tornado/</loc>
+    <loc>http://liyangliang.me/categories/tornado/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/tornado/</loc>
+    <loc>http://liyangliang.me/tags/tornado/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/translation/</loc>
+    <loc>http://liyangliang.me/tags/translation/</loc>
     <lastmod>2013-03-13T00:26:58+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/type-conversion/</loc>
+    <loc>http://liyangliang.me/tags/type-conversion/</loc>
     <lastmod>2014-06-11T15:50:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/categories/vpn/</loc>
+    <loc>http://liyangliang.me/categories/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/vpn/</loc>
+    <loc>http://liyangliang.me/tags/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/web/</loc>
+    <loc>http://liyangliang.me/tags/web/</loc>
     <lastmod>2014-02-26T23:15:42+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/wtforms/</loc>
+    <loc>http://liyangliang.me/tags/wtforms/</loc>
     <lastmod>2015-10-31T01:46:10+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/xlsx/</loc>
+    <loc>http://liyangliang.me/tags/xlsx/</loc>
     <lastmod>2013-02-25T16:39:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/tags/zhihu/</loc>
+    <loc>http://liyangliang.me/tags/zhihu/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://deanthompson.github.io/</loc>
+    <loc>http://liyangliang.me/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>

@@ -3,7 +3,7 @@
   <channel>
       <title>Db on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/db/index.xml</link>
+    <link>http://liyangliang.me/tags/db/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>MongoDB Replica Set 重新同步</title>
-      <link>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</link>
+      <link>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync</link>
       <pubDate>Fri, 15 Apr 2016 11:47:00 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/04/mongodb-replica-set-resync</guid>
+      <guid>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync</guid>
       <description>&lt;p&gt;生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused

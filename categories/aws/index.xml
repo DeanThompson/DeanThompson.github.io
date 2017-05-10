@@ -3,7 +3,7 @@
   <channel>
       <title>Aws on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/aws/index.xml</link>
+    <link>http://liyangliang.me/categories/aws/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>EC2 挂载 EBS</title>
-      <link>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</link>
+      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2</link>
       <pubDate>Wed, 10 May 2017 17:41:54 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/05/mount-ebs-to-ec2</guid>
+      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2</guid>
       <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
 
 &lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
@@ -91,10 +91,10 @@ tmpfs           100M     0  100M   0% /run/user/1000
     
     <item>
       <title>MySQL 数据导入到 Redshift</title>
-      <link>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</link>
+      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift</link>
       <pubDate>Wed, 10 May 2017 17:36:29 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/05/transfer-data-from-mysql-to-redshift</guid>
+      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift</guid>
       <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
 
 &lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
@@ -137,10 +137,10 @@ region &#39;cn-north-1&#39; CSV GZIP NULL AS &#39;NULL&#39;;
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</link>
+      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</link>
       <pubDate>Wed, 10 May 2017 17:23:55 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
+      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
 
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;

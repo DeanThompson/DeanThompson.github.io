@@ -3,7 +3,7 @@
   <channel>
       <title>Go on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/go/index.xml</link>
+    <link>http://liyangliang.me/tags/go/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,11 +11,11 @@
     
     <item>
       <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
-      <link>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</link>
+      <link>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</link>
       <pubDate>Wed, 30 Mar 2016 23:02:51 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
+      <guid>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
 
 &lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
 
@@ -178,10 +178,10 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
     
     <item>
       <title>zhihu-go: 知乎非官方 API库 with Go</title>
-      <link>http://deanthompson.github.io/posts/2016/03/zhihu-go</link>
+      <link>http://liyangliang.me/posts/2016/03/zhihu-go</link>
       <pubDate>Mon, 28 Mar 2016 23:35:58 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/03/zhihu-go</guid>
+      <guid>http://liyangliang.me/posts/2016/03/zhihu-go</guid>
       <description>&lt;p&gt;我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 &lt;a href=&#34;https://github.com/egrcc/zhihu-python&#34;&gt;zhihu-python&lt;/a&gt;. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。&lt;/p&gt;
 
 &lt;p&gt;&lt;/p&gt;
@@ -195,10 +195,10 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
     
     <item>
       <title>极光推送 Go SDK</title>
-      <link>http://deanthompson.github.io/posts/2015/11/jpush-api-go-client</link>
+      <link>http://liyangliang.me/posts/2015/11/jpush-api-go-client</link>
       <pubDate>Sat, 28 Nov 2015 22:32:35 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/jpush-api-go-client</guid>
+      <guid>http://liyangliang.me/posts/2015/11/jpush-api-go-client</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://www.jpush.cn/&#34;&gt;极光推送&lt;/a&gt; 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 &lt;a href=&#34;http://docs.jpush.io/server/server_overview/&#34;&gt;官方文档&lt;/a&gt;。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。&lt;/p&gt;
 
 &lt;p&gt;实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。&lt;/p&gt;
@@ -217,10 +217,10 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
-      <link>http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang</link>
+      <link>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang</link>
       <pubDate>Mon, 12 Jan 2015 15:01:15 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/01/concurrent-safe-map-in-golang</guid>
+      <guid>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang</guid>
       <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
 
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
@@ -285,10 +285,10 @@ func (m *SyncMap) locate(key string) *syncMap {
     
     <item>
       <title>Golang 的 defer 语句</title>
-      <link>http://deanthompson.github.io/posts/2014/12/defer-in-golang</link>
+      <link>http://liyangliang.me/posts/2014/12/defer-in-golang</link>
       <pubDate>Thu, 18 Dec 2014 15:35:38 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/12/defer-in-golang</guid>
+      <guid>http://liyangliang.me/posts/2014/12/defer-in-golang</guid>
       <description>&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://blog.golang.org/defer-panic-and-recover&#34;&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
@@ -361,10 +361,10 @@ BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</link>
+      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</link>
       <pubDate>Wed, 11 Jun 2014 15:50:41 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
+      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
       <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
 
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
@@ -471,10 +471,10 @@ hex.EncodeToString taken: 2.080457ms
     
     <item>
       <title>Golang 排序</title>
-      <link>http://deanthompson.github.io/posts/2014/06/sort-in-golang</link>
+      <link>http://liyangliang.me/posts/2014/06/sort-in-golang</link>
       <pubDate>Tue, 03 Jun 2014 16:50:50 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/06/sort-in-golang</guid>
+      <guid>http://liyangliang.me/posts/2014/06/sort-in-golang</guid>
       <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
 
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;

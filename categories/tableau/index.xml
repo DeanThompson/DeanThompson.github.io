@@ -3,7 +3,7 @@
   <channel>
       <title>Tableau on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/tableau/index.xml</link>
+    <link>http://liyangliang.me/categories/tableau/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</link>
+      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</link>
       <pubDate>Wed, 10 May 2017 17:23:55 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
+      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
 
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;

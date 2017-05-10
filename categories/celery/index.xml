@@ -3,7 +3,7 @@
   <channel>
       <title>Celery on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/celery/index.xml</link>
+    <link>http://liyangliang.me/categories/celery/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,11 +11,11 @@
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</link>
+      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent</link>
       <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
+      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
@@ -30,7 +30,7 @@
 
 &lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
-&lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
+&lt;p&gt;这个问题也是在 &lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;with app.app_context():
     print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
@@ -97,11 +97,11 @@ def add(x, y):
     
     <item>
       <title>在 Flask 项目中使用 Celery</title>
-      <link>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</link>
+      <link>http://liyangliang.me/posts/2015/11/using-celery-with-flask</link>
       <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+      <guid>http://liyangliang.me/posts/2015/11/using-celery-with-flask</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
 
@@ -307,10 +307,10 @@ app.app_context().push()
     
     <item>
       <title>Celery 使用简介</title>
-      <link>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</link>
+      <link>http://liyangliang.me/posts/2015/11/a-introduction-to-celery</link>
       <pubDate>Sat, 14 Nov 2015 16:44:34 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
+      <guid>http://liyangliang.me/posts/2015/11/a-introduction-to-celery</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
 &lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;

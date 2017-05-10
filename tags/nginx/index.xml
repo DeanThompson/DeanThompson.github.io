@@ -3,7 +3,7 @@
   <channel>
       <title>Nginx on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/nginx/index.xml</link>
+    <link>http://liyangliang.me/tags/nginx/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
-      <link>http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution</link>
+      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution</link>
       <pubDate>Thu, 14 Apr 2016 15:33:52 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/04/nginx-aws-elb-name-resolution</guid>
+      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution</guid>
       <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
 
 &lt;ul&gt;

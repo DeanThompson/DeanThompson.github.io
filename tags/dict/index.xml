@@ -3,7 +3,7 @@
   <channel>
       <title>Dict on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/dict/index.xml</link>
+    <link>http://liyangliang.me/tags/dict/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Python字典切片</title>
-      <link>http://deanthompson.github.io/posts/2012/12/python-dict-slice</link>
+      <link>http://liyangliang.me/posts/2012/12/python-dict-slice</link>
       <pubDate>Sat, 01 Dec 2012 15:09:08 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2012/12/python-dict-slice</guid>
+      <guid>http://liyangliang.me/posts/2012/12/python-dict-slice</guid>
       <description>&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
 
 &lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;

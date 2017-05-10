@@ -3,7 +3,7 @@
   <channel>
       <title>Deployment on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/tags/deployment/index.xml</link>
+    <link>http://liyangliang.me/tags/deployment/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>用 Fabric 实现自动化部署</title>
-      <link>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</link>
+      <link>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric</link>
       <pubDate>Fri, 12 Jun 2015 14:00:13 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</guid>
+      <guid>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric</guid>
       <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
 
 &lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;

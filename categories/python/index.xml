@@ -3,7 +3,7 @@
   <channel>
       <title>Python on 李林克斯 </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://deanthompson.github.io/categories/python/index.xml</link>
+    <link>http://liyangliang.me/categories/python/index.xml</link>
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
@@ -11,10 +11,10 @@
     
     <item>
       <title>Flask 应用国际化</title>
-      <link>http://deanthompson.github.io/posts/2017/05/flask-i18n</link>
+      <link>http://liyangliang.me/posts/2017/05/flask-i18n</link>
       <pubDate>Wed, 10 May 2017 17:48:17 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/05/flask-i18n</guid>
+      <guid>http://liyangliang.me/posts/2017/05/flask-i18n</guid>
       <description>&lt;h2 id=&#34;babel&#34;&gt;Babel&lt;/h2&gt;
 
 &lt;blockquote&gt;
@@ -119,10 +119,10 @@ $ pybabel compile -d translations
     
     <item>
       <title>Python 多进程导入数据到 MySQL</title>
-      <link>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</link>
+      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</link>
       <pubDate>Sat, 25 Feb 2017 16:16:14 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</guid>
+      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</guid>
       <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
 分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
 会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
@@ -297,11 +297,11 @@ if __name__ == &#39;__main__&#39;:
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</link>
+      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent</link>
       <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2016/05/using-celery-with-flask-and-gevent</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
+      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
 
@@ -316,7 +316,7 @@ if __name__ == &#39;__main__&#39;:
 
 &lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
 
-&lt;p&gt;这个问题也是在 &lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
+&lt;p&gt;这个问题也是在 &lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;with app.app_context():
     print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
@@ -383,11 +383,11 @@ def add(x, y):
     
     <item>
       <title>在 Flask 项目中使用 Celery</title>
-      <link>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</link>
+      <link>http://liyangliang.me/posts/2015/11/using-celery-with-flask</link>
       <pubDate>Sat, 14 Nov 2015 16:57:03 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/using-celery-with-flask</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
+      <guid>http://liyangliang.me/posts/2015/11/using-celery-with-flask</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
 
@@ -593,10 +593,10 @@ app.app_context().push()
     
     <item>
       <title>Celery 使用简介</title>
-      <link>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</link>
+      <link>http://liyangliang.me/posts/2015/11/a-introduction-to-celery</link>
       <pubDate>Sat, 14 Nov 2015 16:44:34 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/a-introduction-to-celery</guid>
+      <guid>http://liyangliang.me/posts/2015/11/a-introduction-to-celery</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
 
 &lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
@@ -762,10 +762,10 @@ CELERY_ENABLE_UTC = True
     
     <item>
       <title>Tornado 和 Flask 应用缓存响应结果</title>
-      <link>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</link>
+      <link>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask</link>
       <pubDate>Thu, 05 Nov 2015 16:52:12 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/11/cache-response-in-tornado-and-flask</guid>
+      <guid>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask</guid>
       <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
 
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
@@ -948,10 +948,10 @@ def hello():
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
-      <link>http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</link>
+      <link>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</link>
       <pubDate>Sat, 31 Oct 2015 01:46:10 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</guid>
+      <guid>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask</guid>
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;
@@ -1085,10 +1085,10 @@ def register():
     
     <item>
       <title>Python 编码规范</title>
-      <link>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</link>
+      <link>http://liyangliang.me/posts/2015/08/simple-python-style-guide</link>
       <pubDate>Mon, 10 Aug 2015 22:36:42 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/08/simple-python-style-guide</guid>
+      <guid>http://liyangliang.me/posts/2015/08/simple-python-style-guide</guid>
       <description>&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
 
 &lt;p&gt;网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：&lt;/p&gt;
@@ -1410,10 +1410,10 @@ if k in d:
     
     <item>
       <title>用 Fabric 实现自动化部署</title>
-      <link>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</link>
+      <link>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric</link>
       <pubDate>Fri, 12 Jun 2015 14:00:13 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/06/deploy-applications-using-fabric</guid>
+      <guid>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric</guid>
       <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
 
 &lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
@@ -1591,10 +1591,10 @@ $ fab staging deploy
     
     <item>
       <title>使用 supervisor 管理进程</title>
-      <link>http://deanthompson.github.io/posts/2015/06/using-supervisor</link>
+      <link>http://liyangliang.me/posts/2015/06/using-supervisor</link>
       <pubDate>Tue, 09 Jun 2015 17:30:20 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2015/06/using-supervisor</guid>
+      <guid>http://liyangliang.me/posts/2015/06/using-supervisor</guid>
       <description>&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
 
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
@@ -1742,10 +1742,10 @@ $ supervisorctl update
     
     <item>
       <title>Flask 路由做范围限制</title>
-      <link>http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing</link>
+      <link>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing</link>
       <pubDate>Wed, 26 Feb 2014 23:15:42 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2014/02/range-validation-in-flask-routing</guid>
+      <guid>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing</guid>
       <description>&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
 
 &lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
@@ -1807,10 +1807,10 @@ def foo_id(id):
     
     <item>
       <title>【翻译】理解 Python 装饰器</title>
-      <link>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</link>
+      <link>http://liyangliang.me/posts/2013/03/understand-python-decorators</link>
       <pubDate>Wed, 13 Mar 2013 00:26:58 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2013/03/understand-python-decorators</guid>
+      <guid>http://liyangliang.me/posts/2013/03/understand-python-decorators</guid>
       <description>&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
 
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
@@ -2586,10 +2586,10 @@ print get_random_furturama_quote()
     
     <item>
       <title>用 openpyxl 处理 xlsx 文件</title>
-      <link>http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</link>
+      <link>http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</link>
       <pubDate>Mon, 25 Feb 2013 16:39:55 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</guid>
+      <guid>http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files</guid>
       <description>&lt;p&gt;久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;
@@ -2675,10 +2675,10 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
     
     <item>
       <title>Python字典切片</title>
-      <link>http://deanthompson.github.io/posts/2012/12/python-dict-slice</link>
+      <link>http://liyangliang.me/posts/2012/12/python-dict-slice</link>
       <pubDate>Sat, 01 Dec 2012 15:09:08 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2012/12/python-dict-slice</guid>
+      <guid>http://liyangliang.me/posts/2012/12/python-dict-slice</guid>
       <description>&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
 
 &lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;
@@ -2735,10 +2735,10 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
     
     <item>
       <title>Python 时间戳和日期相互转换</title>
-      <link>http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr</link>
+      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</link>
       <pubDate>Sun, 21 Oct 2012 18:53:51 CST</pubDate>
       <author>Yangliang Li</author>
-      <guid>http://deanthompson.github.io/posts/2012/10/python-timestamp-to-timestr</guid>
+      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</guid>
       <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
 
 &lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
