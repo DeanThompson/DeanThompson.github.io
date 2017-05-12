@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>在 AWS 上安装 Tableau Server - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -197,7 +197,7 @@ timeout 5
 
 echo %date% %time%: Uploading to S3
 
-aws s3 cp %Backuppath% s3://marspet-tableau-backup/ --recursive --exclude &quot;*&quot; --include &quot;ts_backup-*.tsbak&quot;
+aws s3 cp %Backuppath% s3://tableau-server-backup/ --recursive --exclude &quot;*&quot; --include &quot;ts_backup-*.tsbak&quot;
 
 echo %date% %time%: *** Housekeeping completed ***
 timeout 5
