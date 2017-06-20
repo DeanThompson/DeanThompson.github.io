@@ -10,6 +10,110 @@
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
+      <title>Pyenv 使用笔记</title>
+      <link>http://liyangliang.me/posts/2017/06/pyenv-notes</link>
+      <pubDate>Tue, 20 Jun 2017 15:09:27 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2017/06/pyenv-notes</guid>
+      <description>&lt;p&gt;应用使用虚拟环境是每个 Python 程序员都应该要掌握的技能。
+&lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;pyenv&lt;/a&gt; 是一个非常好用的 Python 环境管理工具。有这些主要特性：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;方便的安装、管理不同版本的 Python，而且不需要 sudo 权限，不会污染系统的 Python 版本&lt;/li&gt;
+&lt;li&gt;可以修改当前用户使用的默认 Python 版本&lt;/li&gt;
+&lt;li&gt;集成 virtualenv，自动安装、激活&lt;/li&gt;
+&lt;li&gt;命令行自动补全&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;详细内容见 &lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;Github - pyenv/pyenv&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;安装-pyenv&#34;&gt;安装 pyenv&lt;/h2&gt;
+
+&lt;p&gt;最简单的方式是使用 &lt;a href=&#34;https://github.com/pyenv/pyenv-installer&#34;&gt;pyenv-installer&lt;/a&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后在 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.zshrc&lt;/code&gt; 中添加如下内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export PATH=&amp;quot;~/.pyenv/bin:$PATH&amp;quot;
+eval &amp;quot;$(pyenv init -)&amp;quot;
+eval &amp;quot;$(pyenv virtualenv-init -)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;常用命令&#34;&gt;常用命令&lt;/h2&gt;
+
+&lt;p&gt;完整的命令行列表可以参考 &lt;a href=&#34;https://github.com/pyenv/pyenv/blob/master/COMMANDS.md&#34;&gt;pyenv/COMMANDS.md&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;安装 Python&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;pyenv install 3.6.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个命令会为当前用户下载和安装 3.6.0，安装过程可以使用镜像加速，详见下文。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;新建虚拟环境&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;pyenv virtualenv 3.6.0 py36
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;设置当前路径使用的 Python 环境&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;pyenv local py36
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个命令会在当前路径创建一个 &lt;code&gt;.python-version&lt;/code&gt; 文件，文件内容就是 &lt;code&gt;py36&lt;/code&gt;，即环境名称。所以一般需要把 &lt;code&gt;.python-version&lt;/code&gt; 添加到 gitignore.&lt;/p&gt;
+
+&lt;p&gt;下次进入该目录时，会自动激活虚拟环境；离开后自动退出。&lt;/p&gt;
+
+&lt;h2 id=&#34;搭建镜像&#34;&gt;搭建镜像&lt;/h2&gt;
+
+&lt;p&gt;pyenv 默认从 Python 官网下载安装包，比较慢；也支持镜像网站，可以自己搭建。&lt;/p&gt;
+
+&lt;h3 id=&#34;搭建镜像-1&#34;&gt;搭建镜像&lt;/h3&gt;
+
+&lt;p&gt;其实就是把安装包下载好，放到服务器上，用 Nginx 搭建一个下载服务。但安装包的文件名必须是文件的 SHA256 值。
+如 Python-3.6.0.tar.xz 安装包应该保存为 b0c5f904f685e32d9232f7bdcbece9819a892929063b6e385414ad2dd6a23622&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;创建目录 &lt;code&gt;/data/pythons&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;下载安装包，从 &lt;a href=&#34;http://mirrors.sohu.com/python/&#34;&gt;搜狐的开源镜像&lt;/a&gt; 下载 &lt;code&gt;.tar.xz&lt;/code&gt; 格式的安装包。&lt;/li&gt;
+&lt;li&gt;计算 SHA256（可以使用 &lt;code&gt;sha256sum&lt;/code&gt; 命令），重命名文件&lt;/li&gt;
+&lt;li&gt;配置 Nginx&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;server {
+    listen 8000;
+    root /data/pythons;
+    autoindex on;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果没有或不想使用 Nginx，也可以用 Python 运行一个简易的 HTTP 服务：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python3 -m http.server
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;使用镜像&#34;&gt;使用镜像&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;export PYTHON_BUILD_MIRROR_URL=http://localhost:8000
+pyenv install 3.6.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以把 &lt;code&gt;export PYTHON_BUILD_MIRROR_URL=http://localhost:8000&lt;/code&gt; 添加到 &lt;code&gt;~/.bashrc&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;安装其他版本时，pyenv 会回退到从官网下载。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Flask 应用国际化</title>
       <link>http://liyangliang.me/posts/2017/05/flask-i18n</link>
       <pubDate>Wed, 10 May 2017 17:48:17 CST</pubDate>
@@ -2731,72 +2835,6 @@ wb.save(filename=&#39;new_file.xlsx&#39;)
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Python 时间戳和日期相互转换</title>
-      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</link>
-      <pubDate>Sun, 21 Oct 2012 18:53:51 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</guid>
-      <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
-
-&lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93&#34;&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;在Python里，时间戳可以通过 &lt;code&gt;time&lt;/code&gt; 模块里的 &lt;code&gt;time()&lt;/code&gt; 方法获得，比如:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [1]: import time
-
-In [2]: time.time()
-Out[2]: 1350816710.8050799
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 &lt;code&gt;time.strftime()&lt;/code&gt; 函数来达到这个目的。根据 &lt;code&gt;strftime()&lt;/code&gt; 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 &lt;code&gt;time.localtime()&lt;/code&gt; 的返回值。而那个9元组其实是 &lt;code&gt;struct_time&lt;/code&gt;，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [5]: import time
-
-In [6]: time.localtime()
-Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min=4, tm_sec=25, tm_wday=6, tm_yday=295, tm_isdst=0)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [8]: import time
-
-In [9]: st = time.localtime(1350816710.8050799)
- 
-In [10]: time.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;, st)
-Out[10]: &#39;2012-10-21 18:51:50&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;先用 &lt;code&gt;localtime()&lt;/code&gt; 把时间戳转换为 &lt;code&gt;struct_time&lt;/code&gt;， 然后传给 &lt;code&gt;strftime&lt;/code&gt; 转换为指定格式的字符串。那么反过来呢？
-同样需要先转换为 &lt;code&gt;struct_time&lt;/code&gt;，这个工作由 &lt;code&gt;time.strptime()&lt;/code&gt; 函数完成。&lt;code&gt;strptime&lt;/code&gt; 中的 &lt;code&gt;p&lt;/code&gt; 应该是 parse 的意思，原型是:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;strptime(string, format) -&amp;gt; struct_time
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;把字符串形式的时间按照指定格式解析，转换为 &lt;code&gt;struct_time&lt;/code&gt;。然后传给&lt;code&gt;time.mktime()&lt;/code&gt; 完成最后的工作，整个过程是:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [12]: import time
- 
-In [13]: st = time.strptime(&#39;2012-10-21 18:51:50&#39;, &#39;%Y-%m-%d %H:%M:%S&#39;)
- 
-In [14]: time.mktime(st)
-Out[14]: 1350816710.0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;最后，有两篇参考文章：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Python中时间戳与时间字符串互相转化: &lt;a href=&#34;http://www.coder4.com/archives/2239&#34;&gt;http://www.coder4.com/archives/2239&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Python中time模块详解（很好）:&lt;a href=&#34;http://qinxuye.me/article/details-about-time-module-in-python/&#34;&gt;http://qinxuye.me/article/details-about-time-module-in-python/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
     </item>
     
   </channel>
