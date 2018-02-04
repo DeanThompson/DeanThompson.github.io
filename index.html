@@ -146,11 +146,38 @@
 	</div>
 	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2018/02/redshift-snippets" itemprop="url">Redshift Snippets</a></h1>
 	<div class="entry-content" itemprop="articleBody">
-		查询所有 session  SELECT * FROM stv_sessions;   终止 session  SELECT pg_terminate_backend(32281);  即，调用 pg_terminate_backend 函数，传入 process_id。
-权限：普通用户只能终止自己的 session，超级用户能终止任意 session.
- 查询正在运行的 queries  类似 MySQL 的 SHOW PROCESSLIST.
-SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime, stv_recents.duration, stv_recents.user_name, stv_recents.db_name, stv_recents.query, stv_recents.pid FROM stv_recents WHERE stv_recents.status = 'Running'::bpchar;   创建数据库时报错：source database &quot;template1&quot; is being accessed by other users  原因：template1 数据库被其他 session 占用，锁住了。
-解决方法：先从 stv_sessions 表查找 template1 相关的 session，然后用 pg_terminate_backend 杀掉。
+		<ul>
+<li>查询所有 session</li>
+</ul>
+
+<pre><code class="language-sql">SELECT * FROM stv_sessions;
+</code></pre>
+
+<ul>
+<li>终止 session</li>
+</ul>
+
+<pre><code class="language-sql">SELECT pg_terminate_backend(32281);
+</code></pre>
+
+<p>即，调用 <code>pg_terminate_backend</code> 函数，传入 process_id。</p>
+
+<p>权限：普通用户只能终止自己的 session，超级用户能终止任意 session.</p>
+
+<ul>
+<li>查询正在运行的 queries</li>
+</ul>
+
+<p>类似 MySQL 的 <code>SHOW PROCESSLIST</code>.</p>
+
+<pre><code class="language-sql">SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+       stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
+       stv_recents.query, stv_recents.pid
+FROM stv_recents
+WHERE stv_recents.status = 'Running'::bpchar;
+</code></pre>
+
+<p></p>
 		<a href="http://liyangliang.me/posts/2018/02/redshift-snippets" class="more-link">Read on →</a>
 	</div>
 </article>

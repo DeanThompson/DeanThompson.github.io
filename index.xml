@@ -46,6 +46,8 @@ FROM stv_recents
 WHERE stv_recents.status = &#39;Running&#39;::bpchar;
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;ul&gt;
 &lt;li&gt;创建数据库时报错：&lt;code&gt;source database &amp;quot;template1&amp;quot; is being accessed by other users&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -129,8 +131,7 @@ roma	mda_price_idx	0	50005	10	10
 roma	mda_vendor	0	4	10	10
 roma	mda_vendor	0	8	10	7
 roma	sku_bodytype	0	9	10	7
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
