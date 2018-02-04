@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Flask 应用国际化 - 李林克斯</title>
+	<title>Redshift Snippets - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2017/05/flask-i18n">
+	<link rel="canonical" href="http://liyangliang.me/posts/2018/02/redshift-snippets">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -120,129 +120,145 @@
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 						<div class="meta">
-							<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+							<div class="date"><time datetime='Sun, Feb 4, 2018' data-updated="true" itemprop="datePublished">Sun, Feb 4, 2018</time>
 </div>
 							<div class="tags">
 
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="http://liyangliang.me/categories/devops"> devops </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/flask"> flask </a>
+	    <a href="http://liyangliang.me/categories/sql"> sql </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2017/05/flask-i18n#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2018/02/redshift-snippets#disqus_thread">Comments</a></span>
 							
 						</div>
 						
-    <h1 class="title" itemprop="name">Flask 应用国际化</h1>
-	<div class="entry-content" itemprop="articleBody"><h2 id="babel">Babel</h2>
-
-<blockquote>
-<p>Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.</p>
-</blockquote>
-
-<ul>
-<li>文档：<a href="http://babel.pocoo.org/en/latest/">http://babel.pocoo.org/en/latest/</a></li>
-<li>代码：<a href="https://github.com/python-babel/babel">https://github.com/python-babel/babel</a></li>
+    <h1 class="title" itemprop="name">Redshift Snippets</h1>
+	<div class="entry-content" itemprop="articleBody"><ul>
+<li>查询所有 session</li>
 </ul>
 
-<h2 id="flask-babel">Flask-Babel</h2>
-
-<p>Flask 的 i18n 扩展，集成 babel、pytz 等。</p>
-
-<ul>
-<li>文档：<a href="https://pythonhosted.org/Flask-Babel/">https://pythonhosted.org/Flask-Babel/</a></li>
-<li>代码：<a href="https://github.com/python-babel/flask-babel">https://github.com/python-babel/flask-babel</a></li>
-</ul>
-
-<h2 id="使用">使用</h2>
-
-<ul>
-<li><p>安装：<code>pip install Flask-Babel</code></p></li>
-
-<li><p>babel 配置文件：babel.cfg</p></li>
-</ul>
-
-<pre><code class="language-ini">[python: **.py]
-[jinja2: **.html]
-extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
-</code></pre>
-
-<p></p>
-
-<ul>
-<li>Flask-Babel 配置：</li>
-</ul>
-
-<pre><code class="language-python">BABEL_DEFAULT_LOCALE = 'zh_CN’                  # locale 选项，默认 'en'
-BABEL_DEFAULT_TIMEZONE = 'Asia/Shanghai'        # 时区，默认 'UTC'
-BABEL_TRANSLATION_DIRECTORIES = 'translations'  # 翻译文件所在目录，默认 'translations'
+<pre><code class="language-sql">SELECT * FROM stv_sessions;
 </code></pre>
 
 <ul>
-<li>生成翻译文件模版：</li>
+<li>终止 session</li>
 </ul>
 
-<pre><code>$ pybabel extract -F babel.cfg -o messages.pot .
+<pre><code class="language-sql">SELECT pg_terminate_backend(32281);
 </code></pre>
 
-<p>如果使用了 <code>lazy_gettext()</code> 这样的函数，需要在上面的命令行参数指定：</p>
+<p>即，调用 <code>pg_terminate_backend</code> 函数，传入 process_id。</p>
 
-<pre><code>$ pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot .
+<p>权限：普通用户只能终止自己的 session，超级用户能终止任意 session.</p>
+
+<ul>
+<li>查询正在运行的 queries</li>
+</ul>
+
+<p>类似 MySQL 的 <code>SHOW PROCESSLIST</code>.</p>
+
+<pre><code class="language-sql">SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+       stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
+       stv_recents.query, stv_recents.pid
+FROM stv_recents
+WHERE stv_recents.status = 'Running'::bpchar;
 </code></pre>
 
 <ul>
-<li>生成翻译文件:</li>
+<li>创建数据库时报错：<code>source database &quot;template1&quot; is being accessed by other users</code></li>
 </ul>
 
-<pre><code>$ pybabel init -i messages.pot -d translations
+<p>原因：<code>template1</code> 数据库被其他 session 占用，锁住了。</p>
+
+<p>解决方法：先从 <code>stv_sessions</code> 表查找 <code>template1</code> 相关的 session，然后用 <code>pg_terminate_backend</code> 杀掉。</p>
+
+<ul>
+<li>备份数据到 S3</li>
+</ul>
+
+<pre><code class="language-sql">UNLOAD ('SELECT * FROM public.category') TO 's3://redshift-backup/unload/public/category/category_'
+access_key_id '&lt;access_key_id&gt;' secret_access_key '&lt;secret_access_key&gt;'
+DELIMITER '|' ADDQUOTES ESCAPE ALLOWOVERWRITE;
 </code></pre>
 
 <ul>
-<li>编辑 translations/zh_CN/LC_MESSAGES/messages.po 文件，手动翻译。po 文件内容形如：</li>
+<li>从 S3 加载数据</li>
 </ul>
 
-<pre><code>#: forms.py:65 forms.py:78
-#: templates/flask_user/emails/invite_child_user_message.html:9
-msgid &quot;Username&quot;
-msgstr &quot;&quot;
-</code></pre>
-
-<p>其中：
-  - <code>#:</code> 注释内容是 ‘文件名:行号’，即所有出现过的地方
-  - <code>msgid</code> 是需要翻译的内容
-  - <code>msgstr</code> 是翻译后的内容，如果留空，则会显示原文，即 msgid</p>
-
-<ul>
-<li>更新翻译文件（一般只需要 init 一次）：</li>
-</ul>
-
-<pre><code>$ pybabel update -i messages.pot -d translations
+<pre><code class="language-sql">COPY public.category FROM 's3://redshift-backup/unload/public/category'
+CREDENTIALS 'aws_access_key_id=&lt;access_key_id&gt;;aws_secret_access_key=&lt;secret_access_key&gt;'
+DELIMITER '|' REMOVEQUOTES ESCAPE REGION 'cn-north-1';
 </code></pre>
 
 <ul>
-<li>编译</li>
+<li>定义 Python UDF</li>
 </ul>
 
-<pre><code>$ pybabel compile -d translations
+<p>文档: <a href="http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html"><a href="http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html">http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html</a></a></p>
+
+<pre><code class="language-sql">CREATE FUNCTION f_hash(value varchar) returns varchar immutable as $$
+    def sha256_hash(value):
+        import hashlib, base64
+        return base64.urlsafe_b64encode(hashlib.sha256(value or '').digest())
+    return sha256_hash(value)
+$$ language plpythonu;
+
+SELECT address, mobile_no, f_hash(address), f_hash(mobile_no)
+FROM leqi_orders LIMIT 10;
 </code></pre>
 
-<h2 id="工作流">工作流</h2>
+<ul>
+<li>查看表所占磁盘等信息</li>
+</ul>
 
-<pre><code>$ pybabel extract -F babel.cfg -o messages.pot .
-$ pybabel init -i messages.pot -d translations     # 第一次
-$ pybabel update -i messages.pot -d translations   # 更新
-# 手动翻译
-$ pybabel compile -d translations
-</code></pre></div>
+<pre><code class="language-sql">SELECT BTRIM(pgdb.datname::character varying::text) AS &quot;database&quot;,
+       BTRIM(a.name::character varying::text) AS &quot;table&quot;,
+       (b.mbytes::numeric::numeric(18,0) / part.total::numeric::numeric(18,0) * 100::numeric::numeric(18,0))::numeric(5,2) AS pct_of_total,
+       a.&quot;rows&quot;,
+       b.mbytes,
+       b.unsorted_mbytes
+FROM stv_tbl_perm a
+  JOIN pg_database pgdb ON pgdb.oid = a.db_id::oid
+  JOIN (
+    SELECT stv_blocklist.tbl,
+           SUM(
+             CASE
+               WHEN stv_blocklist.unsorted = 1 OR stv_blocklist.unsorted IS NULL AND 1 IS NULL THEN 1
+               ELSE 0
+             END
+           ) AS unsorted_mbytes,
+           COUNT(*) AS mbytes
+    FROM stv_blocklist
+    GROUP BY stv_blocklist.tbl
+  ) b ON a.id = b.tbl
+  JOIN (
+    SELECT SUM(stv_partitions.capacity) AS total
+    FROM stv_partitions
+    WHERE stv_partitions.part_begin = 0
+  ) part ON 1 = 1
+WHERE a.slice = 0
+ORDER BY b.mbytes DESC, a.db_id, a.name;
+</code></pre>
+
+<p>查询结果样例：</p>
+
+<pre><code class="language-text">database  table pct_of_total  rows  mbytes  unsorted_mbytes
+roma	mda_price_idx	0	50005	10	10
+roma	mda_vendor	0	4	10	10
+roma	mda_vendor	0	8	10	7
+roma	sku_bodytype	0	9	10	7
+</code></pre>
+</div>
 					</article>
 					
 					<section id="comment">

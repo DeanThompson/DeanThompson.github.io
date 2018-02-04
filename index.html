@@ -123,6 +123,41 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sun, Feb 4, 2018' data-updated="true" itemprop="datePublished">Sun, Feb 4, 2018</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://liyangliang.me/categories/devops"> devops </a>,
+	
+
+	
+	
+	    <a href="http://liyangliang.me/categories/sql"> sql </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2018/02/redshift-snippets#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2018/02/redshift-snippets" itemprop="url">Redshift Snippets</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		查询所有 session  SELECT * FROM stv_sessions;   终止 session  SELECT pg_terminate_backend(32281);  即，调用 pg_terminate_backend 函数，传入 process_id。
+权限：普通用户只能终止自己的 session，超级用户能终止任意 session.
+ 查询正在运行的 queries  类似 MySQL 的 SHOW PROCESSLIST.
+SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime, stv_recents.duration, stv_recents.user_name, stv_recents.db_name, stv_recents.query, stv_recents.pid FROM stv_recents WHERE stv_recents.status = 'Running'::bpchar;   创建数据库时报错：source database &quot;template1&quot; is being accessed by other users  原因：template1 数据库被其他 session 占用，锁住了。
+解决方法：先从 stv_sessions 表查找 template1 相关的 session，然后用 pg_terminate_backend 杀掉。
+		<a href="http://liyangliang.me/posts/2018/02/redshift-snippets" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Tue, Jun 20, 2017' data-updated="true" itemprop="datePublished">Tue, Jun 20, 2017</time>
 </div>
 		<div class="tags">
@@ -555,53 +590,6 @@ xvdb    202:16   0  30G  0 disk
 
 <p></p>
 		<a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Thu, Apr 14, 2016' data-updated="true" itemprop="datePublished">Thu, Apr 14, 2016</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/nginx"> nginx </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution" itemprop="url">Nginx AWS ELB 域名解析</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：</p>
-
-<ul>
-<li>两个域名：api.example.com, web.example.com</li>
-<li>环境：AWS + ELB + Nginx</li>
-<li>后端：Python + Django + Gunicorn</li>
-</ul>
-
-<p>出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：</p>
-
-<pre><code>                      proxy_pass         backends                      proxy_pass
-APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) ------------&gt; Gunicorn(s)
-</code></pre>
-
-<p>其中 API 的 Nginx 配置大概是这样：</p>
-
-<pre><code class="language-nginx">location /test {
-    proxy_pass http://name.of.elb.aws.com;
-}
-</code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution" class="more-link">Read on →</a>
 	</div>
 </article>
 

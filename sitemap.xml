@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://liyangliang.me/posts/2018/02/redshift-snippets</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/posts/2017/06/pyenv-notes</loc>
     <lastmod>2017-06-20T15:09:27+08:00</lastmod>
   </url>
@@ -172,14 +177,14 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/aws/</loc>
+    <loc>http://liyangliang.me/categories/aws/</loc>
     <lastmod>2017-05-10T17:41:54+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/aws/</loc>
-    <lastmod>2017-05-10T17:41:54+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/aws/</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -190,13 +195,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/cache/</loc>
+    <loc>http://liyangliang.me/categories/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/cache/</loc>
+    <loc>http://liyangliang.me/tags/cache/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -207,13 +212,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/celery/</loc>
+    <loc>http://liyangliang.me/categories/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/celery/</loc>
+    <loc>http://liyangliang.me/tags/celery/</loc>
     <lastmod>2016-05-17T16:42:37+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -261,14 +266,14 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/devops/</loc>
-    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
+    <loc>http://liyangliang.me/categories/devops/</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/devops/</loc>
-    <lastmod>2017-06-20T14:59:27+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/devops/</loc>
+    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -291,13 +296,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/flask/</loc>
+    <loc>http://liyangliang.me/categories/flask/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/flask/</loc>
+    <loc>http://liyangliang.me/tags/flask/</loc>
     <lastmod>2017-05-10T17:48:17+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -321,25 +326,25 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/go/</loc>
-    <lastmod>2016-03-30T23:02:51+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://liyangliang.me/categories/go/</loc>
     <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/golang/</loc>
-    <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/go/</loc>
+    <lastmod>2016-03-30T23:02:51+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/categories/golang/</loc>
+    <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/golang/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -381,13 +386,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/linux/</loc>
+    <loc>http://liyangliang.me/categories/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/linux/</loc>
+    <loc>http://liyangliang.me/tags/linux/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -399,13 +404,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/mongodb/</loc>
+    <loc>http://liyangliang.me/categories/mongodb/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/mongodb/</loc>
+    <loc>http://liyangliang.me/tags/mongodb/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -417,25 +422,25 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/mysql/</loc>
-    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://liyangliang.me/categories/mysql/</loc>
     <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/nginx/</loc>
-    <lastmod>2016-04-14T15:33:52+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/mysql/</loc>
+    <lastmod>2017-02-25T16:16:14+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/categories/nginx/</loc>
+    <lastmod>2016-04-14T15:33:52+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/nginx/</loc>
     <lastmod>2016-04-14T15:33:52+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -448,7 +453,7 @@
   
   <url>
     <loc>http://liyangliang.me/post/</loc>
-    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -459,31 +464,31 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/python/</loc>
-    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://liyangliang.me/categories/python/</loc>
     <lastmod>2017-06-20T15:09:27+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/redshift/</loc>
-    <lastmod>2017-05-10T17:36:29+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/python/</loc>
+    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/shadowsocks/</loc>
-    <lastmod>2015-05-24T22:27:49+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/redshift/</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/categories/shadowsocks/</loc>
+    <lastmod>2015-05-24T22:27:49+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/shadowsocks/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -507,6 +512,18 @@
   </url>
   
   <url>
+    <loc>http://liyangliang.me/categories/sql/</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/sql/</loc>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/tags/ssh/</loc>
     <lastmod>2015-03-15T13:31:49+08:00</lastmod>
     <priority>0</priority>
@@ -519,13 +536,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/tableau/</loc>
+    <loc>http://liyangliang.me/categories/tableau/</loc>
     <lastmod>2017-05-10T17:23:55+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/tableau/</loc>
+    <loc>http://liyangliang.me/tags/tableau/</loc>
     <lastmod>2017-05-10T17:23:55+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -542,25 +559,25 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/tools/</loc>
-    <lastmod>2015-06-09T17:30:20+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://liyangliang.me/categories/tools/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/tornado/</loc>
-    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
+    <loc>http://liyangliang.me/tags/tools/</loc>
+    <lastmod>2015-06-09T17:30:20+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/categories/tornado/</loc>
+    <lastmod>2015-11-05T16:52:12+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/tornado/</loc>
     <lastmod>2015-11-05T16:52:12+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -578,13 +595,13 @@
   </url>
   
   <url>
-    <loc>http://liyangliang.me/tags/vpn/</loc>
+    <loc>http://liyangliang.me/categories/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://liyangliang.me/categories/vpn/</loc>
+    <loc>http://liyangliang.me/tags/vpn/</loc>
     <lastmod>2015-05-24T22:27:49+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -615,7 +632,7 @@
   
   <url>
     <loc>http://liyangliang.me/</loc>
-    <lastmod>2017-06-20T15:09:27+08:00</lastmod>
+    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
     <priority>0</priority>
   </url>
   
