@@ -123,6 +123,52 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Jun 2, 2018' data-updated="true" itemprop="datePublished">Sat, Jun 2, 2018</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2018/06/centos7-firewalld#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2018/06/centos7-firewalld" itemprop="url">CentOS 7 FirewallD</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="背景故事">背景故事</h2>
+
+<p>线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。</p>
+
+<p>因为没有防火墙，其实也发生过几次安全事故：</p>
+
+<ul>
+<li>某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；</li>
+<li>某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序</li>
+<li>某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录</li>
+</ul>
+
+<p>这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 <code>0.0.0.0</code>，加上没有开启认证，很容易被拖库。</p>
+
+<h2 id="firewalld">FirewallD</h2>
+
+<p>最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 <a href="http://www.firewalld.org/">FirewallD</a>，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。</p>
+
+<p>FirewallD 有很多种 zone policy，直接使用默认的 <code>public</code>.</p>
+
+<p></p>
+		<a href="http://liyangliang.me/posts/2018/06/centos7-firewalld" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sun, Feb 4, 2018' data-updated="true" itemprop="datePublished">Sun, Feb 4, 2018</time>
 </div>
 		<div class="tags">
@@ -579,44 +625,6 @@ xvdb    202:16   0  30G  0 disk
 
 <p></p>
 		<a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/mongodb"> mongodb </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync" itemprop="url">MongoDB Replica Set 重新同步</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
-
-<pre><code>2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
-</code></pre>
-
-<p>其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：</p>
-
-<ol>
-<li>为什么会挂掉？</li>
-<li>如何修复？</li>
-</ol>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync" class="more-link">Read on →</a>
 	</div>
 </article>
 

@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://liyangliang.me/posts/2018/06/centos7-firewalld</loc>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/posts/2018/02/redshift-snippets</loc>
     <lastmod>2018-02-04T19:36:03+08:00</lastmod>
   </url>
@@ -267,7 +272,7 @@
   
   <url>
     <loc>http://liyangliang.me/categories/devops/</loc>
-    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -292,6 +297,12 @@
   <url>
     <loc>http://liyangliang.me/tags/fabric/</loc>
     <lastmod>2015-06-12T14:00:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/firewall/</loc>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -346,6 +357,12 @@
   <url>
     <loc>http://liyangliang.me/tags/golang/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/hadoop/</loc>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -453,7 +470,7 @@
   
   <url>
     <loc>http://liyangliang.me/post/</loc>
-    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -478,6 +495,12 @@
   <url>
     <loc>http://liyangliang.me/tags/redshift/</loc>
     <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/security/</loc>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -632,7 +655,7 @@
   
   <url>
     <loc>http://liyangliang.me/</loc>
-    <lastmod>2018-02-04T19:36:03+08:00</lastmod>
+    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
     <priority>0</priority>
   </url>
   
