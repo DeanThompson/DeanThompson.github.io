@@ -10,12 +10,59 @@
     <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
     
     <item>
+      <title>Python 日期和时间处理</title>
+      <link>http://liyangliang.me/posts/2018/06/python-date-time</link>
+      <pubDate>Sat, 02 Jun 2018 16:03:26 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2018/06/python-date-time</guid>
+      <description>
+
+&lt;p&gt;2012 年大四的时候写过一篇 &lt;a href=&#34;http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr&#34;&gt;Python 时间戳和日期相互转换&lt;/a&gt;，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。&lt;/p&gt;
+
+&lt;p&gt;首先再次回答「Python 时间戳和日期相互转换」的问题。&lt;/p&gt;
+
+&lt;h2 id=&#34;时间戳转日期&#34;&gt;时间戳转日期&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
+import time
+
+t = time.time()
+print(&#39;Timestamp&#39;, t)
+
+dt = datetime.datetime.fromtimestamp(t)
+print(&#39;Datetime&#39;, dt)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Timestamp 1527927420.684622
+Datetime 2018-06-02 16:17:00.684622
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;日期转时间戳&#34;&gt;日期转时间戳&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
+
+now = datetime.datetime.now()
+print(&#39;Datetime&#39;, now)
+print(&#39;Timestamp&#39;, now.timestamp())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Datetime 2018-06-02 16:18:42.170874
+Timestamp 1527927522.170874
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Python 时间戳和日期相互转换</title>
       <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</link>
       <pubDate>Sun, 21 Oct 2012 18:53:51 CST</pubDate>
       <author>Yangliang Li</author>
       <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</guid>
-      <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
+      <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
 
 &lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
 
@@ -46,7 +93,7 @@ Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [8]: import time
 
 In [9]: st = time.localtime(1350816710.8050799)
- 
+
 In [10]: time.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;, st)
 Out[10]: &#39;2012-10-21 18:51:50&#39;
 &lt;/code&gt;&lt;/pre&gt;
@@ -60,9 +107,9 @@ Out[10]: &#39;2012-10-21 18:51:50&#39;
 &lt;p&gt;把字符串形式的时间按照指定格式解析，转换为 &lt;code&gt;struct_time&lt;/code&gt;。然后传给&lt;code&gt;time.mktime()&lt;/code&gt; 完成最后的工作，整个过程是:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [12]: import time
- 
+
 In [13]: st = time.strptime(&#39;2012-10-21 18:51:50&#39;, &#39;%Y-%m-%d %H:%M:%S&#39;)
- 
+
 In [14]: time.mktime(st)
 Out[14]: 1350816710.0
 &lt;/code&gt;&lt;/pre&gt;

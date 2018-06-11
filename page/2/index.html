@@ -123,6 +123,53 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Tue, May 17, 2016' data-updated="true" itemprop="datePublished">Tue, May 17, 2016</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://liyangliang.me/categories/python"> python </a>,
+	
+
+	
+	
+		<a href="http://liyangliang.me/categories/flask"> flask </a>,
+	
+
+	
+	
+	    <a href="http://liyangliang.me/categories/celery"> celery </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent" itemprop="url">在 Flask 项目的 celery 中使用 gevent</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
+
+<h2 id="1-使用-gevent-并发模型">1. 使用 gevent 并发模型</h2>
+
+<p>如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：</p>
+
+<pre><code class="language-bash">$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
+</code></pre>
+
+<p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
+
+<p></p>
+		<a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
 </div>
 		<div class="tags">
@@ -288,9 +335,9 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
 
-<p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
+<p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近几天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
 
-<p>啰嗦了一大推，差点忘了最重要的东西，下面给出链接：</p>
+<p>啰嗦了一大堆，差点忘了最重要的东西，下面给出链接：</p>
 
 <ul>
 <li>源代码和示例：<a href="https://github.com/DeanThompson/jpush-api-go-client">https://github.com/DeanThompson/jpush-api-go-client</a></li>
@@ -493,53 +540,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p></p>
 		<a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide" itemprop="url">Python 编码规范</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
-
-<p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
-
-<ul>
-<li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
-<li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
-<li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
-<li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
-</ul>
-
-<p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
-
-<ul>
-<li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
-<li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
-<li>pyflakes, pylint 等工具及各种编辑器的插件</li>
-</ul>
-
-<p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide" class="more-link">Read on →</a>
 	</div>
 </article>
 

@@ -7,7 +7,54 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 02 Jun 2018 15:11:15 CST</updated>
+    <updated>Sat, 02 Jun 2018 16:03:26 CST</updated>
+    
+    <item>
+      <title>Python 日期和时间处理</title>
+      <link>http://liyangliang.me/posts/2018/06/python-date-time</link>
+      <pubDate>Sat, 02 Jun 2018 16:03:26 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2018/06/python-date-time</guid>
+      <description>
+
+&lt;p&gt;2012 年大四的时候写过一篇 &lt;a href=&#34;http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr&#34;&gt;Python 时间戳和日期相互转换&lt;/a&gt;，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。&lt;/p&gt;
+
+&lt;p&gt;首先再次回答「Python 时间戳和日期相互转换」的问题。&lt;/p&gt;
+
+&lt;h2 id=&#34;时间戳转日期&#34;&gt;时间戳转日期&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
+import time
+
+t = time.time()
+print(&#39;Timestamp&#39;, t)
+
+dt = datetime.datetime.fromtimestamp(t)
+print(&#39;Datetime&#39;, dt)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Timestamp 1527927420.684622
+Datetime 2018-06-02 16:17:00.684622
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;日期转时间戳&#34;&gt;日期转时间戳&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
+
+now = datetime.datetime.now()
+print(&#39;Datetime&#39;, now)
+print(&#39;Timestamp&#39;, now.timestamp())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Datetime 2018-06-02 16:18:42.170874
+Timestamp 1527927522.170874
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>CentOS 7 FirewallD</title>
@@ -1398,28 +1445,6 @@ doc.Find(&amp;quot;body&amp;quot;).AppendSelection(sel)
 &lt;p&gt;前几天在 V2EX 发了一个 &lt;a href=&#34;http://v2ex.com/t/266372&#34;&gt;推广的帖子&lt;/a&gt;，没想到反响还不错，收到不少支持和鼓励，GitHub 也在一两天内收获了 50 来个 star （个人最高）. 其实在这之前，还在 StuduGolang 发了 &lt;a href=&#34;http://studygolang.com/topics/1528&#34;&gt;一个主题&lt;/a&gt;，然而并没有人回复，带到 GitHub 的流量也很少，好像只有 1 个 star. golangtc 也发了，流量就更少了，可以忽略不计。&lt;/p&gt;
 
 &lt;p&gt;后续有时间简单分析一下源码，分享一下开发过程和心得。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>极光推送 Go SDK</title>
-      <link>http://liyangliang.me/posts/2015/11/jpush-api-go-client</link>
-      <pubDate>Sat, 28 Nov 2015 22:32:35 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2015/11/jpush-api-go-client</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://www.jpush.cn/&#34;&gt;极光推送&lt;/a&gt; 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 &lt;a href=&#34;http://docs.jpush.io/server/server_overview/&#34;&gt;官方文档&lt;/a&gt;。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。&lt;/p&gt;
-
-&lt;p&gt;实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近今天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。&lt;/p&gt;
-
-&lt;p&gt;啰嗦了一大推，差点忘了最重要的东西，下面给出链接：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;源代码和示例：&lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client&#34;&gt;https://github.com/DeanThompson/jpush-api-go-client&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;官方文档：&lt;a href=&#34;http://docs.jpush.io/server/rest_api_v3_push/&#34;&gt;http://docs.jpush.io/server/rest_api_v3_push/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;欢迎使用，并 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/issues&#34;&gt;反馈 issues&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/pulls&#34;&gt;创建 pull request&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>
