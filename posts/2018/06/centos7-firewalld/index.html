@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2018/06/centos7-firewalld">
+	<link rel="canonical" href="http://liyangliang.me/posts/2018/06/centos7-firewalld/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -133,7 +133,7 @@
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2018/06/centos7-firewalld#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2018/06/centos7-firewalld/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -157,8 +157,6 @@
 <p>最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 <a href="http://www.firewalld.org/">FirewallD</a>，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。</p>
 
 <p>FirewallD 有很多种 zone policy，直接使用默认的 <code>public</code>.</p>
-
-<p></p>
 
 <p>首先内网之间必须能相互访问，否则各种集群的节点之间无法通信，会导致集群无法使用。我们有两套内网环境，一个是机房服务器之间，IP 网段是 <code>172.16.24.0/24</code>；另一个是本地和服务器之间，通过 openvpn 连接，有两个 IP 段 <code>10.8.0.0/24</code> 和 <code>10.8.1.0/24</code>. 参考 <a href="http://xuxping.com/2017/04/04/hadoop%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/">这篇文章</a>进行配置：</p>
 
@@ -357,7 +355,7 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

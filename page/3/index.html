@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.18.1" />
+	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
@@ -123,6 +123,39 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Oct 31, 2015' data-updated="true" itemprop="datePublished">Sat, Oct 31, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://liyangliang.me/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://liyangliang.me/categories/flask"> flask </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
+
+<p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
+		<a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
 </div>
 		<div class="tags">
@@ -136,10 +169,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide" itemprop="url">Python 编码规范</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/" itemprop="url">Python 编码规范</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
 
@@ -161,9 +194,7 @@
 </ul>
 
 <p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -188,10 +219,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric" itemprop="url">用 Fabric 实现自动化部署</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" itemprop="url">用 Fabric 实现自动化部署</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？</p>
 
@@ -218,9 +249,7 @@
 <p>很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。</p>
 
 <p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -250,10 +279,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/using-supervisor#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/using-supervisor/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/using-supervisor" itemprop="url">使用 supervisor 管理进程</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/using-supervisor/" itemprop="url">使用 supervisor 管理进程</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
 
@@ -265,9 +294,7 @@
 </code></pre>
 
 <p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/06/using-supervisor" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/06/using-supervisor/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -292,10 +319,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="缘起">缘起</h2>
 
@@ -312,9 +339,7 @@
 </ol>
 
 <p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -334,10 +359,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection" itemprop="url">重用 SSH 连接</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" itemprop="url">重用 SSH 连接</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
 
@@ -350,9 +375,7 @@
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -372,10 +395,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang" itemprop="url">Golang 并发安全的 map 实现</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" itemprop="url">Golang 并发安全的 map 实现</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
 
@@ -397,9 +420,7 @@
 <li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -419,10 +440,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang" itemprop="url">Golang 的 defer 语句</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang/" itemprop="url">Golang 的 defer 语句</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 
@@ -460,9 +481,7 @@
     return 1
 }
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2014/12/defer-in-golang" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2014/12/defer-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -482,10 +501,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
 
@@ -527,9 +546,7 @@ func main() {
 <pre><code>fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -549,10 +566,10 @@ strconv.FormatInt taken: 1.057318ms
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang" itemprop="url">Golang 排序</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang/" itemprop="url">Golang 排序</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="interface-接口">Interface 接口</h2>
 
@@ -595,49 +612,7 @@ func Sort(data Interface) {
     quickSort(data, 0, n, maxDepth)
 }
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2014/06/sort-in-golang" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, Mar 2, 2014' data-updated="true" itemprop="datePublished">Sun, Mar 2, 2014</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/mysql"> mysql </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
-
-<h2 id="1-innodb-flush-log-at-trx-commit">1. innodb_flush_log_at_trx_commit</h2>
-
-<p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
-
-<ol>
-<li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
-<li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
-<li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
-</ol>
-
-<p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2014/06/sort-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -654,7 +629,7 @@ func Sort(data Interface) {
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

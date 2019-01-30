@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Multiprocessing on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/multiprocessing/index.xml</link>
+    <title>Multiprocessing on 李林克斯</title>
+    <link>http://liyangliang.me/tags/multiprocessing/</link>
+    <description>Recent content in Multiprocessing on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Sat, 25 Feb 2017 16:16:14 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/multiprocessing/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Python 多进程导入数据到 MySQL</title>
-      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</link>
-      <pubDate>Sat, 25 Feb 2017 16:16:14 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing</guid>
+      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
+      <pubDate>Sat, 25 Feb 2017 16:16:14 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
       <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
 分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
 会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
@@ -29,162 +33,7 @@
 &lt;li&gt;用 &lt;a href=&#34;http://click.pocoo.org/5/&#34;&gt;click&lt;/a&gt; 封装命令行工具&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;具体的代码实现如下：&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import codecs
-import csv
-import logging
-import multiprocessing
-import os
-import warnings
-
-import click
-import MySQLdb
-import sqlalchemy
-
-warnings.filterwarnings(&#39;ignore&#39;, category=MySQLdb.Warning)
-
-# 批量插入的记录数量
-BATCH = 5000
-
-DB_URI = &#39;mysql://root@localhost:3306/example?charset=utf8&#39;
-
-engine = sqlalchemy.create_engine(DB_URI)
-
-
-def get_table_cols(table):
-    sql = &#39;SELECT * FROM `{table}` LIMIT 0&#39;.format(table=table)
-    res = engine.execute(sql)
-    return res.keys()
-
-
-def insert_many(table, cols, rows, cursor):
-    sql = &#39;INSERT INTO `{table}` ({cols}) VALUES ({marks})&#39;.format(
-            table=table,
-            cols=&#39;, &#39;.join(cols),
-            marks=&#39;, &#39;.join([&#39;%s&#39;] * len(cols)))
-    cursor.execute(sql, *rows)
-    logging.info(&#39;process %s inserted %s rows into table %s&#39;, os.getpid(), len(rows), table)
-
-
-def insert_worker(table, cols, queue):
-    rows = []
-    # 每个子进程创建自己的 engine 对象
-    cursor = sqlalchemy.create_engine(DB_URI)
-    while True:
-        row = queue.get()
-        if row is None:
-            if rows:
-                insert_many(table, cols, rows, cursor)
-            break
-
-        rows.append(row)
-        if len(rows) == BATCH:
-            insert_many(table, cols, rows, cursor)
-            rows = []
-
-
-def insert_parallel(table, reader, w=10):
-    cols = get_table_cols(table)
-
-    # 数据队列，主进程读文件并往里写数据，worker 进程从队列读数据
-    # 注意一下控制队列的大小，避免消费太慢导致堆积太多数据，占用过多内存
-    queue = multiprocessing.Queue(maxsize=w*BATCH*2)
-    workers = []
-    for i in range(w):
-        p = multiprocessing.Process(target=insert_worker, args=(table, cols, queue))
-        p.start()
-        workers.append(p)
-        logging.info(&#39;starting # %s worker process, pid: %s...&#39;, i + 1, p.pid)
-
-    dirty_data_file = &#39;./{}_dirty_rows.csv&#39;.format(table)
-    xf = open(dirty_data_file, &#39;w&#39;)
-    writer = csv.writer(xf, delimiter=reader.dialect.delimiter)
-
-    for line in reader:
-        # 记录并跳过脏数据: 键值数量不一致
-        if len(line) != len(cols):
-            writer.writerow(line)
-            continue
-
-        # 把 None 值替换为 &#39;NULL&#39;
-        clean_line = [None if x == &#39;NULL&#39; else x for x in line]
-
-        # 往队列里写数据
-        queue.put(tuple(clean_line))
-        if reader.line_num % 500000 == 0:
-            logging.info(&#39;put %s tasks into queue.&#39;, reader.line_num)
-
-    xf.close()
-
-    # 给每个 worker 发送任务结束的信号
-    logging.info(&#39;send close signal to worker processes&#39;)
-    for i in range(w):
-        queue.put(None)
-
-    for p in workers:
-        p.join()
-
-
-def convert_file_to_utf8(f, rv_file=None):
-    if not rv_file:
-        name, ext = os.path.splitext(f)
-        if isinstance(name, unicode):
-            name = name.encode(&#39;utf8&#39;)
-        rv_file = &#39;{}_utf8{}&#39;.format(name, ext)
-    logging.info(&#39;start to process file %s&#39;, f)
-    with open(f) as infd:
-        with open(rv_file, &#39;w&#39;) as outfd:
-            lines = []
-            loop = 0
-            chunck = 200000
-            first_line = infd.readline().strip(codecs.BOM_UTF8).strip() + &#39;\n&#39;
-            lines.append(first_line)
-            for line in infd:
-                clean_line = line.decode(&#39;gb18030&#39;).encode(&#39;utf8&#39;)
-                clean_line = clean_line.rstrip() + &#39;\n&#39;
-                lines.append(clean_line)
-                if len(lines) == chunck:
-                    outfd.writelines(lines)
-                    lines = []
-                    loop += 1
-                    logging.info(&#39;processed %s lines.&#39;, loop * chunck)
-
-            outfd.writelines(lines)
-            logging.info(&#39;processed %s lines.&#39;, loop * chunck + len(lines))
-
-
-@click.group()
-def cli():
-    logging.basicConfig(level=logging.INFO,
-                        format=&#39;%(asctime)s - %(levelname)s - %(name)s - %(message)s&#39;)
-
-
-@cli.command(&#39;gbk_to_utf8&#39;)
-@click.argument(&#39;f&#39;)
-def convert_gbk_to_utf8(f):
-    convert_file_to_utf8(f)
-
-
-@cli.command(&#39;load&#39;)
-@click.option(&#39;-t&#39;, &#39;--table&#39;, required=True, help=&#39;表名&#39;)
-@click.option(&#39;-i&#39;, &#39;--filename&#39;, required=True, help=&#39;输入文件&#39;)
-@click.option(&#39;-w&#39;, &#39;--workers&#39;, default=10, help=&#39;worker 数量，默认 10&#39;)
-def load_fac_day_pro_nos_sal_table(table, filename, workers):
-    with open(filename) as fd:
-        fd.readline()   # skip header
-        reader = csv.reader(fd)
-        insert_parallel(table, reader, w=workers)
-
-
-if __name__ == &#39;__main__&#39;:
-    cli()
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;p&gt;具体的代码实现如下：&lt;/p&gt;</description>
     </item>
     
   </channel>

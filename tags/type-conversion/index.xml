@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Type Conversion on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/type-conversion/index.xml</link>
+    <title>Type Conversion on 李林克斯</title>
+    <link>http://liyangliang.me/tags/type-conversion/</link>
+    <description>Recent content in Type Conversion on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Wed, 11 Jun 2014 15:50:41 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/type-conversion/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</link>
-      <pubDate>Wed, 11 Jun 2014 15:50:41 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion</guid>
+      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
+      <pubDate>Wed, 11 Jun 2014 15:50:41 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
       <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
 
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
@@ -54,69 +58,7 @@ func main() {
 
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;多次运行结果都类似，结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 的 3 倍。&lt;/p&gt;
-
-&lt;p&gt;同理，对于 &lt;code&gt;float64&lt;/code&gt; 类型，推荐使用 &lt;code&gt;strconv.FormatFloat&lt;/code&gt;。测试代码和上面类似，得到的结论是：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;strconv.FormatFloat&lt;/code&gt; 的 1.1 倍。效果没有整型明显，但依然更高效。&lt;/p&gt;
-
-&lt;h2 id=&#34;hexadecimal-to-string&#34;&gt;hexadecimal to string&lt;/h2&gt;
-
-&lt;p&gt;十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 &lt;code&gt;encoding/hex&lt;/code&gt; 包提供了十六进制数的编解码函数。&lt;/p&gt;
-
-&lt;p&gt;下面比较一下 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 和 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的时间开销：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;crypto/md5&amp;quot;
-    &amp;quot;encoding/hex&amp;quot;
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;io&amp;quot;
-    &amp;quot;time&amp;quot;
-)
-
-const LOOP = 10000
-
-func makeMd5(data string) []byte {
-    h := md5.New()
-    io.WriteString(h, data)
-    return h.Sum(nil)
-}
-
-func main() {
-    s := &amp;quot;123456&amp;quot;
-    hexBytes := makeMd5(s)
-    s1 := fmt.Sprintf(&amp;quot;%x&amp;quot;, hexBytes)
-    s2 := hex.EncodeToString(hexBytes)
-    fmt.Println(&amp;quot;result of fmt.Sprintf == hex.EncodeToString:&amp;quot;, s1 == s2) // 确保结果一致
-
-    start := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%x&amp;quot;, hexBytes)
-    }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(start))
-
-    start = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        hex.EncodeToString(hexBytes)
-    }
-    fmt.Printf(&amp;quot;hex.EncodeToString taken: %v\n&amp;quot;, time.Since(start))
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个程序某一次的运行结果是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;result of fmt.Sprintf == hex.EncodeToString: true
-fmt.Sprintf taken: 10.285488ms
-hex.EncodeToString taken: 2.080457ms
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;多次运行结果都类似，可以得到一个结论：&lt;code&gt;fmt.Sprintf&lt;/code&gt; 所需要的时间大约是 &lt;code&gt;hex.EncodeToString&lt;/code&gt; 的 5 倍。&lt;/p&gt;
-
-&lt;p&gt;这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;。&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

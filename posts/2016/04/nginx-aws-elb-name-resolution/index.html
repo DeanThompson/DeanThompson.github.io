@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution">
+	<link rel="canonical" href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -133,7 +133,7 @@
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -158,8 +158,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
     proxy_pass http://name.of.elb.aws.com;
 }
 </code></pre>
-
-<p></p>
 
 <p>文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。</p>
 
@@ -232,7 +230,7 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

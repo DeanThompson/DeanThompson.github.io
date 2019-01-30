@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Life on 李林克斯</title>
+    <link>http://liyangliang.me/categories/life/</link>
+    <description>Recent content in Life on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Wed, 30 Jan 2019 23:24:51 +0800</lastBuildDate>
+    
+	<atom:link href="http://liyangliang.me/categories/life/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>放假</title>
+      <link>http://liyangliang.me/posts/2019/01/2018-holiday/</link>
+      <pubDate>Wed, 30 Jan 2019 23:24:51 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/01/2018-holiday/</guid>
+      <description>原本准备 6 点下班，离开公司已经超过 8 点了；约好的篮球活动没有去成。
+下班路上吃了个羊肉粉，回到家里胃有点不舒服。
+躺在沙发上看了一下手机，阳台上有风吹进，慢慢有些凉意。
+放下手机起身收拾行李，假期已经开始，我并没有因此感到兴奋.</description>
+    </item>
+    
+  </channel>
+</rss>

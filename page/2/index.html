@@ -3,10 +3,10 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.18.1" />
+	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -123,6 +123,51 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Feb 25, 2017' data-updated="true" itemprop="datePublished">Sat, Feb 25, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://liyangliang.me/categories/python"> python </a>,
+	
+
+	
+	
+	    <a href="http://liyangliang.me/categories/mysql"> mysql </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/" itemprop="url">Python 多进程导入数据到 MySQL</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
+分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
+会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：</p>
+
+<ul>
+<li>批量插入而不是逐条插入</li>
+<li>为了加快插入速度，先不要建索引</li>
+<li>生产者和消费者模型，主进程读文件，多个 worker 进程执行插入</li>
+<li>注意控制 worker 的数量，避免对 MySQL 造成太大的压力</li>
+<li>注意处理脏数据导致的异常</li>
+<li>原始数据是 GBK 编码，所以还要注意转换成 UTF-8</li>
+<li>用 <a href="http://click.pocoo.org/5/">click</a> 封装命令行工具</li>
+</ul>
+
+<p>具体的代码实现如下：</p>
+		<a href="http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Tue, May 17, 2016' data-updated="true" itemprop="datePublished">Tue, May 17, 2016</time>
 </div>
 		<div class="tags">
@@ -146,10 +191,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent" itemprop="url">在 Flask 项目的 celery 中使用 gevent</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/" itemprop="url">在 Flask 项目的 celery 中使用 gevent</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
 
@@ -161,9 +206,7 @@
 </code></pre>
 
 <p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -183,10 +226,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync" itemprop="url">MongoDB Replica Set 重新同步</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/" itemprop="url">MongoDB Replica Set 重新同步</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
 
@@ -199,9 +242,7 @@
 <li>为什么会挂掉？</li>
 <li>如何修复？</li>
 </ol>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -221,10 +262,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution" itemprop="url">Nginx AWS ELB 域名解析</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/" itemprop="url">Nginx AWS ELB 域名解析</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：</p>
 
@@ -246,9 +287,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
     proxy_pass http://name.of.elb.aws.com;
 }
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -268,19 +307,17 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery" itemprop="url">zhihu-go 源码解析：用 goquery 解析 HTML</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" itemprop="url">zhihu-go 源码解析：用 goquery 解析 HTML</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2016/03/zhihu-go/">上一篇博客</a> 简单介绍了 <a href="https://github.com/DeanThompson/zhihu-go">zhihu-go</a> 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。</p>
 
 <p>因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 <a href="https://github.com/PuerkitoBio/goquery">goquery</a>.</p>
 
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -300,15 +337,13 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go" itemprop="url">zhihu-go: 知乎非官方 API库 with Go</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/" itemprop="url">zhihu-go: 知乎非官方 API库 with Go</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 <a href="https://github.com/egrcc/zhihu-python">zhihu-python</a>. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2016/03/zhihu-go" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2016/03/zhihu-go/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -328,10 +363,10 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client" itemprop="url">极光推送 Go SDK</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client/" itemprop="url">极光推送 Go SDK</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
 
@@ -345,9 +380,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 </ul>
 
 <p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client" class="more-link">Read on →</a>
+		
 	</div>
 </article>
 
@@ -377,10 +410,10 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask" itemprop="url">在 Flask 项目中使用 Celery</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/" itemprop="url">在 Flask 项目中使用 Celery</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
 
@@ -390,9 +423,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <li><a href="http://blog.miguelgrinberg.com/post/using-celery-with-flask">Using Celery With Flask</a>: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.</li>
 <li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
 </ol>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -417,10 +448,10 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery" itemprop="url">Celery 使用简介</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" itemprop="url">Celery 使用简介</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="introduction">Introduction</h2>
 
@@ -447,9 +478,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
 </blockquote>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -484,10 +513,10 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask" itemprop="url">Tornado 和 Flask 应用缓存响应结果</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" itemprop="url">Tornado 和 Flask 应用缓存响应结果</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。</p>
 
@@ -502,44 +531,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 </ul>
 
 <p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Oct 31, 2015' data-updated="true" itemprop="datePublished">Sat, Oct 31, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/flask"> flask </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
-
-<p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -556,7 +548,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

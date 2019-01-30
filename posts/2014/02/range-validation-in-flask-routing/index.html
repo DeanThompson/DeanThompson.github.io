@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Flask 路由做范围限制 - 李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing">
+	<link rel="canonical" href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -133,7 +133,7 @@
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -156,8 +156,6 @@ def foo_id(id):
 </code></pre>
 
 <p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
-
-<p></p>
 
 <h1 id="2-how">2. How</h1>
 
@@ -235,7 +233,7 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

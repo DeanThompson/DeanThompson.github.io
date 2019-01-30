@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Sql on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/sql/index.xml</link>
+    <title>Sql on 李林克斯</title>
+    <link>http://liyangliang.me/tags/sql/</link>
+    <description>Recent content in Sql on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Sun, 04 Feb 2018 19:36:03 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/sql/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Redshift Snippets</title>
-      <link>http://liyangliang.me/posts/2018/02/redshift-snippets</link>
-      <pubDate>Sun, 04 Feb 2018 19:36:03 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets</guid>
+      <link>http://liyangliang.me/posts/2018/02/redshift-snippets/</link>
+      <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;查询所有 session&lt;/li&gt;
 &lt;/ul&gt;
@@ -44,93 +48,6 @@
        stv_recents.query, stv_recents.pid
 FROM stv_recents
 WHERE stv_recents.status = &#39;Running&#39;::bpchar;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;创建数据库时报错：&lt;code&gt;source database &amp;quot;template1&amp;quot; is being accessed by other users&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;原因：&lt;code&gt;template1&lt;/code&gt; 数据库被其他 session 占用，锁住了。&lt;/p&gt;
-
-&lt;p&gt;解决方法：先从 &lt;code&gt;stv_sessions&lt;/code&gt; 表查找 &lt;code&gt;template1&lt;/code&gt; 相关的 session，然后用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 杀掉。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;备份数据到 S3&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;UNLOAD (&#39;SELECT * FROM public.category&#39;) TO &#39;s3://redshift-backup/unload/public/category/category_&#39;
-access_key_id &#39;&amp;lt;access_key_id&amp;gt;&#39; secret_access_key &#39;&amp;lt;secret_access_key&amp;gt;&#39;
-DELIMITER &#39;|&#39; ADDQUOTES ESCAPE ALLOWOVERWRITE;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;从 S3 加载数据&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;COPY public.category FROM &#39;s3://redshift-backup/unload/public/category&#39;
-CREDENTIALS &#39;aws_access_key_id=&amp;lt;access_key_id&amp;gt;;aws_secret_access_key=&amp;lt;secret_access_key&amp;gt;&#39;
-DELIMITER &#39;|&#39; REMOVEQUOTES ESCAPE REGION &#39;cn-north-1&#39;;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;定义 Python UDF&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;文档: &lt;a href=&#34;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&#34;&gt;&lt;a href=&#34;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&#34;&gt;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;CREATE FUNCTION f_hash(value varchar) returns varchar immutable as $$
-    def sha256_hash(value):
-        import hashlib, base64
-        return base64.urlsafe_b64encode(hashlib.sha256(value or &#39;&#39;).digest())
-    return sha256_hash(value)
-$$ language plpythonu;
-
-SELECT address, mobile_no, f_hash(address), f_hash(mobile_no)
-FROM leqi_orders LIMIT 10;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;查看表所占磁盘等信息&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT BTRIM(pgdb.datname::character varying::text) AS &amp;quot;database&amp;quot;,
-       BTRIM(a.name::character varying::text) AS &amp;quot;table&amp;quot;,
-       (b.mbytes::numeric::numeric(18,0) / part.total::numeric::numeric(18,0) * 100::numeric::numeric(18,0))::numeric(5,2) AS pct_of_total,
-       a.&amp;quot;rows&amp;quot;,
-       b.mbytes,
-       b.unsorted_mbytes
-FROM stv_tbl_perm a
-  JOIN pg_database pgdb ON pgdb.oid = a.db_id::oid
-  JOIN (
-    SELECT stv_blocklist.tbl,
-           SUM(
-             CASE
-               WHEN stv_blocklist.unsorted = 1 OR stv_blocklist.unsorted IS NULL AND 1 IS NULL THEN 1
-               ELSE 0
-             END
-           ) AS unsorted_mbytes,
-           COUNT(*) AS mbytes
-    FROM stv_blocklist
-    GROUP BY stv_blocklist.tbl
-  ) b ON a.id = b.tbl
-  JOIN (
-    SELECT SUM(stv_partitions.capacity) AS total
-    FROM stv_partitions
-    WHERE stv_partitions.part_begin = 0
-  ) part ON 1 = 1
-WHERE a.slice = 0
-ORDER BY b.mbytes DESC, a.db_id, a.name;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;查询结果样例：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;database  table pct_of_total  rows  mbytes  unsorted_mbytes
-roma	mda_price_idx	0	50005	10	10
-roma	mda_vendor	0	4	10	10
-roma	mda_vendor	0	8	10	7
-roma	sku_bodytype	0	9	10	7
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     

@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.18.1" />
+	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
@@ -123,6 +123,44 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 2, 2014' data-updated="true" itemprop="datePublished">Sun, Mar 2, 2014</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/mysql"> mysql </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
+
+<h2 id="1-innodb-flush-log-at-trx-commit">1. innodb_flush_log_at_trx_commit</h2>
+
+<p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
+
+<ol>
+<li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
+<li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
+<li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
+</ol>
+
+<p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
+		<a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Wed, Feb 26, 2014' data-updated="true" itemprop="datePublished">Wed, Feb 26, 2014</time>
 </div>
 		<div class="tags">
@@ -136,10 +174,10 @@
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing" itemprop="url">Flask 路由做范围限制</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" itemprop="url">Flask 路由做范围限制</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
 
@@ -159,9 +197,7 @@ def foo_id(id):
 </code></pre>
 
 <p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -181,10 +217,10 @@ def foo_id(id):
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number" itemprop="url">less 命令支持语法高亮和行号</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" itemprop="url">less 命令支持语法高亮和行号</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>首先来一句装X的话：</p>
 
@@ -214,9 +250,7 @@ export LESS=&quot; -R &quot;
 </code></pre>
 
 <p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -236,10 +270,10 @@ export LESS=&quot; -R &quot;
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="note">Note</h2>
 
@@ -310,9 +344,7 @@ except NameError, e:
     print e
     #outputs : &quot;name 'whisper' is not defined&quot;*
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2013/03/understand-python-decorators" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -332,17 +364,15 @@ except NameError, e:
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
 
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -362,10 +392,10 @@ except NameError, e:
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice" itemprop="url">Python字典切片</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" itemprop="url">Python字典切片</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
 
@@ -378,9 +408,7 @@ except NameError, e:
         dict_slice[k] = adict[k]
     return dict_slice
 </code></pre>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2012/12/python-dict-slice" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -400,10 +428,10 @@ except NameError, e:
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr" itemprop="url">Python 时间戳和日期相互转换</a></h1>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" itemprop="url">Python 时间戳和日期相互转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
 
@@ -412,9 +440,7 @@ except NameError, e:
 <blockquote>
 <p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
 </blockquote>
-
-<p></p>
-		<a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr" class="more-link">Read on →</a>
+		<a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -429,7 +455,7 @@ except NameError, e:
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

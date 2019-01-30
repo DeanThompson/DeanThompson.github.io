@@ -1,125 +1,44 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Time on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/time/index.xml</link>
+    <title>Time on 李林克斯</title>
+    <link>http://liyangliang.me/tags/time/</link>
+    <description>Recent content in Time on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Sat, 02 Jun 2018 16:03:26 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/time/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Python 日期和时间处理</title>
-      <link>http://liyangliang.me/posts/2018/06/python-date-time</link>
-      <pubDate>Sat, 02 Jun 2018 16:03:26 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2018/06/python-date-time</guid>
-      <description>
-
-&lt;p&gt;2012 年大四的时候写过一篇 &lt;a href=&#34;http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr&#34;&gt;Python 时间戳和日期相互转换&lt;/a&gt;，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。&lt;/p&gt;
-
-&lt;p&gt;首先再次回答「Python 时间戳和日期相互转换」的问题。&lt;/p&gt;
-
-&lt;h2 id=&#34;时间戳转日期&#34;&gt;时间戳转日期&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
-import time
-
-t = time.time()
-print(&#39;Timestamp&#39;, t)
-
-dt = datetime.datetime.fromtimestamp(t)
-print(&#39;Datetime&#39;, dt)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;输出：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Timestamp 1527927420.684622
-Datetime 2018-06-02 16:17:00.684622
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;日期转时间戳&#34;&gt;日期转时间戳&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
-
-now = datetime.datetime.now()
-print(&#39;Datetime&#39;, now)
-print(&#39;Timestamp&#39;, now.timestamp())
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;输出：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Datetime 2018-06-02 16:18:42.170874
-Timestamp 1527927522.170874
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <link>http://liyangliang.me/posts/2018/06/python-date-time/</link>
+      <pubDate>Sat, 02 Jun 2018 16:03:26 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2018/06/python-date-time/</guid>
+      <description> 2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
+首先再次回答「Python 时间戳和日期相互转换」的问题。
+时间戳转日期 import datetime import time t = time.time() print(&#39;Timestamp&#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&#39;Datetime&#39;, dt)  输出：
+Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622  日期转时间戳 import datetime now = datetime.datetime.now() print(&#39;Datetime&#39;, now) print(&#39;Timestamp&#39;, now.timestamp())  输出：
+Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874  </description>
     </item>
     
     <item>
       <title>Python 时间戳和日期相互转换</title>
-      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</link>
-      <pubDate>Sun, 21 Oct 2012 18:53:51 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr</guid>
+      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</link>
+      <pubDate>Sun, 21 Oct 2012 18:53:51 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</guid>
       <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
 
 &lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93&#34;&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;在Python里，时间戳可以通过 &lt;code&gt;time&lt;/code&gt; 模块里的 &lt;code&gt;time()&lt;/code&gt; 方法获得，比如:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [1]: import time
-
-In [2]: time.time()
-Out[2]: 1350816710.8050799
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 &lt;code&gt;time.strftime()&lt;/code&gt; 函数来达到这个目的。根据 &lt;code&gt;strftime()&lt;/code&gt; 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 &lt;code&gt;time.localtime()&lt;/code&gt; 的返回值。而那个9元组其实是 &lt;code&gt;struct_time&lt;/code&gt;，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [5]: import time
-
-In [6]: time.localtime()
-Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min=4, tm_sec=25, tm_wday=6, tm_yday=295, tm_isdst=0)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [8]: import time
-
-In [9]: st = time.localtime(1350816710.8050799)
-
-In [10]: time.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;, st)
-Out[10]: &#39;2012-10-21 18:51:50&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;先用 &lt;code&gt;localtime()&lt;/code&gt; 把时间戳转换为 &lt;code&gt;struct_time&lt;/code&gt;， 然后传给 &lt;code&gt;strftime&lt;/code&gt; 转换为指定格式的字符串。那么反过来呢？
-同样需要先转换为 &lt;code&gt;struct_time&lt;/code&gt;，这个工作由 &lt;code&gt;time.strptime()&lt;/code&gt; 函数完成。&lt;code&gt;strptime&lt;/code&gt; 中的 &lt;code&gt;p&lt;/code&gt; 应该是 parse 的意思，原型是:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;strptime(string, format) -&amp;gt; struct_time
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;把字符串形式的时间按照指定格式解析，转换为 &lt;code&gt;struct_time&lt;/code&gt;。然后传给&lt;code&gt;time.mktime()&lt;/code&gt; 完成最后的工作，整个过程是:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;In [12]: import time
-
-In [13]: st = time.strptime(&#39;2012-10-21 18:51:50&#39;, &#39;%Y-%m-%d %H:%M:%S&#39;)
-
-In [14]: time.mktime(st)
-Out[14]: 1350816710.0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;最后，有两篇参考文章：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Python中时间戳与时间字符串互相转化: &lt;a href=&#34;http://www.coder4.com/archives/2239&#34;&gt;http://www.coder4.com/archives/2239&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Python中time模块详解（很好）:&lt;a href=&#34;http://qinxuye.me/article/details-about-time-module-in-python/&#34;&gt;http://qinxuye.me/article/details-about-time-module-in-python/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;/blockquote&gt;</description>
     </item>
     
   </channel>

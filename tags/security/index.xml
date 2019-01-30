@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Security on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/security/index.xml</link>
+    <title>Security on 李林克斯</title>
+    <link>http://liyangliang.me/tags/security/</link>
+    <description>Recent content in Security on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Sat, 02 Jun 2018 15:11:15 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/security/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>CentOS 7 FirewallD</title>
-      <link>http://liyangliang.me/posts/2018/06/centos7-firewalld</link>
-      <pubDate>Sat, 02 Jun 2018 15:11:15 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2018/06/centos7-firewalld</guid>
+      <link>http://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
+      <pubDate>Sat, 02 Jun 2018 15:11:15 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
       <description>&lt;h2 id=&#34;背景故事&#34;&gt;背景故事&lt;/h2&gt;
 
 &lt;p&gt;线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。&lt;/p&gt;
@@ -33,167 +37,7 @@
 
 &lt;p&gt;最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 &lt;a href=&#34;http://www.firewalld.org/&#34;&gt;FirewallD&lt;/a&gt;，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。&lt;/p&gt;
 
-&lt;p&gt;FirewallD 有很多种 zone policy，直接使用默认的 &lt;code&gt;public&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;首先内网之间必须能相互访问，否则各种集群的节点之间无法通信，会导致集群无法使用。我们有两套内网环境，一个是机房服务器之间，IP 网段是 &lt;code&gt;172.16.24.0/24&lt;/code&gt;；另一个是本地和服务器之间，通过 openvpn 连接，有两个 IP 段 &lt;code&gt;10.8.0.0/24&lt;/code&gt; 和 &lt;code&gt;10.8.1.0/24&lt;/code&gt;. 参考 &lt;a href=&#34;http://xuxping.com/2017/04/04/hadoop%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/&#34;&gt;这篇文章&lt;/a&gt;进行配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo firewall-cmd --permanent --add-rich-rule=&#39;rule family=ipv4 source address=172.16.24.0/24 accept&#39;
-sudo firewall-cmd --permanent --add-rich-rule=&#39;rule family=ipv4 source address=10.8.0.0/24 accept&#39;
-sudo firewall-cmd --permanent --add-rich-rule=&#39;rule family=ipv4 source address=10.8.1.0/24 accept&#39;
-sudo firewall-cmd  --reload
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其次常用服务、端口也需要开启：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=https
-sudo firewall-cmd --permanent --add-service=openvpn
-
-sudo firewall-cmd --permanent --add-port=5000
-sudo firewall-cmd --permanent --add-port=8080
-sudo firewall-cmd --permanent --add-port=8088
-sudo firewall-cmd --reload
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;配置完成之后可以查看 &lt;code&gt;/etc/firewalld/zones/public.xml&lt;/code&gt; 文件进一步确认开启的 service、source 和 port. 挑个端口用 &lt;code&gt;telnet&lt;/code&gt; 测试：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;&amp;gt; telnet &amp;lt;public-ip&amp;gt; 21050
-
-Trying &amp;lt;public-ip&amp;gt;...
-telnet: connect to address &amp;lt;public-ip&amp;gt;: Connection refused
-telnet: Unable to connect to remote host
-
-&amp;gt; telnet 172.16.24.123 21050
-
-Trying 172.16.24.123...
-Connected to 172.16.24.123.
-Escape character is &#39;^]&#39;.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;firewalld-docker&#34;&gt;FirewallD &amp;amp; Docker&lt;/h2&gt;
-
-&lt;p&gt;如果先运行 &lt;code&gt;dockerd&lt;/code&gt; 再运行 &lt;code&gt;firewalld&lt;/code&gt;, 会导致 Docker 无法正常工作，用 Docker 部署的程序无法访问了。这个问题在网上有很多讨论，Docker 的 GitHub 主页就有&lt;a href=&#34;https://github.com/moby/moby/issues/16137&#34;&gt;一个 issue&lt;/a&gt;.
-我是这么解决的：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo firewall-cmd --permanent --zone=trusted --change-interface=docker0
-sudo firewall-cmd --reload
-sudo service docker restard
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;也就是把 &lt;code&gt;docker0&lt;/code&gt; 网卡添加到 &lt;code&gt;trusted&lt;/code&gt; zone，再重启 &lt;code&gt;dockerd&lt;/code&gt;. 操作完成后 Docker 服务恢复正常，但是 &lt;code&gt;firewalld&lt;/code&gt; 进程却意外退出了，大量这种日志：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -n -L DOCKER&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -n -L DOCKER&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -n -L DOCKER-ISOLATION&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C DOCKER-ISOLATION -j RETURN&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C POSTROUTING -m addrtype --src-type LOCAL -o docker0 -j MASQUERADE&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -i docker0 -o docker0 -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -i docker0 ! -o docker0 -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C PREROUTING -m addrtype --dst-type LOCAL -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C OUTPUT -m addrtype --dst-type LOCAL -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -j DOCKER-ISOLATION&#39; failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;参照 &lt;a href=&#34;https://github.com/moby/moby/issues/16137#issuecomment-271615192&#34;&gt;这个&lt;/a&gt; 和 &lt;a href=&#34;https://stackoverflow.com/questions/33600154/docker-not-starting-could-not-delete-the-default-bridge-network-network-bridg/33604859#33604859&#34;&gt;这个&lt;/a&gt; 做法均无法消除这种错误日志，但是配置的防火墙规则都生效了。&lt;/p&gt;
-
-&lt;h2 id=&#34;ansible-role&#34;&gt;Ansible Role&lt;/h2&gt;
-
-&lt;p&gt;把以上配置写成 Ansible 任务进行自动化：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;---
-
-- name: stop iptables and disable iptables on boot
-  service: name=iptables state=stopped enabled=no
-  ignore_errors: true
-
-- name: ensure firewalld installed
-  yum: name=firewalld state=present
-
-- name: enable firewalld
-  service: name=firewalld state=started enabled=yes
-
-- name: set public as default zone policy
-  command: firewall-cmd --set-default-zone=public
-
-- name: ensure private network is not blocked
-  firewalld:
-    rich_rule: &#39;rule family=ipv4 source address={{ item }} accept&#39;
-    permanent: true
-    state: enabled
-  with_items:
-      - 172.16.24.0/24
-      - 10.8.0.0/24
-      - 10.8.1.0/24
-
-- name: enable common services
-  firewalld:
-    service: &#39;{{ item }}&#39;
-    permanent: true
-    state: enabled
-  with_items:
-    - http
-    - https
-    - ssh
-    - ntp
-    - openvpn
-
-- name: enable ports
-  firewalld:
-    port: &#39;{{ item }}&#39;
-    permanent: true
-    state: enabled
-  with_items:
-    - 58890/tcp
-    - 58880/tcp
-    - 5000/tcp
-    - 8080/tcp
-    - 8088/tcp
-    - 8888/tcp
-
-- name: enable docker interface
-  firewalld:
-    zone: trusted
-    interface: docker0
-    permanent: true
-    state: enabled
-
-- name: enable docker ports
-  firewalld:
-    port: &#39;{{ item }}&#39;
-    permanent: true
-    state: enabled
-  with_items:
-    - 4243/tcp
-
-# 有些机器可能没有运行 dockerd，简单的通过 ignore_errors 来跳过
-- name: restart docker daemon
-  service: name=docker state=restarted
-  ignore_errors: true
-
-- name: reload firewalld
-  service: name=firewalld state=reloaded
-
-# 有时候会出现 firewalld 进程意外退出的情况，具体原因待查
-- name: enable firewalld
-  service: name=firewalld state=started enabled=yes
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.firewalld.org/&#34;&gt;FirewallD 官网&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-7&#34;&gt;DigitalOcean: How To Set Up a Firewall Using FirewallD on CentOS 7&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.linode.com/docs/security/firewalls/introduction-to-firewalld-on-centos/&#34;&gt;Linode: Introduction to FirewallD on CentOS&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/moby/moby/issues/16137&#34;&gt;GitHub: Docker vs. firewalld on CentOS 7 #16137&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://docs.ansible.com/ansible/latest/modules/firewalld_module.html&#34;&gt;Ansible firewalld&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;p&gt;FirewallD 有很多种 zone policy，直接使用默认的 &lt;code&gt;public&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
   </channel>

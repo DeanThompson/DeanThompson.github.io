@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Golang 并发安全的 map 实现 - 李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang">
+	<link rel="canonical" href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -133,7 +133,7 @@
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -158,8 +158,6 @@
 <li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
-
-<p></p>
 
 <h2 id="分表">「分表」</h2>
 
@@ -238,7 +236,7 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 

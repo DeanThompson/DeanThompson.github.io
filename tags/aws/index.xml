@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Aws on 李林克斯 </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://liyangliang.me/tags/aws/index.xml</link>
+    <title>Aws on 李林克斯</title>
+    <link>http://liyangliang.me/tags/aws/</link>
+    <description>Recent content in Aws on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <author>Yangliang Li</author>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Sun, 04 Feb 2018 19:36:03 +0800</lastBuildDate>
     
-    <updated>Mon, 01 Jan 0001 00:00:00 UTC</updated>
+	<atom:link href="http://liyangliang.me/tags/aws/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Redshift Snippets</title>
-      <link>http://liyangliang.me/posts/2018/02/redshift-snippets</link>
-      <pubDate>Sun, 04 Feb 2018 19:36:03 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets</guid>
+      <link>http://liyangliang.me/posts/2018/02/redshift-snippets/</link>
+      <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;查询所有 session&lt;/li&gt;
 &lt;/ul&gt;
@@ -44,102 +48,15 @@
        stv_recents.query, stv_recents.pid
 FROM stv_recents
 WHERE stv_recents.status = &#39;Running&#39;::bpchar;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;创建数据库时报错：&lt;code&gt;source database &amp;quot;template1&amp;quot; is being accessed by other users&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;原因：&lt;code&gt;template1&lt;/code&gt; 数据库被其他 session 占用，锁住了。&lt;/p&gt;
-
-&lt;p&gt;解决方法：先从 &lt;code&gt;stv_sessions&lt;/code&gt; 表查找 &lt;code&gt;template1&lt;/code&gt; 相关的 session，然后用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 杀掉。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;备份数据到 S3&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;UNLOAD (&#39;SELECT * FROM public.category&#39;) TO &#39;s3://redshift-backup/unload/public/category/category_&#39;
-access_key_id &#39;&amp;lt;access_key_id&amp;gt;&#39; secret_access_key &#39;&amp;lt;secret_access_key&amp;gt;&#39;
-DELIMITER &#39;|&#39; ADDQUOTES ESCAPE ALLOWOVERWRITE;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;从 S3 加载数据&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;COPY public.category FROM &#39;s3://redshift-backup/unload/public/category&#39;
-CREDENTIALS &#39;aws_access_key_id=&amp;lt;access_key_id&amp;gt;;aws_secret_access_key=&amp;lt;secret_access_key&amp;gt;&#39;
-DELIMITER &#39;|&#39; REMOVEQUOTES ESCAPE REGION &#39;cn-north-1&#39;;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;定义 Python UDF&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;文档: &lt;a href=&#34;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&#34;&gt;&lt;a href=&#34;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&#34;&gt;http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;CREATE FUNCTION f_hash(value varchar) returns varchar immutable as $$
-    def sha256_hash(value):
-        import hashlib, base64
-        return base64.urlsafe_b64encode(hashlib.sha256(value or &#39;&#39;).digest())
-    return sha256_hash(value)
-$$ language plpythonu;
-
-SELECT address, mobile_no, f_hash(address), f_hash(mobile_no)
-FROM leqi_orders LIMIT 10;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;查看表所占磁盘等信息&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT BTRIM(pgdb.datname::character varying::text) AS &amp;quot;database&amp;quot;,
-       BTRIM(a.name::character varying::text) AS &amp;quot;table&amp;quot;,
-       (b.mbytes::numeric::numeric(18,0) / part.total::numeric::numeric(18,0) * 100::numeric::numeric(18,0))::numeric(5,2) AS pct_of_total,
-       a.&amp;quot;rows&amp;quot;,
-       b.mbytes,
-       b.unsorted_mbytes
-FROM stv_tbl_perm a
-  JOIN pg_database pgdb ON pgdb.oid = a.db_id::oid
-  JOIN (
-    SELECT stv_blocklist.tbl,
-           SUM(
-             CASE
-               WHEN stv_blocklist.unsorted = 1 OR stv_blocklist.unsorted IS NULL AND 1 IS NULL THEN 1
-               ELSE 0
-             END
-           ) AS unsorted_mbytes,
-           COUNT(*) AS mbytes
-    FROM stv_blocklist
-    GROUP BY stv_blocklist.tbl
-  ) b ON a.id = b.tbl
-  JOIN (
-    SELECT SUM(stv_partitions.capacity) AS total
-    FROM stv_partitions
-    WHERE stv_partitions.part_begin = 0
-  ) part ON 1 = 1
-WHERE a.slice = 0
-ORDER BY b.mbytes DESC, a.db_id, a.name;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;查询结果样例：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-text&#34;&gt;database  table pct_of_total  rows  mbytes  unsorted_mbytes
-roma	mda_price_idx	0	50005	10	10
-roma	mda_vendor	0	4	10	10
-roma	mda_vendor	0	8	10	7
-roma	sku_bodytype	0	9	10	7
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
       <title>EC2 挂载 EBS</title>
-      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2</link>
-      <pubDate>Wed, 10 May 2017 17:41:54 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2</guid>
+      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
+      <pubDate>Wed, 10 May 2017 17:41:54 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
       <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
 
 &lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
@@ -153,73 +70,15 @@ xvda    202:0    0   8G  0 disk
 xvdb    202:16   0  30G  0 disk
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;确定是否需要在卷上创建文件系统&#34;&gt;确定是否需要在卷上创建文件系统。&lt;/h2&gt;
-
-&lt;p&gt;如果是新的 EBS，是一个原始的块存储设备，需要先创建文件系统才能安装使用。从快照还原的卷可能已经含有文件系统。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ sudo file -s /dev/xvdb
-/dev/xvdb: data
-
-$ sudo file -s /dev/xvda1
-/dev/xvda1: Linux rev 1.0 ext4 filesystem data, UUID=9fbb7c51-0409-4b50-ad40-068dcfe4bc89, volume name &amp;quot;cloudimg-rootfs&amp;quot; (needs journal recovery) (extents) (large files) (huge files)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;可以看到 &lt;code&gt;/dev/xvdb&lt;/code&gt; 上面还没有文件系统，需要手动创建:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ sudo mkfs -t ext4 /dev/xvdb
-mke2fs 1.42.13 (17-May-2015)
-Creating filesystem with 7864320 4k blocks and 1966080 inodes
-Filesystem UUID: 2a0dae23-7b6e-42ec-95e1-df58f29520a4
-Superblock backups stored on blocks:
-     32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
-     4096000
-
-Allocating group tables: done
-Writing inode tables: done
-Creating journal (32768 blocks): done
-Writing superblocks and filesystem accounting information: done
-
-$ sudo file -s /dev/xvdb
-/dev/xvdb: Linux rev 1.0 ext4 filesystem data, UUID=2a0dae23-7b6e-42ec-95e1-df58f29520a4 (extents) (large files) (huge files)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;注意：&lt;code&gt;mkfs&lt;/code&gt; 会格式化卷，删除所有数据。&lt;/p&gt;
-
-&lt;h2 id=&#34;创建安装点-也就是要挂载的位置&#34;&gt;创建安装点，也就是要挂载的位置:&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;$ sudo mkdir /data
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;挂载&#34;&gt;挂载&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo mount /dev/xvdb /data/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;用-df-命令磁盘空间&#34;&gt;用 &lt;code&gt;df&lt;/code&gt; 命令磁盘空间&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;$ df -h
-Filesystem      Size  Used Avail Use% Mounted on
-udev            489M     0  489M   0% /dev
-tmpfs           100M  3.1M   97M   4% /run
-/dev/xvda1      7.8G  1.9G  5.5G  26% /
-tmpfs           496M     0  496M   0% /dev/shm
-tmpfs           5.0M     0  5.0M   0% /run/lock
-tmpfs           496M     0  496M   0% /sys/fs/cgroup
-tmpfs           100M     0  100M   0% /run/user/1000
-/dev/xvdb        30G   44M   28G   1% /data
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>MySQL 数据导入到 Redshift</title>
-      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift</link>
-      <pubDate>Wed, 10 May 2017 17:36:29 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift</guid>
+      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
+      <pubDate>Wed, 10 May 2017 17:36:29 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
       <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
 
 &lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
@@ -232,40 +91,15 @@ tmpfs           100M     0  100M   0% /run/user/1000
 &lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;加载数据&#34;&gt;加载数据&lt;/h2&gt;
-
-&lt;p&gt;因为 Redshift 推荐使用 &lt;code&gt;COPY&lt;/code&gt; 命令从 S3 加载数据，所以首先得要从 MySQL 中导出数据，然后上传到 CSV.&lt;/p&gt;
-
-&lt;p&gt;以导出 CSV 为例，需要注意使用 &lt;code&gt;&amp;quot;&lt;/code&gt; 符号作为转义字符，而不是 &lt;code&gt;\&lt;/code&gt;. 另外最好用 &lt;code&gt;&amp;quot;&lt;/code&gt; 把每个值都 wrap 起来，免得有些多行字符串导致出错。导出后可以压缩成 gzip 格式，在上传 S3 的时候可以快一些。&lt;/p&gt;
-
-&lt;p&gt;Redshift 的 &lt;code&gt;COPY&lt;/code&gt; 例子：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;COPY syns_bigdata
-FROM &#39;s3://some-bucket/some_filename.csv.gz&#39;
-credentials &#39;aws_access_key_id=&amp;lt;aws_access_key_id&amp;gt;;aws_secret_access_key=&amp;lt;aws_secret_access_key&amp;gt;&#39;
-region &#39;cn-north-1&#39; CSV GZIP NULL AS &#39;NULL&#39;;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;语法很简单，需要注意的有：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;aws_access_key_id&lt;/code&gt; 和 &lt;code&gt;aws_secret_access_key&lt;/code&gt; 要有访问 S3 的权限&lt;/li&gt;
-&lt;li&gt;指定 region&lt;/li&gt;
-&lt;li&gt;指定文件格式，&lt;code&gt;CSV GZIP&lt;/code&gt; 表示是 gzip 压缩的 CSV 文件&lt;/li&gt;
-&lt;li&gt;可以用 &lt;code&gt;NULL AS&lt;/code&gt; 语句指定 NULL 值&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</link>
-      <pubDate>Wed, 10 May 2017 17:23:55 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2</guid>
+      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
+      <pubDate>Wed, 10 May 2017 17:23:55 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
 
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
@@ -284,69 +118,15 @@ region &#39;cn-north-1&#39; CSV GZIP NULL AS &#39;NULL&#39;;
 
 &lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
 
-&lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;可选-安装-mysql-驱动&#34;&gt;（可选）安装 MySQL 驱动&lt;/h2&gt;
-
-&lt;p&gt;在 &lt;a href=&#34;https://www.tableau.com/zh-cn/support/drivers&#34;&gt;这个页面&lt;/a&gt;可以找到所有数据源需要的驱动程序.&lt;/p&gt;
-
-&lt;p&gt;下载好驱动程序，如 mysql-connector-odbc-5.3.7-winx64.msi，双击安装，提示错误。搜索了一番，应该是缺少 Visual C++ 的运行库。试过 Visual C++ Redistributable for Visual Studio 2012 Update 4 和 Visual C++ Redistributable Packages for Visual Studio 2013，最后发现后者才有用。&lt;/p&gt;
-
-&lt;p&gt;安装完 &lt;a href=&#34;https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784&#34;&gt;Visual C++ Redistributable Packages for Visual Studio 2013&lt;/a&gt; 之后，可以成功安装mysql-connector-odbc-5.3.7-winx64.msi 。&lt;/p&gt;
-
-&lt;h2 id=&#34;安装-aws-命令行程序&#34;&gt;安装 AWS 命令行程序&lt;/h2&gt;
-
-&lt;p&gt;从这里下载：&lt;a href=&#34;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&#34;&gt;https://s3.amazonaws.com/aws-cli/AWSCLI64.msi&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;安装完后打开 cmd，运行 &lt;code&gt;aws configure&lt;/code&gt; 进行配置，要有上传 S3 的权限。完成后可以运行 &lt;code&gt;aws s3 ls&lt;/code&gt; 验证。&lt;/p&gt;
-
-&lt;h2 id=&#34;编写备份脚本&#34;&gt;编写备份脚本&lt;/h2&gt;
-
-&lt;p&gt;自动备份并且把备份文件上传到 S3。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@echo OFF
-set Binpath=&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin&amp;quot;
-set Backuppath=&amp;quot;C:\Backups\Tablea Server\nightly&amp;quot;
-echo %date% %time%: *** Housekeeping started ***
-
-rmdir %Backuppath% /S /Q
-
-%Binpath%\tabadmin backup %Backuppath%\ts_backup -d --no-config
-timeout 5
-
-%Binpath%\tabadmin cleanup
-
-echo %date% %time%: Uploading to S3
-
-aws s3 cp %Backuppath% s3://tableau-server-backup/ --recursive --exclude &amp;quot;*&amp;quot; --include &amp;quot;ts_backup-*.tsbak&amp;quot;
-
-echo %date% %time%: *** Housekeeping completed ***
-timeout 5
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;从备份恢复&#34;&gt;从备份恢复&lt;/h2&gt;
-
-&lt;p&gt;如果是从其他的 Tableau Server 迁移过来，可以使用备份文件迁移数据。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;C:\Users\Administrator&amp;gt;&amp;quot;C:\Program Files\Tableau\Tableau Server\10.2\bin\tabadmi
-n.bat&amp;quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;restore 操作会关闭 Tableau Server，恢复完成后需要手动开启。&lt;/p&gt;
-
-&lt;h2 id=&#34;自动备份&#34;&gt;自动备份&lt;/h2&gt;
-
-&lt;p&gt;使用 Task Scheduler 实现，详情见官方文档：&lt;a href=&#34;http://technet.microsoft.com/en-us/library/cc766428.aspx&#34;&gt;http://technet.microsoft.com/en-us/library/cc766428.aspx&lt;/a&gt;&lt;/p&gt;</description>
+&lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>MongoDB Replica Set 重新同步</title>
-      <link>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync</link>
-      <pubDate>Fri, 15 Apr 2016 11:47:00 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync</guid>
+      <link>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</link>
+      <pubDate>Fri, 15 Apr 2016 11:47:00 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</guid>
       <description>&lt;p&gt;生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
@@ -357,29 +137,15 @@ n.bat&amp;quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
 &lt;ol&gt;
 &lt;li&gt;为什么会挂掉？&lt;/li&gt;
 &lt;li&gt;如何修复？&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;当务之急是先修复集群，这一点官方文档有说明：&lt;a href=&#34;https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/&#34;&gt;Resync a Member of a Replica Set&lt;/a&gt;. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;清空数据目录，重启 mongod 实例，让MongoDB进行正常的初始化同步。这是个简单的方式，但是耗时较长。&lt;/li&gt;
-&lt;li&gt;为该机器从其他节点上复制一份最近的数据文件，并重启。操作步骤较多，但是最为快速。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。&lt;/p&gt;
-
-&lt;p&gt;遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，&lt;code&gt;history&lt;/code&gt; 也没发现有 &lt;code&gt;kill&lt;/code&gt; 的记录。
-幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;</description>
+&lt;/ol&gt;</description>
     </item>
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
-      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution</link>
-      <pubDate>Thu, 14 Apr 2016 15:33:52 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution</guid>
+      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
+      <pubDate>Thu, 14 Apr 2016 15:33:52 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
       <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
 
 &lt;ul&gt;
@@ -399,41 +165,7 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
 &lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
     proxy_pass http://name.of.elb.aws.com;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。&lt;/p&gt;
-
-&lt;p&gt;后来 Google 了一番，发现确实是 DNS 的问题。Nginx 会在启动的时候进行域名查找，然后把 IP 地址缓存起来，后续就直接使用这些 IP 地址。而 AWS 的 ELB 所指向的 IP 地址是不固定的，会经常更新；所以这会导致 Nginx 缓存的 IP 地址实际上已经失效。定位出了问题，也参考网上的做法，把 API 的 Nginx 配置稍作修改：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    resolver 233.5.5.5 valid=30s;
-    proxy_pass http://name.of.elb.aws.com;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;resolver&lt;/a&gt; 就是 Nginx 用于把域名转换为 IP 地址的域名服务器。后面的第一个参数是域名服务器，valid 指定了缓存有效期，这里是 30s （默认 5min）. 加上这个配置后，Nginx 会用指定的域名服务器来解析域名，并定期把缓存失效。这样就能避免 ELB 地址更新带来的问题。&lt;/p&gt;
-
-&lt;p&gt;刚开始以为只需要加上 resolver 这一行配置就可以，后来看 &lt;a href=&#34;[http://serverfault.com/a/562518/192152&#34;&gt;这个 serverfault 上的回答&lt;/a&gt;，还需要把 proxy_pass 的地址定义成一个变量。于是最终的配置变成了：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    resolver 233.5.5.5 valid=30s;
-    set $backends &amp;quot;http://name.of.elb.aws.com&amp;quot;;
-    proxy_pass $backends;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;修改配置，reload，一两天后如果无响应的现象不再出现，说明问题已经解决。&lt;/p&gt;
-
-&lt;p&gt;参考材料：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;Nginx 文档&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://tenzer.dk/nginx-with-dynamic-upstreams/&#34;&gt;Nginx with dynamic upstreams&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers&#34;&gt;nginx AWS ELB name resolution with resolvers&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day&#34;&gt;serverfault - Some nginx reverse proxy configs stops working once a day&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

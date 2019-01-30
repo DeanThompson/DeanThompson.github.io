@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog">
+	<link rel="canonical" href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -133,7 +133,7 @@
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -151,8 +151,6 @@
 </ol>
 
 <p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
-
-<p></p>
 
 <h2 id="2-sync-binlog">2. sync_binlog</h2>
 
@@ -201,7 +199,7 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2018
+			<footer id="footer" class="inner">Copyright &copy; 2019
 
     Yangliang Li
 
