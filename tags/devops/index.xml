@@ -8,10 +8,25 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Tue, 20 Jun 2017 15:09:27 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 02 Mar 2019 16:40:45 +0800</lastBuildDate>
     
 	<atom:link href="http://liyangliang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</title>
+      <link>http://liyangliang.me/posts/2019/03/data-encoding/</link>
+      <pubDate>Sat, 02 Mar 2019 16:40:45 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/03/data-encoding/</guid>
+      <description>&lt;p&gt;最近一段时间都在读 &lt;em&gt;Designing Data-Intensive Applications&lt;/em&gt; 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 &lt;em&gt;Encoding and Evolution&lt;/em&gt; （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。&lt;/p&gt;
+
+&lt;h2 id=&#34;编码和解码&#34;&gt;编码和解码&lt;/h2&gt;
+
+&lt;p&gt;在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。&lt;/p&gt;
+
+&lt;p&gt;从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Pyenv 使用笔记</title>

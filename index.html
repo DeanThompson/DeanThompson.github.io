@@ -6,7 +6,7 @@
 	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -121,6 +121,38 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Mar 2, 2019' data-updated="true" itemprop="datePublished">Sat, Mar 2, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/03/data-encoding/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/03/data-encoding/" itemprop="url"> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>最近一段时间都在读 <em>Designing Data-Intensive Applications</em> 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 <em>Encoding and Evolution</em> （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。</p>
+
+<h2 id="编码和解码">编码和解码</h2>
+
+<p>在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。</p>
+
+<p>从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。</p>
+		<a href="http://liyangliang.me/posts/2019/03/data-encoding/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Wed, Jan 30, 2019' data-updated="true" itemprop="datePublished">Wed, Jan 30, 2019</time>
@@ -525,55 +557,6 @@ xvdb    202:16   0  30G  0 disk
 
 <p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
 		<a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/aws"> aws </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/tableau"> tableau </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/" itemprop="url">在 AWS 上安装 Tableau Server</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="启动-ec2-实例">启动 EC2 实例</h2>
-
-<p>先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。</p>
-
-<ul>
-<li>AMI: Microsoft Windows Server 2012 R2 Base（简体中文）</li>
-<li>类型: m4.4xlarge</li>
-</ul>
-
-<p>启动、配置步骤略去不表，有两点需要注意：</p>
-
-<ul>
-<li>VPC 需要开启 3389 端口用于远程登录（RDP）</li>
-<li>密钥对会用于解密登录密码</li>
-</ul>
-
-<h2 id="安装-tableau-server">安装 Tableau Server</h2>
-
-<p>从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。</p>
-		<a href="http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/" class="more-link">Read on →</a>
 	</div>
 </article>
 
