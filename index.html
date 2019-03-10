@@ -6,7 +6,7 @@
 	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
 	
@@ -121,6 +121,36 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 10, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 10, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/03/2018-holiday/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/03/2018-holiday/" itemprop="url">字节跳动（今日头条） 2018 校招后端第二批算法题</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>逛 V2EX 的时候无意间看到了有个叫 <a href="https://www.nowcoder.com">牛客网</a> 的网站，里面有很多公司的笔试真题和大家分享的面经。
+出于好奇，看了一下 <a href="https://www.nowcoder.com/test/8537209/summary">字节跳动（今日头条）的后端题</a>。</p>
+
+<p>一共有 5 题，3 道编程，2 道问答。时候发现前面 4 题跟算法有关，其中 3 道要实现，1 道是纠错和优化，最后一题是系统设计。
+做得比较差，只完成了前面两道算法题。用 Go 语言实现，代码如下。</p>
+		<a href="http://liyangliang.me/posts/2019/03/2018-holiday/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Mar 2, 2019' data-updated="true" itemprop="datePublished">Sat, Mar 2, 2019</time>
@@ -519,44 +549,6 @@ xvdb    202:16   0  30G  0 disk
 
 <p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
 		<a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/aws"> aws </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" itemprop="url">MySQL 数据导入到 Redshift</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="设计表">设计表</h2>
-
-<p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
-
-<ul>
-<li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
-<li>FLOAT 类型改成 REAL 或 FLOAT4</li>
-<li>把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。</li>
-<li>Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型</li>
-<li>有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.</li>
-</ul>
-
-<p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
-		<a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" class="more-link">Read on →</a>
 	</div>
 </article>
 
