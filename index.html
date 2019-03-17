@@ -6,7 +6,7 @@
 	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -121,6 +121,40 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 17, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 17, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/" itemprop="url">聊聊幂等</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，<code>a = 1</code> 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。</p>
+
+<h2 id="http-的幂等性">HTTP 的幂等性</h2>
+
+<p><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP RFC 规范</a>里有关于幂等方法的讨论：</p>
+
+<blockquote>
+<p>Methods can also have the property of &ldquo;idempotence&rdquo; in that (aside from error or expiration issues) the side-effects of N &gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.</p>
+</blockquote>
+		<a href="http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Mar 10, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 10, 2019</time>
@@ -520,44 +554,6 @@ xvdb    202:16   0  30G  0 disk
 
 <p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
 		<a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/aws"> aws </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" itemprop="url">MySQL 数据导入到 Redshift</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="设计表">设计表</h2>
-
-<p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
-
-<ul>
-<li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
-<li>FLOAT 类型改成 REAL 或 FLOAT4</li>
-<li>把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。</li>
-<li>Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型</li>
-<li>有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.</li>
-</ul>
-
-<p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
-		<a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" class="more-link">Read on →</a>
 	</div>
 </article>
 

@@ -7,7 +7,85 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sun, 10 Mar 2019 22:24:51 CST</updated>
+    <updated>Sun, 17 Mar 2019 23:38:00 CST</updated>
+    
+    <item>
+      <title>聊聊幂等</title>
+      <link>http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/</link>
+      <pubDate>Sun, 17 Mar 2019 23:38:00 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/</guid>
+      <description>&lt;p&gt;计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，&lt;code&gt;a = 1&lt;/code&gt; 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。&lt;/p&gt;
+
+&lt;h2 id=&#34;http-的幂等性&#34;&gt;HTTP 的幂等性&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP RFC 规范&lt;/a&gt;里有关于幂等方法的讨论：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Methods can also have the property of &amp;ldquo;idempotence&amp;rdquo; in that (aside from error or expiration issues) the side-effects of N &amp;gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Restful 风格的 API 比较忠实的遵守了 HTTP 协议的各种规定，充分利用了 HTTP 方法和状态码的语义，用 URI 表示资源，&lt;code&gt;POST&lt;/code&gt;, &lt;code&gt;DELETE&lt;/code&gt;, &lt;code&gt;PUT&lt;/code&gt; 和 &lt;code&gt;GET&lt;/code&gt; 来对应增删改查四种操作。这些方法里，除了 &lt;code&gt;POST&lt;/code&gt;，其它三个都是幂等的，我们分别从语义和实现的角度来讨论。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;GET&lt;/code&gt; 方法用于获取资源，可以获取一个（&lt;code&gt;GET /posts/1&lt;/code&gt;）或多个（&lt;code&gt;GET /posts&lt;/code&gt;）。在服务端实现上，其实就是根据资源标识（主键或全表）查询对应的数据。这个操作没有副作用，虽然可能会每次得到不同的结果，不管执行多少次，都不会对数据库的数据产生影响。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;DELETE&lt;/code&gt; 用于删除资源，&lt;code&gt;DELETE /posts/1&lt;/code&gt; 会触发服务端从数据库删除主键为 &lt;code&gt;1&lt;/code&gt; 的记录，调用一次和 N 次产生的副作用都是一致的。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;POST&lt;/code&gt; 用于创建资源，服务器获取数据后会在数据库里新增一条记录，得到一个新的主键。在正常情况下，服务器不会预先检查数据是否存在，所有每次相同的请求都会导致新建一份资源（除非有唯一性约束）。因此 &lt;code&gt;POST&lt;/code&gt; 不具备幂等性，设计 API 时需要仔细考虑如何避免产生重复数据。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;PUT&lt;/code&gt; 通常用于更新资源，但实际上也可以创建，在 HTTP 规范里，&lt;code&gt;PUT&lt;/code&gt; 类似有些数据库里的 &lt;code&gt;UPSERT&lt;/code&gt;，即如果数据存在就更新，否则新建。两种场景的区别在于，资源标识是谁生成的。更新的场景一般是先从服务端获取了数据，客户端修改后提交更新；另一种场景则是客户端指定，如博客系统里 slug 是唯一的，而且通常由作者指定。不管是更新还是创建，由于存在主键或唯一性约束，执行多次都不会产生额外的副作用。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;实现幂等性非常重要。在理想的世界里，所有的操作都能一次性成功；然而现实情况往往很复杂，网络波动可能导致请求失败，用户（客户端）可能会无意的触发多次重复请求。为了确保成功率，在失败时通常都会有重试机制，如果系统没有实现幂等，可能会产生难以预料的结果。在网上搜索幂等经常能看到支付、转账、取款的例子（这些例子也经常用于数据库事务），解决方案也类似，一般用 token (ticket) + 唯一性约束来实现。&lt;/p&gt;
+
+&lt;h2 id=&#34;etl-与幂等&#34;&gt;ETL 与幂等&lt;/h2&gt;
+
+&lt;p&gt;上文讨论 HTTP 幂等性时提到了很多关于数据库的操作，其中最重要就是数据去重，数据库层面一般由主键或唯一性约束来保证。在做 ETL 任务时，幂等也非常重要。&lt;/p&gt;
+
+&lt;p&gt;一个常见的 ETL 场景是从生产系统（MySQL）把数据增量同步到 Hive，然后在 Hive 里对数据做处理后增量写到另一个表。全量更新比较容易，增量更新就一定要确保幂等，否则重试就会产生重复数据。ETL 任务不仅在失败的时候需要重跑，即使成功了也有可能会调整业务逻辑然后重新运行。所有 ETL 任务都应该实现幂等，即使是一次性的。&lt;/p&gt;
+
+&lt;p&gt;Hive 里没有主键和唯一性约束的概念，所以需要想办法实现去重。其中一种思路是用分区表，每次增量更新都覆盖一个分区。但也有的数据并不适合做分区，比如商品信息表。虽然 Hive 没有主键和唯一性约束，但如果数据本身存在可以表示唯一记录的字段（多个也行），可以考虑使用 &lt;code&gt;FULL JOIN&lt;/code&gt; 或 &lt;code&gt;LEFT JOIN&lt;/code&gt; 的方式来实现。首先把新增数据保存到一个 staging 表，然后更新到 target 表。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;FULL JOIN&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- 两表合并，同时出现的记录优先取 staging 表的值，最终的影响是已存在则更新，否则插入
+
+INSERT OVERWRITE TABLE target
+SELECT COALESCE(a.id, b.id),
+       COALESCE(a.name, b.name)
+FROM staging a FULL JOIN target b ON a.id = b.id
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;LEFT JOIN&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;-- 找出仅在 target 表存在的记录，再加上 staging 的所有记录，最终的影响也是已存在则更新，否则插入
+
+INSERT OVERWRITE TABLE target
+SELECT a.id, a.name
+FROM target a LEFT JOIN staging b ON a.id = b.id
+WHERE b.id IS NULL
+
+UNION ALL
+
+SELECT * FROM staging
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这其实就是一种 MERGE 操作，两种方式都实现了幂等。有时候 staging 的数据是完全新增的，也不能使用 &lt;code&gt;INSERT INTO&lt;/code&gt;，因为多次执行会导致数据重复。这种技术不仅适用于 Hive，MySQL, PostgeSQL 这些数据库有主键和唯一性约束，但用 &lt;code&gt;JOIN&lt;/code&gt; 的方式往往会更高效简单。&lt;/p&gt;
+
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.cnblogs.com/weidagang2046/archive/2011/06/04/idempotence.html&#34;&gt;理解HTTP幂等性&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;RFC 2616, Hypertext Transfer Protocol &amp;ndash; HTTP/1.1, Method Definitions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://gtoonstra.github.io/etl-with-airflow/principles.html?highlight=idempotency&#34;&gt;ETL Best Practices with airflow - ETL Principles&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://time.geekbang.org/column/article/896&#34;&gt;每个工程师都应该了解的：聊聊幂等&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>字节跳动（今日头条） 2018 校招后端第二批算法题</title>
@@ -1499,66 +1577,6 @@ def add(x, y):
 
 &lt;p&gt;遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，&lt;code&gt;history&lt;/code&gt; 也没发现有 &lt;code&gt;kill&lt;/code&gt; 的记录。
 幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Nginx AWS ELB 域名解析</title>
-      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
-      <pubDate>Thu, 14 Apr 2016 15:33:52 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
-      <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;两个域名：api.example.com, web.example.com&lt;/li&gt;
-&lt;li&gt;环境：AWS + ELB + Nginx&lt;/li&gt;
-&lt;li&gt;后端：Python + Django + Gunicorn&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;                      proxy_pass         backends                      proxy_pass
-APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backend Nginx(s) ------------&amp;gt; Gunicorn(s)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    proxy_pass http://name.of.elb.aws.com;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。&lt;/p&gt;
-
-&lt;p&gt;后来 Google 了一番，发现确实是 DNS 的问题。Nginx 会在启动的时候进行域名查找，然后把 IP 地址缓存起来，后续就直接使用这些 IP 地址。而 AWS 的 ELB 所指向的 IP 地址是不固定的，会经常更新；所以这会导致 Nginx 缓存的 IP 地址实际上已经失效。定位出了问题，也参考网上的做法，把 API 的 Nginx 配置稍作修改：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    resolver 233.5.5.5 valid=30s;
-    proxy_pass http://name.of.elb.aws.com;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;resolver&lt;/a&gt; 就是 Nginx 用于把域名转换为 IP 地址的域名服务器。后面的第一个参数是域名服务器，valid 指定了缓存有效期，这里是 30s （默认 5min）. 加上这个配置后，Nginx 会用指定的域名服务器来解析域名，并定期把缓存失效。这样就能避免 ELB 地址更新带来的问题。&lt;/p&gt;
-
-&lt;p&gt;刚开始以为只需要加上 resolver 这一行配置就可以，后来看 &lt;a href=&#34;[http://serverfault.com/a/562518/192152&#34;&gt;这个 serverfault 上的回答&lt;/a&gt;，还需要把 proxy_pass 的地址定义成一个变量。于是最终的配置变成了：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    resolver 233.5.5.5 valid=30s;
-    set $backends &amp;quot;http://name.of.elb.aws.com&amp;quot;;
-    proxy_pass $backends;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;修改配置，reload，一两天后如果无响应的现象不再出现，说明问题已经解决。&lt;/p&gt;
-
-&lt;p&gt;参考材料：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver&#34;&gt;Nginx 文档&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://tenzer.dk/nginx-with-dynamic-upstreams/&#34;&gt;Nginx with dynamic upstreams&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://gc-taylor.com/blog/2011/11/10/nginx-aws-elb-name-resolution-resolvers&#34;&gt;nginx AWS ELB name resolution with resolvers&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://serverfault.com/questions/560632/some-nginx-reverse-proxy-configs-stops-working-once-a-day&#34;&gt;serverfault - Some nginx reverse proxy configs stops working once a day&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
     </item>
     
   </channel>

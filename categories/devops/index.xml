@@ -8,10 +8,27 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Sun, 10 Mar 2019 22:24:51 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 17 Mar 2019 23:38:00 +0800</lastBuildDate>
     
 	<atom:link href="http://liyangliang.me/categories/devops/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>聊聊幂等</title>
+      <link>http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/</link>
+      <pubDate>Sun, 17 Mar 2019 23:38:00 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/03/%E8%81%8A%E8%81%8A%E5%B9%82%E7%AD%89/</guid>
+      <description>&lt;p&gt;计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，&lt;code&gt;a = 1&lt;/code&gt; 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。&lt;/p&gt;
+
+&lt;h2 id=&#34;http-的幂等性&#34;&gt;HTTP 的幂等性&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP RFC 规范&lt;/a&gt;里有关于幂等方法的讨论：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Methods can also have the property of &amp;ldquo;idempotence&amp;rdquo; in that (aside from error or expiration issues) the side-effects of N &amp;gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
     
     <item>
       <title>字节跳动（今日头条） 2018 校招后端第二批算法题</title>

@@ -130,6 +130,44 @@
 
 	
 	
+	    <a href="http://liyangliang.me/categories/aws"> aws </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" itemprop="url">MySQL 数据导入到 Redshift</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="设计表">设计表</h2>
+
+<p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
+
+<ul>
+<li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
+<li>FLOAT 类型改成 REAL 或 FLOAT4</li>
+<li>把索引语句去掉，保留主键、外键、唯一性约束，Redshift 不会检查这些约束，但是查询时会用于优化。</li>
+<li>Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型</li>
+<li>有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.</li>
+</ul>
+
+<p>关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。</p>
+		<a href="http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
 		<a href="http://liyangliang.me/categories/aws"> aws </a>,
 	
 
@@ -473,61 +511,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 <li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
 </ol>
 		<a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/celery"> celery </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" itemprop="url">Celery 使用简介</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="introduction">Introduction</h2>
-
-<h3 id="分布式任务队列">分布式任务队列</h3>
-
-<p>Celery 是一个分布式任务队列，下面是 <a href="http://www.celeryproject.org/">官网</a> 的一段描述：</p>
-
-<blockquote>
-<p>Celery is an asynchronous task queue/job queue based on distributed message passing.  It is focused on real-time operation, but supports scheduling as well.</p>
-</blockquote>
-
-<p>Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。</p>
-
-<h3 id="何为任务队列">何为任务队列？</h3>
-
-<p>摘自 Celery 官方文档的 <a href="http://docs.jinkan.org/docs/celery/getting-started/introduction.html">中文翻译</a>：</p>
-
-<blockquote>
-<p>任务队列是一种在线程或机器间分发任务的机制。</p>
-
-<p>消息队列的输入是工作的一个单元，称为任务，独立的职程（Worker）进程持续监视队列中是否有需要处理的新任务。</p>
-
-<p>Celery 用消息通信，通常使用中间人（Broker）在客户端和职程间斡旋。这个过程从客户端向队列添加消息开始，之后中间人把消息派送给职程。</p>
-
-<p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
-</blockquote>
-		<a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" class="more-link">Read on →</a>
 	</div>
 </article>
 
