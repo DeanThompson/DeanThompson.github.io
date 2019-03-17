@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>聊聊幂等 - 李林克斯</title>
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="http://liyangliang.me/posts/2019/03/idempotence/">
+	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	
+	
+	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
+<script>hljs.initHighlightingOnLoad();</script>
+
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+	<style media="screen">
+	article pre, article code {border-radius: 3px 3px 3px 3px; -moz-border-radius: 3px 3px 3px 3px; -webkit-border-radius: 3px 3px 3px 3px; border: 0px solid #000000;}
+	article code {background: #f8f8f8;}
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="http://schema.org/Blog">
+					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Sun, Mar 17, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 17, 2019</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="http://liyangliang.me/posts/2019/03/idempotence/#disqus_thread">Comments</a></span>
+							
+						</div>
+						
+    <h1 class="title" itemprop="name">聊聊幂等</h1>
+	<div class="entry-content" itemprop="articleBody"><p>计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，<code>a = 1</code> 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。</p>
+
+<h2 id="http-的幂等性">HTTP 的幂等性</h2>
+
+<p><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP RFC 规范</a>里有关于幂等方法的讨论：</p>
+
+<blockquote>
+<p>Methods can also have the property of &ldquo;idempotence&rdquo; in that (aside from error or expiration issues) the side-effects of N &gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.</p>
+</blockquote>
+
+<p>Restful 风格的 API 比较忠实的遵守了 HTTP 协议的各种规定，充分利用了 HTTP 方法和状态码的语义，用 URI 表示资源，<code>POST</code>, <code>DELETE</code>, <code>PUT</code> 和 <code>GET</code> 来对应增删改查四种操作。这些方法里，除了 <code>POST</code>，其它三个都是幂等的，我们分别从语义和实现的角度来讨论。</p>
+
+<ul>
+<li><p><code>GET</code> 方法用于获取资源，可以获取一个（<code>GET /posts/1</code>）或多个（<code>GET /posts</code>）。在服务端实现上，其实就是根据资源标识（主键或全表）查询对应的数据。这个操作没有副作用，虽然可能会每次得到不同的结果，不管执行多少次，都不会对数据库的数据产生影响。</p></li>
+
+<li><p><code>DELETE</code> 用于删除资源，<code>DELETE /posts/1</code> 会触发服务端从数据库删除主键为 <code>1</code> 的记录，调用一次和 N 次产生的副作用都是一致的。</p></li>
+
+<li><p><code>POST</code> 用于创建资源，服务器获取数据后会在数据库里新增一条记录，得到一个新的主键。在正常情况下，服务器不会预先检查数据是否存在，所有每次相同的请求都会导致新建一份资源（除非有唯一性约束）。因此 <code>POST</code> 不具备幂等性，设计 API 时需要仔细考虑如何避免产生重复数据。</p></li>
+
+<li><p><code>PUT</code> 通常用于更新资源，但实际上也可以创建，在 HTTP 规范里，<code>PUT</code> 类似有些数据库里的 <code>UPSERT</code>，即如果数据存在就更新，否则新建。两种场景的区别在于，资源标识是谁生成的。更新的场景一般是先从服务端获取了数据，客户端修改后提交更新；另一种场景则是客户端指定，如博客系统里 slug 是唯一的，而且通常由作者指定。不管是更新还是创建，由于存在主键或唯一性约束，执行多次都不会产生额外的副作用。</p></li>
+</ul>
+
+<p>实现幂等性非常重要。在理想的世界里，所有的操作都能一次性成功；然而现实情况往往很复杂，网络波动可能导致请求失败，用户（客户端）可能会无意的触发多次重复请求。为了确保成功率，在失败时通常都会有重试机制，如果系统没有实现幂等，可能会产生难以预料的结果。在网上搜索幂等经常能看到支付、转账、取款的例子（这些例子也经常用于数据库事务），解决方案也类似，一般用 token (ticket) + 唯一性约束来实现。</p>
+
+<h2 id="etl-与幂等">ETL 与幂等</h2>
+
+<p>上文讨论 HTTP 幂等性时提到了很多关于数据库的操作，其中最重要就是数据去重，数据库层面一般由主键或唯一性约束来保证。在做 ETL 任务时，幂等也非常重要。</p>
+
+<p>一个常见的 ETL 场景是从生产系统（MySQL）把数据增量同步到 Hive，然后在 Hive 里对数据做处理后增量写到另一个表。全量更新比较容易，增量更新就一定要确保幂等，否则重试就会产生重复数据。ETL 任务不仅在失败的时候需要重跑，即使成功了也有可能会调整业务逻辑然后重新运行。所有 ETL 任务都应该实现幂等，即使是一次性的。</p>
+
+<p>Hive 里没有主键和唯一性约束的概念，所以需要想办法实现去重。其中一种思路是用分区表，每次增量更新都覆盖一个分区。但也有的数据并不适合做分区，比如商品信息表。虽然 Hive 没有主键和唯一性约束，但如果数据本身存在可以表示唯一记录的字段（多个也行），可以考虑使用 <code>FULL JOIN</code> 或 <code>LEFT JOIN</code> 的方式来实现。首先把新增数据保存到一个 staging 表，然后更新到 target 表。</p>
+
+<ul>
+<li>使用 <code>FULL JOIN</code></li>
+</ul>
+
+<pre><code class="language-sql">-- 两表合并，同时出现的记录优先取 staging 表的值，最终的影响是已存在则更新，否则插入
+
+INSERT OVERWRITE TABLE target
+SELECT COALESCE(a.id, b.id),
+       COALESCE(a.name, b.name)
+FROM staging a FULL JOIN target b ON a.id = b.id
+</code></pre>
+
+<ul>
+<li>使用 <code>LEFT JOIN</code></li>
+</ul>
+
+<pre><code class="language-sql">-- 找出仅在 target 表存在的记录，再加上 staging 的所有记录，最终的影响也是已存在则更新，否则插入
+
+INSERT OVERWRITE TABLE target
+SELECT a.id, a.name
+FROM target a LEFT JOIN staging b ON a.id = b.id
+WHERE b.id IS NULL
+
+UNION ALL
+
+SELECT * FROM staging
+</code></pre>
+
+<p>这其实就是一种 MERGE 操作，两种方式都实现了幂等。有时候 staging 的数据是完全新增的，也不能使用 <code>INSERT INTO</code>，因为多次执行会导致数据重复。这种技术不仅适用于 Hive，MySQL, PostgeSQL 这些数据库有主键和唯一性约束，但用 <code>JOIN</code> 的方式往往会更高效简单。</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://www.cnblogs.com/weidagang2046/archive/2011/06/04/idempotence.html">理解HTTP幂等性</a></li>
+<li><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">RFC 2616, Hypertext Transfer Protocol &ndash; HTTP/1.1, Method Definitions</a></li>
+<li><a href="https://gtoonstra.github.io/etl-with-airflow/principles.html?highlight=idempotency">ETL Best Practices with airflow - ETL Principles</a></li>
+<li><a href="https://time.geekbang.org/column/article/896">每个工程师都应该了解的：聊聊幂等</a></li>
+</ul></div>
+					</article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s); }());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s); }());
+</script>
+
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+ript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2019
+
+    Yangliang Li
+
+Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="http://liyangliang.me/js/slash.js"></script>
+<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script></footer>
+		</div>
+	</div>
+	
+</body>
+</html>
