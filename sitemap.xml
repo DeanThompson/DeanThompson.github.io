@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</loc>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/posts/2019/03/idempotence/</loc>
     <lastmod>2019-03-17T23:38:00+08:00</lastmod>
   </url>
@@ -221,6 +226,18 @@
   </url>
   
   <url>
+    <loc>http://liyangliang.me/categories/bigdata/</loc>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/bigdata/</loc>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/tags/binlog/</loc>
     <lastmod>2014-03-02T16:16:04+08:00</lastmod>
     <priority>0</priority>
@@ -269,6 +286,12 @@
   </url>
   
   <url>
+    <loc>http://liyangliang.me/tags/database/</loc>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/tags/db/</loc>
     <lastmod>2016-04-15T11:47:00+08:00</lastmod>
     <priority>0</priority>
@@ -300,7 +323,7 @@
   
   <url>
     <loc>http://liyangliang.me/categories/devops/</loc>
-    <lastmod>2019-03-17T23:38:00+08:00</lastmod>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -324,7 +347,7 @@
   
   <url>
     <loc>http://liyangliang.me/tags/etl/</loc>
-    <lastmod>2019-03-17T23:38:00+08:00</lastmod>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -516,7 +539,7 @@
   
   <url>
     <loc>http://liyangliang.me/post/</loc>
-    <lastmod>2019-03-17T23:38:00+08:00</lastmod>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -702,7 +725,7 @@
   
   <url>
     <loc>http://liyangliang.me/</loc>
-    <lastmod>2019-03-17T23:38:00+08:00</lastmod>
+    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
     <priority>0</priority>
   </url>
   

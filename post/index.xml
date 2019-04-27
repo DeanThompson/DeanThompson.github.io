@@ -8,10 +8,29 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Sun, 17 Mar 2019 23:38:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 27 Apr 2019 14:02:16 +0800</lastBuildDate>
     
 	<atom:link href="http://liyangliang.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>一个轻量级通用的数据同步方案</title>
+      <link>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
+      <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
+      <description>&lt;p&gt;在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。&lt;/p&gt;
+
+&lt;p&gt;首先梳理一下需求和目标：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度&lt;/li&gt;
+&lt;li&gt;扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等&lt;/li&gt;
+&lt;li&gt;性能要求：因为是离线系统，对性能要求无严格要求，但最好尽可能快，并有可能调优&lt;/li&gt;
+&lt;li&gt;复杂度：复杂度低，依赖少，易使用，易运维&lt;/li&gt;
+&lt;li&gt;功能要求：要满足全量同步和增量数据同步&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>聊聊幂等</title>

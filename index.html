@@ -123,6 +123,47 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sat, Apr 27, 2019' data-updated="true" itemprop="datePublished">Sat, Apr 27, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="http://liyangliang.me/categories/devops"> devops </a>,
+	
+
+	
+	
+	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/" itemprop="url">一个轻量级通用的数据同步方案</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。</p>
+
+<p>首先梳理一下需求和目标：</p>
+
+<ul>
+<li>实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度</li>
+<li>扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等</li>
+<li>性能要求：因为是离线系统，对性能要求无严格要求，但最好尽可能快，并有可能调优</li>
+<li>复杂度：复杂度低，依赖少，易使用，易运维</li>
+<li>功能要求：要满足全量同步和增量数据同步</li>
+</ul>
+		<a href="http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sun, Mar 17, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 17, 2019</time>
 </div>
 		<div class="tags">
@@ -515,45 +556,6 @@ drwxr-x---. 2 rundeck rundeck   27 Jun 19 16:52 ssl
 extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
 </code></pre>
 		<a href="http://liyangliang.me/posts/2017/05/flask-i18n/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/aws"> aws </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/" itemprop="url">EC2 挂载 EBS</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。</p>
-
-<p>详情见 <a href="http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html">EBS 的文档</a></p>
-
-<h2 id="用-lsblk-命令查看所有可用的磁盘及其安装点">用 <code>lsblk</code> 命令查看所有可用的磁盘及其安装点</h2>
-
-<pre><code>$ lsblk
-NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-xvda    202:0    0   8G  0 disk
-`-xvda1 202:1    0   8G  0 part /
-xvdb    202:16   0  30G  0 disk
-</code></pre>
-
-<p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
-		<a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/" class="more-link">Read on →</a>
 	</div>
 </article>
 

@@ -32,6 +32,15 @@
     </item>
     
     <item>
+      <title>Bigdata</title>
+      <link>http://liyangliang.me/tags/bigdata/</link>
+      <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/tags/bigdata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Binlog</title>
       <link>http://liyangliang.me/tags/binlog/</link>
       <pubDate>Sun, 02 Mar 2014 16:16:04 +0800</pubDate>
@@ -73,6 +82,15 @@
       <pubDate>Mon, 12 Jan 2015 15:01:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
       <guid>http://liyangliang.me/tags/concurrent-safe/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Database</title>
+      <link>http://liyangliang.me/tags/database/</link>
+      <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/tags/database/</guid>
       <description></description>
     </item>
     
@@ -142,7 +160,7 @@
     <item>
       <title>Etl</title>
       <link>http://liyangliang.me/tags/etl/</link>
-      <pubDate>Sun, 17 Mar 2019 23:38:00 +0800</pubDate>
+      <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
       <guid>http://liyangliang.me/tags/etl/</guid>
       <description></description>
