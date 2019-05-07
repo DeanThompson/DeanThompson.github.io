@@ -7,7 +7,166 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Sat, 27 Apr 2019 14:02:16 CST</updated>
+    <updated>Tue, 07 May 2019 15:47:04 CST</updated>
+    
+    <item>
+      <title>HDFS 异构存储调研</title>
+      <link>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</link>
+      <pubDate>Tue, 07 May 2019 15:47:04 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</guid>
+      <description>&lt;h2 id=&#34;结论&#34;&gt;结论&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。&lt;/li&gt;
+&lt;li&gt;HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;存储类型&#34;&gt;存储类型&lt;/h2&gt;
+
+&lt;p&gt;按访问速度降序：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;RAM_DISK: 即内存&lt;/li&gt;
+&lt;li&gt;SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用&lt;/li&gt;
+&lt;li&gt;DISK: 普通硬盘&lt;/li&gt;
+&lt;li&gt;ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;存储策略&#34;&gt;存储策略&lt;/h2&gt;
+
+&lt;p&gt;共有 6 种策略&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Hot&lt;/strong&gt;: 即通常意义的热数据，需要经常使用。所有副本都存在 DISK. &lt;strong&gt;这是默认的策略。&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Cold&lt;/strong&gt;: 即通常意义的冷数据，很少使用，主要是归档备份。所有副本都存在 ARCHIVE.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Warm&lt;/strong&gt;: 介于冷热之间。一个副本放 DISK，其余的放 ARCHIVE.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;All_SSD&lt;/strong&gt;: 所有副本都在 SSD.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;One_SSD&lt;/strong&gt;: 一个副本在 SSD，其余的放 DISK.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Lazy_Persist&lt;/strong&gt;: 适用于单副本数据，放在内存。先写到 RAM_DISK, 再持久化到 DISK.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;按访问速度从快到慢排列&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;策略&lt;/th&gt;
+&lt;th&gt;块分布&lt;/th&gt;
+&lt;th&gt;creationFallbacks&lt;/th&gt;
+&lt;th&gt;replicationFallbacks&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Lazy_Persist&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;RAM_DISK: 1, DISK: n-1&lt;/td&gt;
+&lt;td&gt;DISK&lt;/td&gt;
+&lt;td&gt;DISK&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;All_SSD&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;SSD: n&lt;/td&gt;
+&lt;td&gt;DISK&lt;/td&gt;
+&lt;td&gt;DISK&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;One_SSD&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;SSD: 1, DISK: n-1&lt;/td&gt;
+&lt;td&gt;SSD, DISK&lt;/td&gt;
+&lt;td&gt;SSD, DISK&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Hot&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;DISK: n&lt;/td&gt;
+&lt;td&gt;&amp;lt; none &amp;gt;&lt;/td&gt;
+&lt;td&gt;ARCHIVE&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Warm&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;DISK: 1, ARCHIVE: n-1&lt;/td&gt;
+&lt;td&gt;ARCHIVE, DISK&lt;/td&gt;
+&lt;td&gt;ARCHIVE, DISK&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Cold&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;ARCHIVE: n&lt;/td&gt;
+&lt;td&gt;&amp;lt; none &amp;gt;&lt;/td&gt;
+&lt;td&gt;&amp;lt; none &amp;gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;注：creationFallbacks 是对于第一个创建的 block 的 fallback 情况时的可选存储类型；replicationFallbacks 是 block 的其余副本的 fallback 情况时的可选存储类型&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;配置&#34;&gt;配置&lt;/h2&gt;
+
+&lt;p&gt;每个磁盘单独挂载到不同目录，需要注意加上 &lt;code&gt;noatime&lt;/code&gt; 选项。 首先配置 DataNode 的数据目录&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dfs.storage.policy.enabled&lt;/code&gt;: 设置为 &lt;code&gt;true&lt;/code&gt;，默认是 &lt;code&gt;true&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dfs.datanode.data.dir&lt;/code&gt;: 可配置多个路径，用 &lt;code&gt;,&lt;/code&gt; 分隔，每个路径加上存储类型标签作为前缀，如
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;[SSD]file:///dfs/dn1,[DISK]file:///dfs/dn2,[ARCHIVE]file:///dfs/dn3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;注: 通过 Cloudera Manager 配置不需要写 &lt;code&gt;file://&lt;/code&gt;，直接使用 &lt;code&gt;[DISK]/dfs/dn2&lt;/code&gt; 即可&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;使用 &lt;code&gt;hdfs storagepolicies&lt;/code&gt; 命令管理文件/目录的存储策略，共三个子命令。&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;作用&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;hdfs storagepolicies -listPolicies&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;列出所有的块存储策略&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;hdfs storagepolicies -setStoragePolicy -path &amp;lt;path&amp;gt; -policy &amp;lt;policy&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;对指定路径设置存储策略，子目录会继承&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;hdfs storagepolicies -getStoragePolicy -path &amp;lt;path&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;获取指定路径的存储策略&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&#34;mover&#34;&gt;Mover&lt;/h2&gt;
+
+&lt;p&gt;Mover 是 HDFS 的一个数据迁移工具，类似 Balancer. 区别在于，Mover 的目的是把数据块按照存储策略迁移，Balancer 是在不同 DataNode 直接进行平衡。如果 DataNode 挂载了多种存储类型，Mover 优先尝试在本地迁移，避免网络 IO.&lt;/p&gt;
+
+&lt;p&gt;使用方式: &lt;code&gt;hdfs mover -p &amp;lt;path&amp;gt;&lt;/code&gt;，如果想一次性迁移所有数据，可把 path 指定为根路径，不过需要的时间也更长。&lt;/p&gt;
+
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ArchivalStorage.html&#34;&gt;Archival Storage, SSD &amp;amp; Memory&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://issues.apache.org/jira/browse/HDFS-2832&#34;&gt;Enable support for heterogeneous storages in HDFS - DN as a collection of storages&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.csdn.net/androidlushangderen/article/details/51105876&#34;&gt;HDFS异构存储&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.cloudera.com/documentation/enterprise/5-14-x/topics/admin_heterogeneous_storage_oview.html&#34;&gt;Configuring Heterogeneous Storage in HDFS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>一个轻量级通用的数据同步方案</title>
@@ -1615,90 +1774,6 @@ def load_fac_day_pro_nos_sal_table(table, filename, workers):
 
 if __name__ == &#39;__main__&#39;:
     cli()
-&lt;/code&gt;&lt;/pre&gt;</description>
-    </item>
-    
-    <item>
-      <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
-      <pubDate>Tue, 17 May 2016 16:42:37 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
-
-&lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
-
-&lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;
-
-&lt;h2 id=&#34;2-引用-flask-的-application-context&#34;&gt;2. 引用 Flask 的 application context&lt;/h2&gt;
-
-&lt;p&gt;这个问题也是在 &lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;with app.app_context():
-    print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在实际应用中，我最后写了个装饰器来实现这个目的。简单介绍一下场景，项目用到了 Flask-Cache，项目启动时会创建全局单例 &lt;code&gt;cache&lt;/code&gt;，并在 &lt;code&gt;create_app&lt;/code&gt; 中进行初始化。在 Flask-Cache 初始化时，会把当前的 Flask app 对象绑定到实例 &lt;code&gt;cache&lt;/code&gt; 中，所以可以尝试从这里获取 app 对象。&lt;/p&gt;
-
-&lt;p&gt;代码的目录结构与之前一样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;.
-├── README.md
-├── app
-│   ├── __init__.py
-│   ├── config.py
-│   ├── forms
-│   ├── models
-│   ├── tasks
-│   │   ├── __init__.py
-│   │   └── email.py
-│   └── views
-│   │   ├── __init__.py
-│   │   └── account.py
-├── celery_worker.py
-├── manage.py
-└── wsgi.py
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;装饰器：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def with_app_context(task):
-    memo = {&#39;app&#39;: None}
-
-    @functools.wraps(task)
-    def _wrapper(*args, **kwargs):
-        if not memo[&#39;app&#39;]:
-            try:
-                # 尝试从 cache 中获取 app 对象，如果得到的不是 None，就不需要重复创建了
-                app = cache.app
-                _ = app.name
-            except Exception:
-                from app import create_app
-
-                app = create_app()
-            memo[&#39;app&#39;] = app
-        else:
-            app = memo[&#39;app&#39;]
-
-        # 把 task 放到 application context 环境中运行
-        with app.app_context():
-            return task(*args, **kwargs)
-
-    return _wrapper
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;使用：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;@celery.task()
-@with_app_context
-def add(x, y):
-    print app.config.get(&#39;SOME_CONFIG_KEY&#39;)
-    return x + y
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     

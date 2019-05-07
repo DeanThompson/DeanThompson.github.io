@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</loc>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</loc>
     <lastmod>2019-04-27T14:02:16+08:00</lastmod>
   </url>
@@ -227,13 +232,13 @@
   
   <url>
     <loc>http://liyangliang.me/categories/bigdata/</loc>
-    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/tags/bigdata/</loc>
-    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -419,13 +424,19 @@
   
   <url>
     <loc>http://liyangliang.me/tags/hadoop/</loc>
-    <lastmod>2018-06-02T15:11:15+08:00</lastmod>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/tags/hash/</loc>
     <lastmod>2015-01-12T15:01:15+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://liyangliang.me/tags/hdfs/</loc>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -539,7 +550,7 @@
   
   <url>
     <loc>http://liyangliang.me/post/</loc>
-    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -725,7 +736,7 @@
   
   <url>
     <loc>http://liyangliang.me/</loc>
-    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
     <priority>0</priority>
   </url>
   

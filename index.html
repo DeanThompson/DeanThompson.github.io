@@ -123,6 +123,48 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Tue, May 7, 2019' data-updated="true" itemprop="datePublished">Tue, May 7, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/" itemprop="url">HDFS 异构存储调研</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="结论">结论</h2>
+
+<ul>
+<li>HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。</li>
+<li>HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本</li>
+</ul>
+
+<h2 id="存储类型">存储类型</h2>
+
+<p>按访问速度降序：</p>
+
+<ul>
+<li>RAM_DISK: 即内存</li>
+<li>SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用</li>
+<li>DISK: 普通硬盘</li>
+<li>ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）</li>
+</ul>
+		<a href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Sat, Apr 27, 2019' data-updated="true" itemprop="datePublished">Sat, Apr 27, 2019</time>
 </div>
 		<div class="tags">
@@ -494,68 +536,6 @@ $ ll
 drwxr-x---. 2 rundeck rundeck   27 Jun 19 16:52 ssl
 </code></pre>
 		<a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/flask"> flask </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/05/flask-i18n/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/05/flask-i18n/" itemprop="url">Flask 应用国际化</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="babel">Babel</h2>
-
-<blockquote>
-<p>Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.</p>
-</blockquote>
-
-<ul>
-<li>文档：<a href="http://babel.pocoo.org/en/latest/">http://babel.pocoo.org/en/latest/</a></li>
-<li>代码：<a href="https://github.com/python-babel/babel">https://github.com/python-babel/babel</a></li>
-</ul>
-
-<h2 id="flask-babel">Flask-Babel</h2>
-
-<p>Flask 的 i18n 扩展，集成 babel、pytz 等。</p>
-
-<ul>
-<li>文档：<a href="https://pythonhosted.org/Flask-Babel/">https://pythonhosted.org/Flask-Babel/</a></li>
-<li>代码：<a href="https://github.com/python-babel/flask-babel">https://github.com/python-babel/flask-babel</a></li>
-</ul>
-
-<h2 id="使用">使用</h2>
-
-<ul>
-<li><p>安装：<code>pip install Flask-Babel</code></p></li>
-
-<li><p>babel 配置文件：babel.cfg</p></li>
-</ul>
-
-<pre><code class="language-ini">[python: **.py]
-[jinja2: **.html]
-extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
-</code></pre>
-		<a href="http://liyangliang.me/posts/2017/05/flask-i18n/" class="more-link">Read on →</a>
 	</div>
 </article>
 

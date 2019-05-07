@@ -123,6 +123,51 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" itemprop="url">Golang 并发安全的 map 实现</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
+
+<h2 id="并发安全">并发安全</h2>
+
+<p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
+
+<pre><code class="language-go">type syncMap struct {
+    items map[string]interface{}
+    sync.RWMutex
+}
+</code></pre>
+
+<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
+
+<p>但是这种设计会有些性能隐患。主要是两个方面：</p>
+
+<ol>
+<li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
+<li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
+</ol>
+		<a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Thu, Dec 18, 2014' data-updated="true" itemprop="datePublished">Thu, Dec 18, 2014</time>
 </div>
 		<div class="tags">
@@ -605,43 +650,13 @@ except NameError, e:
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, Oct 21, 2012' data-updated="true" itemprop="datePublished">Sun, Oct 21, 2012</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" itemprop="url">Python 时间戳和日期相互转换</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
-
-<p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
-
-<blockquote>
-<p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
-</blockquote>
-		<a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
 				    </div>
 				    <nav id="pagenavi">
 					    
 					        <a href="/page/3/" class="prev">Prev</a>
 					    
+					    
+					        <a href="/page/5/" class="next">Next</a>
 					    
 					    <div class="center"><a href="http://liyangliang.me/post/">Blog Archives</a></div>
 					</nav>

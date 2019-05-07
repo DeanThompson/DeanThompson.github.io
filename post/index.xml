@@ -8,10 +8,35 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Sat, 27 Apr 2019 14:02:16 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 07 May 2019 15:47:04 +0800</lastBuildDate>
     
 	<atom:link href="http://liyangliang.me/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>HDFS 异构存储调研</title>
+      <link>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</link>
+      <pubDate>Tue, 07 May 2019 15:47:04 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</guid>
+      <description>&lt;h2 id=&#34;结论&#34;&gt;结论&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。&lt;/li&gt;
+&lt;li&gt;HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;存储类型&#34;&gt;存储类型&lt;/h2&gt;
+
+&lt;p&gt;按访问速度降序：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;RAM_DISK: 即内存&lt;/li&gt;
+&lt;li&gt;SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用&lt;/li&gt;
+&lt;li&gt;DISK: 普通硬盘&lt;/li&gt;
+&lt;li&gt;ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>一个轻量级通用的数据同步方案</title>

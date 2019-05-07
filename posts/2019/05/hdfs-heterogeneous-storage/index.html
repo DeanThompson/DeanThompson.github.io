@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>MongoDB Replica Set 重新同步 - 李林克斯</title>
+	<title>HDFS 异构存储调研 - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/">
+	<link rel="canonical" href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -120,47 +120,175 @@
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 						<div class="meta">
-							<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
+							<div class="date"><time datetime='Tue, May 7, 2019' data-updated="true" itemprop="datePublished">Tue, May 7, 2019</time>
 </div>
 							<div class="tags">
 
 
 	
 	
-	    <a href="http://liyangliang.me/categories/mongodb"> mongodb </a>
+	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
-    <h1 class="title" itemprop="name">MongoDB Replica Set 重新同步</h1>
-	<div class="entry-content" itemprop="articleBody"><p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
+    <h1 class="title" itemprop="name">HDFS 异构存储调研</h1>
+	<div class="entry-content" itemprop="articleBody"><h2 id="结论">结论</h2>
 
-<pre><code>2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
+<ul>
+<li>HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。</li>
+<li>HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本</li>
+</ul>
+
+<h2 id="存储类型">存储类型</h2>
+
+<p>按访问速度降序：</p>
+
+<ul>
+<li>RAM_DISK: 即内存</li>
+<li>SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用</li>
+<li>DISK: 普通硬盘</li>
+<li>ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）</li>
+</ul>
+
+<h2 id="存储策略">存储策略</h2>
+
+<p>共有 6 种策略</p>
+
+<ul>
+<li><strong>Hot</strong>: 即通常意义的热数据，需要经常使用。所有副本都存在 DISK. <strong>这是默认的策略。</strong></li>
+<li><strong>Cold</strong>: 即通常意义的冷数据，很少使用，主要是归档备份。所有副本都存在 ARCHIVE.</li>
+<li><strong>Warm</strong>: 介于冷热之间。一个副本放 DISK，其余的放 ARCHIVE.</li>
+<li><strong>All_SSD</strong>: 所有副本都在 SSD.</li>
+<li><strong>One_SSD</strong>: 一个副本在 SSD，其余的放 DISK.</li>
+<li><strong>Lazy_Persist</strong>: 适用于单副本数据，放在内存。先写到 RAM_DISK, 再持久化到 DISK.</li>
+</ul>
+
+<p>按访问速度从快到慢排列</p>
+
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>块分布</th>
+<th>creationFallbacks</th>
+<th>replicationFallbacks</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>Lazy_Persist</code></td>
+<td>RAM_DISK: 1, DISK: n-1</td>
+<td>DISK</td>
+<td>DISK</td>
+</tr>
+
+<tr>
+<td><code>All_SSD</code></td>
+<td>SSD: n</td>
+<td>DISK</td>
+<td>DISK</td>
+</tr>
+
+<tr>
+<td><code>One_SSD</code></td>
+<td>SSD: 1, DISK: n-1</td>
+<td>SSD, DISK</td>
+<td>SSD, DISK</td>
+</tr>
+
+<tr>
+<td><code>Hot</code></td>
+<td>DISK: n</td>
+<td>&lt; none &gt;</td>
+<td>ARCHIVE</td>
+</tr>
+
+<tr>
+<td><code>Warm</code></td>
+<td>DISK: 1, ARCHIVE: n-1</td>
+<td>ARCHIVE, DISK</td>
+<td>ARCHIVE, DISK</td>
+</tr>
+
+<tr>
+<td><code>Cold</code></td>
+<td>ARCHIVE: n</td>
+<td>&lt; none &gt;</td>
+<td>&lt; none &gt;</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>注：creationFallbacks 是对于第一个创建的 block 的 fallback 情况时的可选存储类型；replicationFallbacks 是 block 的其余副本的 fallback 情况时的可选存储类型</p>
+</blockquote>
+
+<h2 id="配置">配置</h2>
+
+<p>每个磁盘单独挂载到不同目录，需要注意加上 <code>noatime</code> 选项。 首先配置 DataNode 的数据目录</p>
+
+<ul>
+<li><code>dfs.storage.policy.enabled</code>: 设置为 <code>true</code>，默认是 <code>true</code>.</li>
+<li><code>dfs.datanode.data.dir</code>: 可配置多个路径，用 <code>,</code> 分隔，每个路径加上存储类型标签作为前缀，如
+<br /></li>
+</ul>
+
+<pre><code>[SSD]file:///dfs/dn1,[DISK]file:///dfs/dn2,[ARCHIVE]file:///dfs/dn3
 </code></pre>
 
-<p>其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：</p>
+<blockquote>
+<p>注: 通过 Cloudera Manager 配置不需要写 <code>file://</code>，直接使用 <code>[DISK]/dfs/dn2</code> 即可</p>
+</blockquote>
 
-<ol>
-<li>为什么会挂掉？</li>
-<li>如何修复？</li>
-</ol>
+<p>使用 <code>hdfs storagepolicies</code> 命令管理文件/目录的存储策略，共三个子命令。</p>
 
-<p>当务之急是先修复集群，这一点官方文档有说明：<a href="https://docs.mongodb.org/manual/tutorial/resync-replica-set-member/">Resync a Member of a Replica Set</a>. 其实就是删除数据文件，然后通过 initial sync 来重新同步。有两种 initial sync 的方式：</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
 
-<ol>
-<li>清空数据目录，重启 mongod 实例，让MongoDB进行正常的初始化同步。这是个简单的方式，但是耗时较长。</li>
-<li>为该机器从其他节点上复制一份最近的数据文件，并重启。操作步骤较多，但是最为快速。</li>
-</ol>
+<tbody>
+<tr>
+<td><code>hdfs storagepolicies -listPolicies</code></td>
+<td>列出所有的块存储策略</td>
+</tr>
 
-<p>考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。</p>
+<tr>
+<td><code>hdfs storagepolicies -setStoragePolicy -path &lt;path&gt; -policy &lt;policy&gt;</code></td>
+<td>对指定路径设置存储策略，子目录会继承</td>
+</tr>
 
-<p>遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，<code>history</code> 也没发现有 <code>kill</code> 的记录。
-幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。</p></div>
+<tr>
+<td><code>hdfs storagepolicies -getStoragePolicy -path &lt;path&gt;</code></td>
+<td>获取指定路径的存储策略</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="mover">Mover</h2>
+
+<p>Mover 是 HDFS 的一个数据迁移工具，类似 Balancer. 区别在于，Mover 的目的是把数据块按照存储策略迁移，Balancer 是在不同 DataNode 直接进行平衡。如果 DataNode 挂载了多种存储类型，Mover 优先尝试在本地迁移，避免网络 IO.</p>
+
+<p>使用方式: <code>hdfs mover -p &lt;path&gt;</code>，如果想一次性迁移所有数据，可把 path 指定为根路径，不过需要的时间也更长。</p>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ArchivalStorage.html">Archival Storage, SSD &amp; Memory</a></li>
+<li><a href="https://issues.apache.org/jira/browse/HDFS-2832">Enable support for heterogeneous storages in HDFS - DN as a collection of storages</a></li>
+<li><a href="https://blog.csdn.net/androidlushangderen/article/details/51105876">HDFS异构存储</a></li>
+<li><a href="https://www.cloudera.com/documentation/enterprise/5-14-x/topics/admin_heterogeneous_storage_oview.html">Configuring Heterogeneous Storage in HDFS</a></li>
+</ul></div>
 					</article>
 					
 					<section id="comment">
