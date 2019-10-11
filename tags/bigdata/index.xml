@@ -8,10 +8,28 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Tue, 07 May 2019 15:47:04 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 14:09:28 +0800</lastBuildDate>
     
 	<atom:link href="http://liyangliang.me/tags/bigdata/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Impala 添加和使用 UDF</title>
+      <link>http://liyangliang.me/posts/2019/10/impala-udf/</link>
+      <pubDate>Fri, 11 Oct 2019 14:09:28 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/posts/2019/10/impala-udf/</guid>
+      <description>&lt;p&gt;Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;hdfs dfs -mkdir /user/hive/udfs
+
+hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
     
     <item>
       <title>HDFS 异构存储调研</title>

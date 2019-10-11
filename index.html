@@ -6,7 +6,7 @@
 	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -121,6 +121,41 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Fri, Oct 11, 2019' data-updated="true" itemprop="datePublished">Fri, Oct 11, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/10/impala-udf/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/10/impala-udf/" itemprop="url">Impala 添加和使用 UDF</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。</p>
+
+<ul>
+<li>首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去</li>
+</ul>
+
+<pre><code>hdfs dfs -mkdir /user/hive/udfs
+
+hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
+</code></pre>
+		<a href="http://liyangliang.me/posts/2019/10/impala-udf/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Tue, May 7, 2019' data-updated="true" itemprop="datePublished">Tue, May 7, 2019</time>
@@ -480,62 +515,6 @@ eval &quot;$(pyenv init -)&quot;
 eval &quot;$(pyenv virtualenv-init -)&quot;
 </code></pre>
 		<a href="http://liyangliang.me/posts/2017/06/pyenv-notes/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Tue, Jun 20, 2017' data-updated="true" itemprop="datePublished">Tue, Jun 20, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/devops"> devops </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/" itemprop="url">Centos 7 安装配置 Rundeck</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="通过-yum-安装">通过 yum 安装：</h2>
-
-<pre><code>$ sudo yum install java-1.8.0
-$ sudo rpm -Uvh http://repo.rundeck.org/latest.rpm
-$ sudo yum install rundeck
-</code></pre>
-
-<p>如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。</p>
-
-<p>安装完成后可以立即运行：</p>
-
-<pre><code>$ sudo service rundeckd start
-</code></pre>
-
-<p>但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 <code>/etc/rundeck</code>:</p>
-
-<pre><code>$ sudo su - rundeck
-$ cd /etc/rundeck/
-$ ll
--rw-r-----. 1 rundeck rundeck  738 Apr 20 07:47 admin.aclpolicy
--rw-r-----. 1 rundeck rundeck 1104 Apr 20 07:47 apitoken.aclpolicy
--rw-r-----. 1 rundeck rundeck  511 Apr 20 07:47 cli-log4j.properties
--rw-r-----. 1 rundeck rundeck 1438 Jun 19 16:52 framework.properties
--rw-r-----. 1 rundeck rundeck  136 Apr 20 07:47 jaas-loginmodule.conf
--rw-r-----. 1 rundeck rundeck 7538 Apr 20 07:47 log4j.properties
--rw-r-----. 1 rundeck rundeck 2889 Apr 20 07:47 profile
--rw-r-----. 1 rundeck rundeck  549 Apr 20 07:47 project.properties
--rw-r-----. 1 rundeck rundeck 1065 Jun 20 11:54 realm.properties
--rw-r-----. 1 rundeck rundeck  579 Jun 20 11:56 rundeck-config.properties
-drwxr-x---. 2 rundeck rundeck   27 Jun 19 16:52 ssl
-</code></pre>
-		<a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/" class="more-link">Read on →</a>
 	</div>
 </article>
 

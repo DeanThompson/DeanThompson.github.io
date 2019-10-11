@@ -7,7 +7,65 @@
     <language>zh-CN</language>
     <author>Yangliang Li</author>
     
-    <updated>Tue, 07 May 2019 15:47:04 CST</updated>
+    <updated>Fri, 11 Oct 2019 14:09:28 CST</updated>
+    
+    <item>
+      <title>Impala 添加和使用 UDF</title>
+      <link>http://liyangliang.me/posts/2019/10/impala-udf/</link>
+      <pubDate>Fri, 11 Oct 2019 14:09:28 CST</pubDate>
+      <author>Yangliang Li</author>
+      <guid>http://liyangliang.me/posts/2019/10/impala-udf/</guid>
+      <description>&lt;p&gt;Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;hdfs dfs -mkdir /user/hive/udfs
+
+hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;进入 Impala 注册函数&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;CREATE DATABASE udfs;
+
+CREATE FUNCTION udfs.f_get_json_object(STRING, STRING) RETURNS STRING LOCATION &#39;/user/hive/udfs/hive-builtins.jar&#39; SYMBOL=&#39;org.apache.hadoop.hive.ql.udf.UDFJson&#39;;
+
+REFRESH FUNCTIONS udfs;
+
+SHOW FUNCTIONS IN udfs;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;使用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;SELECT id,
+       udfs.f_get_json_object(user_info, &#39;$.city&#39;) AS user_city
+       user_info
+FROM user
+LIMIT 100
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;删除&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;DROP FUNCTION IF EXISTS udfs.f_get_json_object(STRING, STRING)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.cloudera.com/documentation/enterprise/5-14-x/topics/impala_udf.html&#34;&gt;Impala User-Defined Functions (UDFs)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF&#34;&gt;Hive Operators and User-Defined Functions (UDFs)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.cloudera.com/documentation/enterprise/5-14-x/topics/impala_drop_function.html&#34;&gt;DROP FUNCTION Statement&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/cloudera/impala-udf-samples&#34;&gt;cloudera/impala-udf-samples&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>HDFS 异构存储调研</title>
@@ -1599,182 +1657,6 @@ n.bat&amp;quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
 &lt;h2 id=&#34;自动备份&#34;&gt;自动备份&lt;/h2&gt;
 
 &lt;p&gt;使用 Task Scheduler 实现，详情见官方文档：&lt;a href=&#34;http://technet.microsoft.com/en-us/library/cc766428.aspx&#34;&gt;http://technet.microsoft.com/en-us/library/cc766428.aspx&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Python 多进程导入数据到 MySQL</title>
-      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
-      <pubDate>Sat, 25 Feb 2017 16:16:14 CST</pubDate>
-      <author>Yangliang Li</author>
-      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
-      <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
-分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
-会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;批量插入而不是逐条插入&lt;/li&gt;
-&lt;li&gt;为了加快插入速度，先不要建索引&lt;/li&gt;
-&lt;li&gt;生产者和消费者模型，主进程读文件，多个 worker 进程执行插入&lt;/li&gt;
-&lt;li&gt;注意控制 worker 的数量，避免对 MySQL 造成太大的压力&lt;/li&gt;
-&lt;li&gt;注意处理脏数据导致的异常&lt;/li&gt;
-&lt;li&gt;原始数据是 GBK 编码，所以还要注意转换成 UTF-8&lt;/li&gt;
-&lt;li&gt;用 &lt;a href=&#34;http://click.pocoo.org/5/&#34;&gt;click&lt;/a&gt; 封装命令行工具&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;具体的代码实现如下：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import codecs
-import csv
-import logging
-import multiprocessing
-import os
-import warnings
-
-import click
-import MySQLdb
-import sqlalchemy
-
-warnings.filterwarnings(&#39;ignore&#39;, category=MySQLdb.Warning)
-
-# 批量插入的记录数量
-BATCH = 5000
-
-DB_URI = &#39;mysql://root@localhost:3306/example?charset=utf8&#39;
-
-engine = sqlalchemy.create_engine(DB_URI)
-
-
-def get_table_cols(table):
-    sql = &#39;SELECT * FROM `{table}` LIMIT 0&#39;.format(table=table)
-    res = engine.execute(sql)
-    return res.keys()
-
-
-def insert_many(table, cols, rows, cursor):
-    sql = &#39;INSERT INTO `{table}` ({cols}) VALUES ({marks})&#39;.format(
-            table=table,
-            cols=&#39;, &#39;.join(cols),
-            marks=&#39;, &#39;.join([&#39;%s&#39;] * len(cols)))
-    cursor.execute(sql, *rows)
-    logging.info(&#39;process %s inserted %s rows into table %s&#39;, os.getpid(), len(rows), table)
-
-
-def insert_worker(table, cols, queue):
-    rows = []
-    # 每个子进程创建自己的 engine 对象
-    cursor = sqlalchemy.create_engine(DB_URI)
-    while True:
-        row = queue.get()
-        if row is None:
-            if rows:
-                insert_many(table, cols, rows, cursor)
-            break
-
-        rows.append(row)
-        if len(rows) == BATCH:
-            insert_many(table, cols, rows, cursor)
-            rows = []
-
-
-def insert_parallel(table, reader, w=10):
-    cols = get_table_cols(table)
-
-    # 数据队列，主进程读文件并往里写数据，worker 进程从队列读数据
-    # 注意一下控制队列的大小，避免消费太慢导致堆积太多数据，占用过多内存
-    queue = multiprocessing.Queue(maxsize=w*BATCH*2)
-    workers = []
-    for i in range(w):
-        p = multiprocessing.Process(target=insert_worker, args=(table, cols, queue))
-        p.start()
-        workers.append(p)
-        logging.info(&#39;starting # %s worker process, pid: %s...&#39;, i + 1, p.pid)
-
-    dirty_data_file = &#39;./{}_dirty_rows.csv&#39;.format(table)
-    xf = open(dirty_data_file, &#39;w&#39;)
-    writer = csv.writer(xf, delimiter=reader.dialect.delimiter)
-
-    for line in reader:
-        # 记录并跳过脏数据: 键值数量不一致
-        if len(line) != len(cols):
-            writer.writerow(line)
-            continue
-
-        # 把 None 值替换为 &#39;NULL&#39;
-        clean_line = [None if x == &#39;NULL&#39; else x for x in line]
-
-        # 往队列里写数据
-        queue.put(tuple(clean_line))
-        if reader.line_num % 500000 == 0:
-            logging.info(&#39;put %s tasks into queue.&#39;, reader.line_num)
-
-    xf.close()
-
-    # 给每个 worker 发送任务结束的信号
-    logging.info(&#39;send close signal to worker processes&#39;)
-    for i in range(w):
-        queue.put(None)
-
-    for p in workers:
-        p.join()
-
-
-def convert_file_to_utf8(f, rv_file=None):
-    if not rv_file:
-        name, ext = os.path.splitext(f)
-        if isinstance(name, unicode):
-            name = name.encode(&#39;utf8&#39;)
-        rv_file = &#39;{}_utf8{}&#39;.format(name, ext)
-    logging.info(&#39;start to process file %s&#39;, f)
-    with open(f) as infd:
-        with open(rv_file, &#39;w&#39;) as outfd:
-            lines = []
-            loop = 0
-            chunck = 200000
-            first_line = infd.readline().strip(codecs.BOM_UTF8).strip() + &#39;\n&#39;
-            lines.append(first_line)
-            for line in infd:
-                clean_line = line.decode(&#39;gb18030&#39;).encode(&#39;utf8&#39;)
-                clean_line = clean_line.rstrip() + &#39;\n&#39;
-                lines.append(clean_line)
-                if len(lines) == chunck:
-                    outfd.writelines(lines)
-                    lines = []
-                    loop += 1
-                    logging.info(&#39;processed %s lines.&#39;, loop * chunck)
-
-            outfd.writelines(lines)
-            logging.info(&#39;processed %s lines.&#39;, loop * chunck + len(lines))
-
-
-@click.group()
-def cli():
-    logging.basicConfig(level=logging.INFO,
-                        format=&#39;%(asctime)s - %(levelname)s - %(name)s - %(message)s&#39;)
-
-
-@cli.command(&#39;gbk_to_utf8&#39;)
-@click.argument(&#39;f&#39;)
-def convert_gbk_to_utf8(f):
-    convert_file_to_utf8(f)
-
-
-@cli.command(&#39;load&#39;)
-@click.option(&#39;-t&#39;, &#39;--table&#39;, required=True, help=&#39;表名&#39;)
-@click.option(&#39;-i&#39;, &#39;--filename&#39;, required=True, help=&#39;输入文件&#39;)
-@click.option(&#39;-w&#39;, &#39;--workers&#39;, default=10, help=&#39;worker 数量，默认 10&#39;)
-def load_fac_day_pro_nos_sal_table(table, filename, workers):
-    with open(filename) as fd:
-        fd.readline()   # skip header
-        reader = csv.reader(fd)
-        insert_parallel(table, reader, w=workers)
-
-
-if __name__ == &#39;__main__&#39;:
-    cli()
-&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

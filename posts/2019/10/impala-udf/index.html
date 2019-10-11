@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>About Me - 李林克斯</title>
+	<title>Impala 添加和使用 UDF - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/about/">
+	<link rel="canonical" href="http://liyangliang.me/posts/2019/10/impala-udf/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -120,42 +120,74 @@
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 						<div class="meta">
-							<div class="date"><time datetime='Tue, May 19, 2015' data-updated="true" itemprop="datePublished">Tue, May 19, 2015</time>
+							<div class="date"><time datetime='Fri, Oct 11, 2019' data-updated="true" itemprop="datePublished">Fri, Oct 11, 2019</time>
 </div>
 							<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/about/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2019/10/impala-udf/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
-    <h1 class="title" itemprop="name">About Me</h1>
-	<div class="entry-content" itemprop="articleBody"><p>我叫李阳良，在互联网上使用过的 ID 包括 DeanThompson，leonyoung 等。1991 年出生，2013 年大学毕业于中山大学。</p>
-
-<p>做过 Web 开发和大数据，主要技术栈：</p>
+    <h1 class="title" itemprop="name">Impala 添加和使用 UDF</h1>
+	<div class="entry-content" itemprop="articleBody"><p>Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。</p>
 
 <ul>
-<li>编程语言：熟悉 Python 和 Go，有多年生产环境使用经验</li>
-<li>Web 框架：Python: 精通 Flask，熟悉 Tornado；Go: 熟悉标准库 net/http 和 Gin 框架</li>
-<li>数据库：熟悉 MySQL, TiDB, Redis, AWS Redshift, 用过 Cassandra, SQL Server</li>
-<li>大数据：熟悉 Hadoop, HDFS, Hive, Impala, ElasticSearch, ClickHouse, 了解 Spark, Kylin, Presto, Kafka</li>
-<li>公有云：熟悉 AWS, Azure, 用过阿里云</li>
-<li>操作系统：Linux (服务器), macOS (日常)</li>
-<li>其他工具：Git, Supervisord, Airflow, Prometheus, Grafana, Ansible, Docker, Kubernetes 等</li>
+<li>首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去</li>
 </ul>
 
-<p>欢迎一起交流技术问题，你可以在这些地方找到我：</p>
+<pre><code>hdfs dfs -mkdir /user/hive/udfs
+
+hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
+</code></pre>
 
 <ul>
-<li><a href="https://github.com/DeanThompson">GitHub</a></li>
-<li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
-<li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
+<li>进入 Impala 注册函数</li>
 </ul>
 
-<p>或者给我发邮件：</p>
+<pre><code class="language-sql">CREATE DATABASE udfs;
 
-<p><code>yanglianglee &lt;at&gt; gmail &lt;dot&gt; com</code></p>
-</div>
+CREATE FUNCTION udfs.f_get_json_object(STRING, STRING) RETURNS STRING LOCATION '/user/hive/udfs/hive-builtins.jar' SYMBOL='org.apache.hadoop.hive.ql.udf.UDFJson';
+
+REFRESH FUNCTIONS udfs;
+
+SHOW FUNCTIONS IN udfs;
+</code></pre>
+
+<ul>
+<li>使用</li>
+</ul>
+
+<pre><code>SELECT id,
+       udfs.f_get_json_object(user_info, '$.city') AS user_city
+       user_info
+FROM user
+LIMIT 100
+</code></pre>
+
+<ul>
+<li>删除</li>
+</ul>
+
+<pre><code>DROP FUNCTION IF EXISTS udfs.f_get_json_object(STRING, STRING)
+</code></pre>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="https://www.cloudera.com/documentation/enterprise/5-14-x/topics/impala_udf.html">Impala User-Defined Functions (UDFs)</a></li>
+<li><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Hive Operators and User-Defined Functions (UDFs)</a></li>
+<li><a href="https://www.cloudera.com/documentation/enterprise/5-14-x/topics/impala_drop_function.html">DROP FUNCTION Statement</a></li>
+<li><a href="https://github.com/cloudera/impala-udf-samples">cloudera/impala-udf-samples</a></li>
+</ul></div>
 					</article>
 					
 					<section id="comment">

@@ -123,6 +123,42 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 15, 2015' data-updated="true" itemprop="datePublished">Sun, Mar 15, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/linux"> linux </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" itemprop="url">重用 SSH 连接</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
+
+<p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
+
+<p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
+
+<pre><code class="language-sshconfig">Host *
+    ControlMaster auto
+    ControlPath /tmp/ssh_mux_%h_%p_%r
+    ControlPersist 600
+</code></pre>
+		<a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
 </div>
 		<div class="tags">
@@ -610,42 +646,6 @@ except NameError, e:
 
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
 		<a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Dec 1, 2012' data-updated="true" itemprop="datePublished">Sat, Dec 1, 2012</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" itemprop="url">Python字典切片</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-
-<p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-
-<pre><code class="language-python">def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-</code></pre>
-		<a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" class="more-link">Read on →</a>
 	</div>
 </article>
 

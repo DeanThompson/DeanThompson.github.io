@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://liyangliang.me/posts/2019/10/impala-udf/</loc>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</loc>
     <lastmod>2019-05-07T15:47:04+08:00</lastmod>
   </url>
@@ -232,13 +237,13 @@
   
   <url>
     <loc>http://liyangliang.me/categories/bigdata/</loc>
-    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://liyangliang.me/tags/bigdata/</loc>
-    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -292,7 +297,7 @@
   
   <url>
     <loc>http://liyangliang.me/tags/database/</loc>
-    <lastmod>2019-04-27T14:02:16+08:00</lastmod>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -550,7 +555,7 @@
   
   <url>
     <loc>http://liyangliang.me/post/</loc>
-    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -736,7 +741,7 @@
   
   <url>
     <loc>http://liyangliang.me/</loc>
-    <lastmod>2019-05-07T15:47:04+08:00</lastmod>
+    <lastmod>2019-10-11T14:09:28+08:00</lastmod>
     <priority>0</priority>
   </url>
   

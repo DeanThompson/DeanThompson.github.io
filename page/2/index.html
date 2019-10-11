@@ -123,6 +123,62 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Tue, Jun 20, 2017' data-updated="true" itemprop="datePublished">Tue, Jun 20, 2017</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/" itemprop="url">Centos 7 安装配置 Rundeck</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="通过-yum-安装">通过 yum 安装：</h2>
+
+<pre><code>$ sudo yum install java-1.8.0
+$ sudo rpm -Uvh http://repo.rundeck.org/latest.rpm
+$ sudo yum install rundeck
+</code></pre>
+
+<p>如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。</p>
+
+<p>安装完成后可以立即运行：</p>
+
+<pre><code>$ sudo service rundeckd start
+</code></pre>
+
+<p>但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 <code>/etc/rundeck</code>:</p>
+
+<pre><code>$ sudo su - rundeck
+$ cd /etc/rundeck/
+$ ll
+-rw-r-----. 1 rundeck rundeck  738 Apr 20 07:47 admin.aclpolicy
+-rw-r-----. 1 rundeck rundeck 1104 Apr 20 07:47 apitoken.aclpolicy
+-rw-r-----. 1 rundeck rundeck  511 Apr 20 07:47 cli-log4j.properties
+-rw-r-----. 1 rundeck rundeck 1438 Jun 19 16:52 framework.properties
+-rw-r-----. 1 rundeck rundeck  136 Apr 20 07:47 jaas-loginmodule.conf
+-rw-r-----. 1 rundeck rundeck 7538 Apr 20 07:47 log4j.properties
+-rw-r-----. 1 rundeck rundeck 2889 Apr 20 07:47 profile
+-rw-r-----. 1 rundeck rundeck  549 Apr 20 07:47 project.properties
+-rw-r-----. 1 rundeck rundeck 1065 Jun 20 11:54 realm.properties
+-rw-r-----. 1 rundeck rundeck  579 Jun 20 11:56 rundeck-config.properties
+drwxr-x---. 2 rundeck rundeck   27 Jun 19 16:52 ssl
+</code></pre>
+		<a href="http://liyangliang.me/posts/2017/06/centos7-install-rundeck/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Wed, May 10, 2017' data-updated="true" itemprop="datePublished">Wed, May 10, 2017</time>
 </div>
 		<div class="tags">
@@ -506,32 +562,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
 		<a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Mon, Mar 28, 2016' data-updated="true" itemprop="datePublished">Mon, Mar 28, 2016</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/go"> go </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/" itemprop="url">zhihu-go: 知乎非官方 API库 with Go</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 <a href="https://github.com/egrcc/zhihu-python">zhihu-python</a>. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。</p>
-		<a href="http://liyangliang.me/posts/2016/03/zhihu-go/" class="more-link">Read on →</a>
 	</div>
 </article>
 
