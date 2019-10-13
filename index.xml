@@ -228,13 +228,13 @@ LIMIT 100
 &lt;li&gt;Plan 生成迁移计划&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;运行 &lt;code&gt;hdfs diskbalancer -plan &amp;lt;datanode-host&amp;gt;&lt;/code&gt;，如 &lt;code&gt;hdfs diskbalancer -plan hadoop-dn-16&lt;/code&gt;. 该命令会把计划配置以 JSON 文件输出到硬盘，具体路径看日志，以 &lt;code&gt;/system/diskbalancer/2016-Aug-19-18-04-01&lt;/code&gt; 为例。&lt;/p&gt;
+&lt;p&gt;运行 &lt;code&gt;hdfs diskbalancer -plan &amp;lt;datanode-host&amp;gt;&lt;/code&gt;，如 &lt;code&gt;hdfs diskbalancer -plan hadoop-dn-16&lt;/code&gt;. 该命令会把计划配置以 JSON 文件输出到 HDFS 文件系统，具体路径看日志，以 &lt;code&gt;/system/diskbalancer/2019-Oct-13-22-49-45&lt;/code&gt; 为例。&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Execute 执行迁移&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;code&gt;hdfs diskbalancer -execute /system/diskbalancer/2016-Aug-17-17-03-56/172.26.10.16.plan.json&lt;/code&gt; 注意替换文件路径。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hdfs diskbalancer -execute /system/diskbalancer/2019-Oct-13-22-49-45/172.26.10.16.plan.json&lt;/code&gt; 注意替换文件路径。&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Query 查看进度&lt;/li&gt;
