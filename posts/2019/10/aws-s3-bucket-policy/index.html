@@ -4,7 +4,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>About Me - 李林克斯</title>
+	<title>AWS S3 Bucket 指定权限 - 李林克斯</title>
 	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
 
 	
@@ -19,7 +19,7 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/about/">
+	<link rel="canonical" href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/">
 	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
 	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -120,42 +120,86 @@
 					<div itemscope itemtype="http://schema.org/Blog">
 					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 						<div class="meta">
-							<div class="date"><time datetime='Tue, May 19, 2015' data-updated="true" itemprop="datePublished">Tue, May 19, 2015</time>
+							<div class="date"><time datetime='Wed, Oct 23, 2019' data-updated="true" itemprop="datePublished">Wed, Oct 23, 2019</time>
 </div>
 							<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/aws"> aws </a>
+	
+
+
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/about/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
-    <h1 class="title" itemprop="name">About Me</h1>
-	<div class="entry-content" itemprop="articleBody"><p>我叫李阳良，在互联网上使用过的 ID 包括 DeanThompson，leonyoung 等。1991 年出生，2013 年大学毕业于中山大学。</p>
+    <h1 class="title" itemprop="name">AWS S3 Bucket 指定权限</h1>
+	<div class="entry-content" itemprop="articleBody"><p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
 
-<p>做过 Web 开发和大数据，主要技术栈：</p>
+<h2 id="创建-iam-用户">创建 IAM 用户</h2>
 
-<ul>
-<li>编程语言：熟悉 Python 和 Go，有多年生产环境使用经验</li>
-<li>Web 框架：Python: 精通 Flask，熟悉 Tornado；Go: 熟悉标准库 net/http 和 Gin 框架</li>
-<li>数据库：熟悉 MySQL, TiDB, Redis, AWS Redshift, 用过 Cassandra, SQL Server</li>
-<li>大数据：熟悉 Hadoop, HDFS, Hive, Impala, ElasticSearch, ClickHouse, 了解 Spark, Kylin, Presto, Kafka</li>
-<li>公有云：熟悉 AWS, Azure, 用过阿里云</li>
-<li>操作系统：Linux (服务器), macOS (日常)</li>
-<li>其他工具：Git, Supervisord, Airflow, Prometheus, Grafana, Ansible, Docker, Kubernetes 等</li>
-</ul>
+<p>创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 <code>arn:aws-cn:iam::123456789012:user/exampleuser</code>.</p>
 
-<p>欢迎一起交流技术问题，你可以在这些地方找到我：</p>
+<h2 id="配置-s3-bucket-权限">配置 S3 bucket 权限</h2>
 
-<ul>
-<li><a href="https://github.com/DeanThompson">GitHub</a></li>
-<li><a href="http://stackoverflow.com/users/1461780/leon-young">Stack Overflow</a></li>
-<li><a href="http://www.zhihu.com/people/leonyoung">知乎</a></li>
-</ul>
+<p>创建 S3 bucket，假设名字为 <code>example-bucket</code>，于是对应的 ARN 为 <code>arn:aws-cn:s3:::example-bucket</code>. 进入 Permissions 页面，编辑 Bucket Policy.</p>
 
-<p>或者给我发邮件：</p>
+<pre><code class="language-json">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Id&quot;: &quot;Policy1571646921804&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;Stmt1571646903119&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: &quot;arn:aws-cn:iam::123456789012:user/exampleuser&quot;
+            },
+            &quot;Action&quot;: &quot;s3:ListBucket&quot;,
+            &quot;Resource&quot;: &quot;arn:aws-cn:s3:::example-bucket&quot;
+        },
+        {
+            &quot;Sid&quot;: &quot;Stmt1571646919492&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: &quot;arn:aws-cn:iam::123456789012:user/exampleuser&quot;
+            },
+            &quot;Action&quot;: &quot;s3:GetObject&quot;,
+            &quot;Resource&quot;: &quot;arn:aws-cn:s3:::example-bucket/*&quot;
+        }
+    ]
+}
+</code></pre>
 
-<p><code>yanglianglee &lt;at&gt; gmail &lt;dot&gt; com</code></p>
-</div>
+<p>这里分配了 <code>s3:ListBucket</code> 和 <code>s3:GetObject</code> 两个权限，即可以列出及读取  bucket  里所有对象。要注意 <code>s3:ListBucket</code> 是 bucket 级别的，所以 <code>Resource</code> 就是 bucket 的 ARN；<code>s3:GetObject</code> 是对象级别的，所以 <code>Resource</code> 最后要加上 <code>/*</code>.</p>
+
+<p>Bucket Policy 可以通过 <a href="https://awspolicygen.s3.cn-north-1.amazonaws.com.cn/policygen.html">Policy generator</a> 生成。添加 2 个 Statement，如下图所示</p>
+
+<p><img src="https://i.loli.net/2019/10/23/KAr2RdmwGLEUbyX.png" alt="s3_bucket_policy_generator.png" /></p>
+
+<p>点击 Generate Policy 即可生成 JSON 格式的 policy.</p>
+
+<h2 id="测试">测试</h2>
+
+<p>用 <code>aws</code> 命令行程序测试（安装：<code>pip install awscli</code>）。先配置好 access key 和 region 信息。</p>
+
+<pre><code>$ aws s3 ls
+
+An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied
+
+$ aws s3 ls example-bucket
+                           PRE data/
+2019-10-21 16:40:49          7 test.txt
+
+$ aws s3 cp s3://example-bucket/test.txt .
+download: s3://example-bucket/test.txt to ./test.txt
+
+$ aws s3 rm s3://example-bucket/test.txt
+delete failed: s3://example-bucket/test.txt An error occurred (AccessDenied) when calling the DeleteObject operation: Access Denied
+</code></pre></div>
 					</article>
 					
 					<section id="comment">

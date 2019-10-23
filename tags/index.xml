@@ -25,7 +25,7 @@
     <item>
       <title>Aws</title>
       <link>http://liyangliang.me/tags/aws/</link>
-      <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
+      <pubDate>Wed, 23 Oct 2019 10:53:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
       <guid>http://liyangliang.me/tags/aws/</guid>
       <description></description>
@@ -415,6 +415,15 @@
       <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
       <guid>http://liyangliang.me/tags/redshift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>S3</title>
+      <link>http://liyangliang.me/tags/s3/</link>
+      <pubDate>Wed, 23 Oct 2019 10:53:00 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>http://liyangliang.me/tags/s3/</guid>
       <description></description>
     </item>
     

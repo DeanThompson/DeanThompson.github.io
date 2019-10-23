@@ -6,7 +6,7 @@
 	<meta name="generator" content="Hugo 0.51" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -121,6 +121,40 @@
 					
 					<div itemscope itemtype="http://schema.org/Blog">
 					
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, Oct 23, 2019' data-updated="true" itemprop="datePublished">Wed, Oct 23, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/aws"> aws </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/" itemprop="url">AWS S3 Bucket 指定权限</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
+
+<h2 id="创建-iam-用户">创建 IAM 用户</h2>
+
+<p>创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 <code>arn:aws-cn:iam::123456789012:user/exampleuser</code>.</p>
+
+<h2 id="配置-s3-bucket-权限">配置 S3 bucket 权限</h2>
+
+<p>创建 S3 bucket，假设名字为 <code>example-bucket</code>，于是对应的 ARN 为 <code>arn:aws-cn:s3:::example-bucket</code>. 进入 Permissions 页面，编辑 Bucket Policy.</p>
+		<a href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Fri, Oct 11, 2019' data-updated="true" itemprop="datePublished">Fri, Oct 11, 2019</time>
@@ -465,56 +499,6 @@ FROM stv_recents
 WHERE stv_recents.status = 'Running'::bpchar;
 </code></pre>
 		<a href="http://liyangliang.me/posts/2018/02/redshift-snippets/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Tue, Jun 20, 2017' data-updated="true" itemprop="datePublished">Tue, Jun 20, 2017</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2017/06/pyenv-notes/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2017/06/pyenv-notes/" itemprop="url">Pyenv 使用笔记</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>应用使用虚拟环境是每个 Python 程序员都应该要掌握的技能。
-<a href="https://github.com/pyenv/pyenv">pyenv</a> 是一个非常好用的 Python 环境管理工具。有这些主要特性：</p>
-
-<ol>
-<li>方便的安装、管理不同版本的 Python，而且不需要 sudo 权限，不会污染系统的 Python 版本</li>
-<li>可以修改当前用户使用的默认 Python 版本</li>
-<li>集成 virtualenv，自动安装、激活</li>
-<li>命令行自动补全</li>
-</ol>
-
-<p>详细内容见 <a href="https://github.com/pyenv/pyenv">Github - pyenv/pyenv</a>.</p>
-
-<h2 id="安装-pyenv">安装 pyenv</h2>
-
-<p>最简单的方式是使用 <a href="https://github.com/pyenv/pyenv-installer">pyenv-installer</a>:</p>
-
-<pre><code>curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-</code></pre>
-
-<p>然后在 <code>~/.bashrc</code> 或 <code>~/.zshrc</code> 中添加如下内容：</p>
-
-<pre><code class="language-bash">export PATH=&quot;~/.pyenv/bin:$PATH&quot;
-eval &quot;$(pyenv init -)&quot;
-eval &quot;$(pyenv virtualenv-init -)&quot;
-</code></pre>
-		<a href="http://liyangliang.me/posts/2017/06/pyenv-notes/" class="more-link">Read on →</a>
 	</div>
 </article>
 

@@ -123,6 +123,36 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Wed, Mar 30, 2016' data-updated="true" itemprop="datePublished">Wed, Mar 30, 2016</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="http://liyangliang.me/categories/go"> go </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" itemprop="url">zhihu-go 源码解析：用 goquery 解析 HTML</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p><a href="/posts/2016/03/zhihu-go/">上一篇博客</a> 简单介绍了 <a href="https://github.com/DeanThompson/zhihu-go">zhihu-go</a> 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。</p>
+
+<p>因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 <a href="https://github.com/PuerkitoBio/goquery">goquery</a>.</p>
+
+<p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
+		<a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Mon, Mar 28, 2016' data-updated="true" itemprop="datePublished">Mon, Mar 28, 2016</time>
 </div>
 		<div class="tags">
@@ -509,51 +539,6 @@
 
 <p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
 		<a href="http://liyangliang.me/posts/2015/06/using-supervisor/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sun, May 24, 2015' data-updated="true" itemprop="datePublished">Sun, May 24, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/shadowsocks"> shadowsocks </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/vpn"> vpn </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="缘起">缘起</h2>
-
-<p>GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。</p>
-
-<p>我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 <a href="http://fqrouter.com/">fqrouter</a>，然而都不是很稳定和一劳永逸的解决方案。</p>
-
-<p>有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：</p>
-
-<ol>
-<li>很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）</li>
-<li>出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）</li>
-<li>想自己折腾</li>
-</ol>
-
-<p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
-		<a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" class="more-link">Read on →</a>
 	</div>
 </article>
 
