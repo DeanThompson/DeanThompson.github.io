@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,116 +127,96 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">不要用 fmt.Sprintf 做类型转换</h1>
 	<div class="entry-content" itemprop="articleBody"><p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
-
 <h2 id="int-to-string">int to string</h2>
-
 <p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
-
 <p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;strconv&quot;
-    &quot;time&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;strconv&#34;</span>
+    <span style="color:#e6db74">&#34;time&#34;</span>
 )
 
-const LOOP = 10000
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">LOOP</span> = <span style="color:#ae81ff">10000</span>
 
-var num int64 = 10000
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">num</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">10000</span>
 
-func main() {
-    startTime := time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        fmt.Sprintf(&quot;%d&quot;, num)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">startTime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#a6e22e">num</span>)
     }
-    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;fmt.Sprintf taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">startTime</span>))
 
-    startTime = time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
+    <span style="color:#a6e22e">startTime</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">FormatInt</span>(<span style="color:#a6e22e">num</span>, <span style="color:#ae81ff">10</span>)
     }
-    fmt.Printf(&quot;strconv.FormatInt taken: %v\n&quot;, time.Since(startTime))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;strconv.FormatInt taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">startTime</span>))
 }
-</code></pre>
-
-<p>其中某一次运行结果：</p>
-
+</code></pre></div><p>其中某一次运行结果：</p>
 <pre><code>fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
-</code></pre>
-
-<p>多次运行结果都类似，结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatInt</code> 的 3 倍。</p>
-
+</code></pre><p>多次运行结果都类似，结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatInt</code> 的 3 倍。</p>
 <p>同理，对于 <code>float64</code> 类型，推荐使用 <code>strconv.FormatFloat</code>。测试代码和上面类似，得到的结论是：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>strconv.FormatFloat</code> 的 1.1 倍。效果没有整型明显，但依然更高效。</p>
-
 <h2 id="hexadecimal-to-string">hexadecimal to string</h2>
-
 <p>十六进制数到字符串的转换也很常见，尤其是在一些加解密程序中，如获取 md5 值。 <code>encoding/hex</code> 包提供了十六进制数的编解码函数。</p>
-
 <p>下面比较一下 <code>fmt.Sprintf</code> 和 <code>hex.EncodeToString</code> 的时间开销：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;crypto/md5&quot;
-    &quot;encoding/hex&quot;
-    &quot;fmt&quot;
-    &quot;io&quot;
-    &quot;time&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;crypto/md5&#34;</span>
+    <span style="color:#e6db74">&#34;encoding/hex&#34;</span>
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;io&#34;</span>
+    <span style="color:#e6db74">&#34;time&#34;</span>
 )
 
-const LOOP = 10000
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">LOOP</span> = <span style="color:#ae81ff">10000</span>
 
-func makeMd5(data string) []byte {
-    h := md5.New()
-    io.WriteString(h, data)
-    return h.Sum(nil)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">makeMd5</span>(<span style="color:#a6e22e">data</span> <span style="color:#66d9ef">string</span>) []<span style="color:#66d9ef">byte</span> {
+    <span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">md5</span>.<span style="color:#a6e22e">New</span>()
+    <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">h</span>, <span style="color:#a6e22e">data</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Sum</span>(<span style="color:#66d9ef">nil</span>)
 }
 
-func main() {
-    s := &quot;123456&quot;
-    hexBytes := makeMd5(s)
-    s1 := fmt.Sprintf(&quot;%x&quot;, hexBytes)
-    s2 := hex.EncodeToString(hexBytes)
-    fmt.Println(&quot;result of fmt.Sprintf == hex.EncodeToString:&quot;, s1 == s2) // 确保结果一致
-
-    start := time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        fmt.Sprintf(&quot;%x&quot;, hexBytes)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;123456&#34;</span>
+    <span style="color:#a6e22e">hexBytes</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">makeMd5</span>(<span style="color:#a6e22e">s</span>)
+    <span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%x&#34;</span>, <span style="color:#a6e22e">hexBytes</span>)
+    <span style="color:#a6e22e">s2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">hex</span>.<span style="color:#a6e22e">EncodeToString</span>(<span style="color:#a6e22e">hexBytes</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;result of fmt.Sprintf == hex.EncodeToString:&#34;</span>, <span style="color:#a6e22e">s1</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">s2</span>) <span style="color:#75715e">// 确保结果一致
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%x&#34;</span>, <span style="color:#a6e22e">hexBytes</span>)
     }
-    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(start))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;fmt.Sprintf taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">start</span>))
 
-    start = time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        hex.EncodeToString(hexBytes)
+    <span style="color:#a6e22e">start</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">hex</span>.<span style="color:#a6e22e">EncodeToString</span>(<span style="color:#a6e22e">hexBytes</span>)
     }
-    fmt.Printf(&quot;hex.EncodeToString taken: %v\n&quot;, time.Since(start))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;hex.EncodeToString taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">start</span>))
 }
-</code></pre>
-
-<p>这个程序某一次的运行结果是：</p>
-
+</code></pre></div><p>这个程序某一次的运行结果是：</p>
 <pre><code>result of fmt.Sprintf == hex.EncodeToString: true
 fmt.Sprintf taken: 10.285488ms
 hex.EncodeToString taken: 2.080457ms
-</code></pre>
-
-<p>多次运行结果都类似，可以得到一个结论：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>hex.EncodeToString</code> 的 5 倍。</p>
-
+</code></pre><p>多次运行结果都类似，可以得到一个结论：<code>fmt.Sprintf</code> 所需要的时间大约是 <code>hex.EncodeToString</code> 的 5 倍。</p>
 <p>这里只讨论了三种数据类型，对于其他类型的数据也是类似的。总之，在需要转换成字符串时，即使对性能要求不高，都尽量不要用 <code>fmt.Sprintf</code>。</p></div>
 					</article>
 					
@@ -278,13 +258,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

@@ -1,88 +1,69 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Devops on 李林克斯</title>
-    <link>http://liyangliang.me/tags/devops/</link>
-    <description>Recent content in Devops on 李林克斯</description>
+    <title>devops on 李林克斯</title>
+    <link>https://liyangliang.me/tags/devops/</link>
+    <description>Recent content in devops on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 02 Mar 2019 16:40:45 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/devops/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</title>
-      <link>http://liyangliang.me/posts/2019/03/data-encoding/</link>
+      <link>https://liyangliang.me/posts/2019/03/data-encoding/</link>
       <pubDate>Sat, 02 Mar 2019 16:40:45 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/data-encoding/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/data-encoding/</guid>
       <description>&lt;p&gt;最近一段时间都在读 &lt;em&gt;Designing Data-Intensive Applications&lt;/em&gt; 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 &lt;em&gt;Encoding and Evolution&lt;/em&gt; （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。&lt;/p&gt;
-
 &lt;h2 id=&#34;编码和解码&#34;&gt;编码和解码&lt;/h2&gt;
-
 &lt;p&gt;在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。&lt;/p&gt;
-
 &lt;p&gt;从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Pyenv 使用笔记</title>
-      <link>http://liyangliang.me/posts/2017/06/pyenv-notes/</link>
+      <link>https://liyangliang.me/posts/2017/06/pyenv-notes/</link>
       <pubDate>Tue, 20 Jun 2017 15:09:27 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/06/pyenv-notes/</guid>
+      <guid>https://liyangliang.me/posts/2017/06/pyenv-notes/</guid>
       <description>&lt;p&gt;应用使用虚拟环境是每个 Python 程序员都应该要掌握的技能。
 &lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;pyenv&lt;/a&gt; 是一个非常好用的 Python 环境管理工具。有这些主要特性：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;方便的安装、管理不同版本的 Python，而且不需要 sudo 权限，不会污染系统的 Python 版本&lt;/li&gt;
 &lt;li&gt;可以修改当前用户使用的默认 Python 版本&lt;/li&gt;
 &lt;li&gt;集成 virtualenv，自动安装、激活&lt;/li&gt;
 &lt;li&gt;命令行自动补全&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;详细内容见 &lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;Github - pyenv/pyenv&lt;/a&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;安装-pyenv&#34;&gt;安装 pyenv&lt;/h2&gt;
-
 &lt;p&gt;最简单的方式是使用 &lt;a href=&#34;https://github.com/pyenv/pyenv-installer&#34;&gt;pyenv-installer&lt;/a&gt;:&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;然后在 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.zshrc&lt;/code&gt; 中添加如下内容：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export PATH=&amp;quot;~/.pyenv/bin:$PATH&amp;quot;
-eval &amp;quot;$(pyenv init -)&amp;quot;
-eval &amp;quot;$(pyenv virtualenv-init -)&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后在 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.zshrc&lt;/code&gt; 中添加如下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;export PATH&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;~/.pyenv/bin:&lt;/span&gt;$PATH&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+eval &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;pyenv init -&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+eval &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;pyenv virtualenv-init -&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Centos 7 安装配置 Rundeck</title>
-      <link>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
+      <link>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
       <pubDate>Tue, 20 Jun 2017 14:59:27 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
+      <guid>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
       <description>&lt;h2 id=&#34;通过-yum-安装&#34;&gt;通过 yum 安装：&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo yum install java-1.8.0
 $ sudo rpm -Uvh http://repo.rundeck.org/latest.rpm
 $ sudo yum install rundeck
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
 &lt;p&gt;安装完成后可以立即运行：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo service rundeckd start
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ sudo su - rundeck
 $ cd /etc/rundeck/
 $ ll

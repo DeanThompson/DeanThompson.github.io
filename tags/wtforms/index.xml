@@ -1,26 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Wtforms on 李林克斯</title>
-    <link>http://liyangliang.me/tags/wtforms/</link>
-    <description>Recent content in Wtforms on 李林克斯</description>
+    <title>wtforms on 李林克斯</title>
+    <link>https://liyangliang.me/tags/wtforms/</link>
+    <description>Recent content in wtforms on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 31 Oct 2015 01:46:10 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/wtforms/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/wtforms/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
-      <link>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
+      <link>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
       <pubDate>Sat, 31 Oct 2015 01:46:10 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;</description>
     </item>
     

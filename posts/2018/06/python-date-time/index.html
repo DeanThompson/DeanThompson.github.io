@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2018/06/python-date-time/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2018/06/python-date-time/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,56 +127,41 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2018/06/python-date-time/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2018/06/python-date-time/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Python 日期和时间处理</h1>
-	<div class="entry-content" itemprop="articleBody">
-
-<p>2012 年大四的时候写过一篇 <a href="/posts/2012/10/python-timestamp-to-timestr">Python 时间戳和日期相互转换</a>，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。</p>
-
+	<div class="entry-content" itemprop="articleBody"><p>2012 年大四的时候写过一篇 <a href="/posts/2012/10/python-timestamp-to-timestr">Python 时间戳和日期相互转换</a>，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。</p>
 <p>首先再次回答「Python 时间戳和日期相互转换」的问题。</p>
-
 <h2 id="时间戳转日期">时间戳转日期</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">import</span> time
 
-<pre><code class="language-python">import datetime
-import time
+t <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>time()
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Timestamp&#39;</span>, t)
 
-t = time.time()
-print('Timestamp', t)
-
-dt = datetime.datetime.fromtimestamp(t)
-print('Datetime', dt)
-</code></pre>
-
-<p>输出：</p>
-
+dt <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>fromtimestamp(t)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Datetime&#39;</span>, dt)
+</code></pre></div><p>输出：</p>
 <pre><code>Timestamp 1527927420.684622
 Datetime 2018-06-02 16:17:00.684622
-</code></pre>
+</code></pre><h2 id="日期转时间戳">日期转时间戳</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> datetime
 
-<h2 id="日期转时间戳">日期转时间戳</h2>
-
-<pre><code class="language-python">import datetime
-
-now = datetime.datetime.now()
-print('Datetime', now)
-print('Timestamp', now.timestamp())
-</code></pre>
-
-<p>输出：</p>
-
+now <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>now()
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Datetime&#39;</span>, now)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;Timestamp&#39;</span>, now<span style="color:#f92672">.</span>timestamp())
+</code></pre></div><p>输出：</p>
 <pre><code>Datetime 2018-06-02 16:18:42.170874
 Timestamp 1527927522.170874
-</code></pre>
-</div>
+</code></pre></div>
 					</article>
 					
 					<section id="comment">
@@ -217,13 +202,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

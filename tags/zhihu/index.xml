@@ -1,37 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Zhihu on 李林克斯</title>
-    <link>http://liyangliang.me/tags/zhihu/</link>
-    <description>Recent content in Zhihu on 李林克斯</description>
+    <title>zhihu on 李林克斯</title>
+    <link>https://liyangliang.me/tags/zhihu/</link>
+    <description>Recent content in zhihu on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 30 Mar 2016 23:02:51 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/zhihu/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/zhihu/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
-      <link>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</link>
+      <link>https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</link>
       <pubDate>Wed, 30 Mar 2016 23:02:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
 &lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
-
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>zhihu-go: 知乎非官方 API库 with Go</title>
-      <link>http://liyangliang.me/posts/2016/03/zhihu-go/</link>
+      <link>https://liyangliang.me/posts/2016/03/zhihu-go/</link>
       <pubDate>Mon, 28 Mar 2016 23:35:58 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/03/zhihu-go/</guid>
+      <guid>https://liyangliang.me/posts/2016/03/zhihu-go/</guid>
       <description>&lt;p&gt;我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 &lt;a href=&#34;https://github.com/egrcc/zhihu-python&#34;&gt;zhihu-python&lt;/a&gt;. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。&lt;/p&gt;</description>
     </item>
     

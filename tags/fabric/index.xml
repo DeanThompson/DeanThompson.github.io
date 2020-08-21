@@ -1,48 +1,43 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Fabric on 李林克斯</title>
-    <link>http://liyangliang.me/tags/fabric/</link>
-    <description>Recent content in Fabric on 李林克斯</description>
+    <title>fabric on 李林克斯</title>
+    <link>https://liyangliang.me/tags/fabric/</link>
+    <description>Recent content in fabric on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Fri, 12 Jun 2015 14:00:13 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/fabric/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/fabric/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>用 Fabric 实现自动化部署</title>
-      <link>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</link>
+      <link>https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</link>
       <pubDate>Fri, 12 Jun 2015 14:00:13 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</guid>
+      <guid>https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</guid>
       <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
-
 &lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
-
 &lt;p&gt;上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
-
 &lt;ul&gt;
 &lt;li&gt;配置复杂，命令行参数多&lt;/li&gt;
 &lt;li&gt;需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
-
 &lt;ul&gt;
 &lt;li&gt;不能增量更新，每次都是全部传输&lt;/li&gt;
 &lt;li&gt;不能配置忽略文件（.git 怎么办？）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;</description>
     </item>
     

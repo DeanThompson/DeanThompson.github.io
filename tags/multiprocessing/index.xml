@@ -1,28 +1,27 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Multiprocessing on 李林克斯</title>
-    <link>http://liyangliang.me/tags/multiprocessing/</link>
-    <description>Recent content in Multiprocessing on 李林克斯</description>
+    <title>multiprocessing on 李林克斯</title>
+    <link>https://liyangliang.me/tags/multiprocessing/</link>
+    <description>Recent content in multiprocessing on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 25 Feb 2017 16:16:14 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/multiprocessing/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/multiprocessing/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Python 多进程导入数据到 MySQL</title>
-      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
+      <link>https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
       <pubDate>Sat, 25 Feb 2017 16:16:14 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
+      <guid>https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
       <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
 分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
 会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;批量插入而不是逐条插入&lt;/li&gt;
 &lt;li&gt;为了加快插入速度，先不要建索引&lt;/li&gt;
@@ -32,7 +31,6 @@
 &lt;li&gt;原始数据是 GBK 编码，所以还要注意转换成 UTF-8&lt;/li&gt;
 &lt;li&gt;用 &lt;a href=&#34;http://click.pocoo.org/5/&#34;&gt;click&lt;/a&gt; 封装命令行工具&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;具体的代码实现如下：&lt;/p&gt;</description>
     </item>
     

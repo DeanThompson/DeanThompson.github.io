@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Golang 排序 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/06/sort-in-golang/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2014/06/sort-in-golang/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,194 +127,165 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2014/06/sort-in-golang/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Golang 排序</h1>
 	<div class="entry-content" itemprop="articleBody"><h2 id="interface-接口">Interface 接口</h2>
-
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
-
-<pre><code class="language-go">func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">Interface</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">maxDepth</span> <span style="color:#66d9ef">int</span>) {
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &gt; <span style="color:#ae81ff">7</span> {
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+            <span style="color:#a6e22e">heapSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
+            <span style="color:#66d9ef">return</span>
         }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
+        <span style="color:#a6e22e">maxDepth</span><span style="color:#f92672">--</span>
+        <span style="color:#a6e22e">mlo</span>, <span style="color:#a6e22e">mhi</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">doPivot</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
+        <span style="color:#75715e">// Avoiding recursion on the larger subproblem guarantees
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// a stack depth of at most lg(b-a).
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mlo</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &lt; <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">mhi</span> {
+            <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">mlo</span>, <span style="color:#a6e22e">maxDepth</span>)
+            <span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">mhi</span> <span style="color:#75715e">// i.e., quickSort(data, mhi, b)
+</span><span style="color:#75715e"></span>        } <span style="color:#66d9ef">else</span> {
+            <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">mhi</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">maxDepth</span>)
+            <span style="color:#a6e22e">b</span> = <span style="color:#a6e22e">mlo</span> <span style="color:#75715e">// i.e., quickSort(data, a, mlo)
+</span><span style="color:#75715e"></span>        }
     }
-    if b-a &gt; 1 {
-        insertionSort(data, a, b)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &gt; <span style="color:#ae81ff">1</span> {
+        <span style="color:#a6e22e">insertionSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
     }
 }
 
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &gt; 0; i &gt;&gt;= 1 {
-        maxDepth++
+<span style="color:#75715e">// Sort sorts data.
+</span><span style="color:#75715e">// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+</span><span style="color:#75715e">// data.Less and data.Swap. The sort is not guaranteed to be stable.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">Interface</span>) {
+    <span style="color:#75715e">// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">Len</span>()
+    <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span> &gt; <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span> {
+        <span style="color:#a6e22e">maxDepth</span><span style="color:#f92672">++</span>
     }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
+    <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">*=</span> <span style="color:#ae81ff">2</span>
+    <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">maxDepth</span>)
 }
-</code></pre>
-
-<p>这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。</p>
-
+</code></pre></div><p>这里不详细探讨排序算法的实现和性能细节，主要写一下如何使用标准库对基础数据进行排序，以及如何实现对自定义类型的数据进行排序。</p>
 <p>标准库提供一个通用接口，只要实现了这个接口，就可以通过调用 <code>sort.Sort</code> 来排序。</p>
-
-<pre><code class="language-go">type Interface interface {
-    // Len is the number of elements in the collection.
-    Len() int
-    // Less returns whether the element with index i should sort
-    // before the element with index j.
-    Less(i, j int) bool
-    // Swap swaps the elements with indexes i and j.
-    Swap(i, j int)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Interface</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#75715e">// Len is the number of elements in the collection.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Len</span>() <span style="color:#66d9ef">int</span>
+    <span style="color:#75715e">// Less returns whether the element with index i should sort
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// before the element with index j.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Less</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">j</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span>
+    <span style="color:#75715e">// Swap swaps the elements with indexes i and j.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">Swap</span>(<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">j</span> <span style="color:#66d9ef">int</span>)
 }
-</code></pre>
-
-<h2 id="基本数据类型的排序">基本数据类型的排序</h2>
-
+</code></pre></div><h2 id="基本数据类型的排序">基本数据类型的排序</h2>
 <p><code>Interface</code> 接口的三个函数分别用于获取长度（<code>Len</code>）、大小比较（<code>Less</code>）和交换（<code>Swap</code>）。对 <code>int</code>、<code>float64</code> 和 <code>string</code> 的排序，标准库已经做好了封装，直接调用即可。以 <code>int</code> 为例简单说明：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>                                                                                                                                                                                                 
 
-<pre><code class="language-go">package main                                                                                                                                                                                                 
-
-import (
-    &quot;fmt&quot;
-    &quot;sort&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;sort&#34;</span>
 )
 
-func main() {
-    a := []int{100, 5, 29, 3, 76}
-    fmt.Println(a)     // [100 5 29 3 76]
-    sort.Ints(a)       // sort.Sort(IntSlice(a)) 的封装
-    fmt.Println(a)     // [3 5 29 76 100]，默认的 Less() 实现的是升序
-
-    a = []int{100, 5, 29, 3, 76}
-    fmt.Println(a)     // [100 5 29 3 76]
-    sort.Sort(sort.Reverse(sort.IntSlice(a)))
-    fmt.Println(a)     // [100 76 29 5 3]
-}
-</code></pre>
-
-<p>对 <code>float64</code> 和 <code>string</code> 的排序，和上面类似。需要注意的是，默认的 <code>sort.Less</code> 实现的是升序排列，如果想要让结果降序，可以先用 <code>sort.Reverse</code> 包装一次。这个调用会得到一个 <code>reverse</code> 的类型，包含一个 <code>Interface</code> 的匿名字段，其 <code>Less</code> 函数与 <code>Interface</code> 里的相反，从而实现逆序。</p>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">29</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">76</span>}
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)     <span style="color:#75715e">// [100 5 29 3 76]
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Ints</span>(<span style="color:#a6e22e">a</span>)       <span style="color:#75715e">// sort.Sort(IntSlice(a)) 的封装
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)     <span style="color:#75715e">// [3 5 29 76 100]，默认的 Less() 实现的是升序
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">a</span> = []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">29</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">76</span>}
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)     <span style="color:#75715e">// [100 5 29 3 76]
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">IntSlice</span>(<span style="color:#a6e22e">a</span>)))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)     <span style="color:#75715e">// [100 76 29 5 3]
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>对 <code>float64</code> 和 <code>string</code> 的排序，和上面类似。需要注意的是，默认的 <code>sort.Less</code> 实现的是升序排列，如果想要让结果降序，可以先用 <code>sort.Reverse</code> 包装一次。这个调用会得到一个 <code>reverse</code> 的类型，包含一个 <code>Interface</code> 的匿名字段，其 <code>Less</code> 函数与 <code>Interface</code> 里的相反，从而实现逆序。</p>
 <h2 id="自定义数据类型的排序">自定义数据类型的排序</h2>
-
 <p>如果要对自定义的数据类型进行排序，需要实现 <code>sort.Interface</code> 接口，也就是实现 <code>Len</code>、<code>Less</code> 和 <code>Swap</code> 三个函数。很多场景下 <code>Len</code> 和 <code>Swap</code> 基本上和数据类型无关，所以实际上只有 <code>Less</code> 会有差别。</p>
-
 <p>例如有个游戏下载排行榜，知道游戏ID和对应的下载量，需要把数据根据下载量进行排序。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;math/rand&quot;
-    &quot;sort&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;math/rand&#34;</span>
+    <span style="color:#e6db74">&#34;sort&#34;</span>
 )
 
-type GameDownloadItem struct {
-    GameID        int // 游戏ID
-    DownloadTimes int // 下载次数
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GameDownloadItem</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">GameID</span>        <span style="color:#66d9ef">int</span> <span style="color:#75715e">// 游戏ID
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">DownloadTimes</span> <span style="color:#66d9ef">int</span> <span style="color:#75715e">// 下载次数
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">self</span> <span style="color:#a6e22e">GameDownloadItem</span>) <span style="color:#a6e22e">String</span>() <span style="color:#66d9ef">string</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;&lt;Item(%d, %d)&gt;&#34;</span>, <span style="color:#a6e22e">self</span>.<span style="color:#a6e22e">GameID</span>, <span style="color:#a6e22e">self</span>.<span style="color:#a6e22e">DownloadTimes</span>)
 }
 
-func (self GameDownloadItem) String() string {
-    return fmt.Sprintf(&quot;&lt;Item(%d, %d)&gt;&quot;, self.GameID, self.DownloadTimes)
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GameDownloadSlice</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">GameDownloadItem</span>
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">GameDownloadSlice</span>) <span style="color:#a6e22e">Len</span>() <span style="color:#66d9ef">int</span> {
+    <span style="color:#66d9ef">return</span> len(<span style="color:#a6e22e">p</span>)
 }
 
-type GameDownloadSlice []*GameDownloadItem
-
-func (p GameDownloadSlice) Len() int {
-    return len(p)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">GameDownloadSlice</span>) <span style="color:#a6e22e">Swap</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">j</span> <span style="color:#66d9ef">int</span>) {
+    <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">i</span>], <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">j</span>] = <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">j</span>], <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">i</span>]
 }
 
-func (p GameDownloadSlice) Swap(i int, j int) {
-    p[i], p[j] = p[j], p[i]
+<span style="color:#75715e">// 根据游戏下载量 降序 排列
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">GameDownloadSlice</span>) <span style="color:#a6e22e">Less</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">j</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">DownloadTimes</span> &gt; <span style="color:#a6e22e">p</span>[<span style="color:#a6e22e">j</span>].<span style="color:#a6e22e">DownloadTimes</span>
 }
 
-// 根据游戏下载量 降序 排列
-func (p GameDownloadSlice) Less(i int, j int) bool {
-    return p[i].DownloadTimes &gt; p[j].DownloadTimes
-}
-
-func main() {
-    a := make(GameDownloadSlice, 7)
-    for i := 0; i &lt; len(a); i++ {
-        a[i] = &amp;GameDownloadItem{i + 1, rand.Intn(1000)}
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> make(<span style="color:#a6e22e">GameDownloadSlice</span>, <span style="color:#ae81ff">7</span>)
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">a</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">GameDownloadItem</span>{<span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">1000</span>)}
     }
 
-    fmt.Println(a)
-    sort.Sort(a)
-    fmt.Println(a)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)
+    <span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">a</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span>)
 }
-</code></pre>
-
-<p>第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：</p>
-
+</code></pre></div><p>第一次输出结果是随机（每次运行结果都一样）生成的未排序的数据：</p>
 <pre><code>[&lt;Item(1, 81)&gt; &lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(4, 59)&gt; &lt;Item(5, 81)&gt; &lt;Item(6, 318)&gt; &lt;Item(7, 425)&gt;]
-</code></pre>
-
-<p>排序后：</p>
-
+</code></pre><p>排序后：</p>
 <pre><code>[&lt;Item(2, 887)&gt; &lt;Item(3, 847)&gt; &lt;Item(7, 425)&gt; &lt;Item(6, 318)&gt; &lt;Item(1, 81)&gt; &lt;Item(5, 81)&gt; &lt;Item(4, 59)&gt;]
-</code></pre>
-
-<h2 id="vs-python">Vs. Python</h2>
-
+</code></pre><h2 id="vs-python">Vs. Python</h2>
 <p>相比之下，Python 里的排序就非常简单便捷了，直接调用 <code>list</code> 的 <code>sort</code> 方法（in-place）即可，还可以用 built-in 函数 <code>sorted</code> （返回新列表）。对于自定义类型指定属性，或 tuple 指定列的排序也很简单，只需要重新定义一下 <code>sort</code> 方法的 <code>key</code> 参数。对于上面游戏下载量排序的例子，下面是 python 实现版本：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python                                                                                                                                                                                        </span>
+<span style="color:#75715e"># -*- coding: utf-8 -*-</span>
 
-<pre><code class="language-python">#!/usr/bin/env python                                                                                                                                                                                        
-# -*- coding: utf-8 -*-
+<span style="color:#f92672">import</span> random
 
-import random
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GameDownloadItem</span>(object):
 
-class GameDownloadItem(object):
+    <span style="color:#66d9ef">def</span> __init__(self, game_id, download_times):
+        self<span style="color:#f92672">.</span>game_id <span style="color:#f92672">=</span> game_id
+        self<span style="color:#f92672">.</span>download_times <span style="color:#f92672">=</span> download_times
 
-    def __init__(self, game_id, download_times):
-        self.game_id = game_id
-        self.download_times = download_times
+    <span style="color:#66d9ef">def</span> __str__(self):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;&lt;Item(</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">, </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">)&gt;&#39;</span> <span style="color:#f92672">%</span> (self<span style="color:#f92672">.</span>game_id, self<span style="color:#f92672">.</span>download_times)
 
-    def __str__(self):
-        return '&lt;Item(%d, %d)&gt;' % (self.game_id, self.download_times)
-
-def display(items):
-    for item in items:
-        print item,
-    print '\n'
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">display</span>(items):
+    <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> items:
+        <span style="color:#66d9ef">print</span> item,
+    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
 
 
-if __name__ == &quot;__main__&quot;:
-    items = [GameDownloadItem(i+1, random.randrange(1000)) for i in range(7)]
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+    items <span style="color:#f92672">=</span> [GameDownloadItem(i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, random<span style="color:#f92672">.</span>randrange(<span style="color:#ae81ff">1000</span>)) <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">7</span>)]
     display(items)
 
-    items.sort(key=lambda item: item.download_times, reverse=True)
+    items<span style="color:#f92672">.</span>sort(key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> item: item<span style="color:#f92672">.</span>download_times, reverse<span style="color:#f92672">=</span>True)
     display(items)
-</code></pre>
-
-<p>某一次的执行结果：</p>
-
+</code></pre></div><p>某一次的执行结果：</p>
 <pre><code>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt;
 
 &lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt;
@@ -359,13 +330,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

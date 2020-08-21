@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Golang 的 defer 语句 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/12/defer-in-golang/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2014/12/defer-in-golang/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,83 +127,63 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2014/12/defer-in-golang/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Golang 的 defer 语句</h1>
 	<div class="entry-content" itemprop="articleBody"><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
-
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
-
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func a() {
-    i := 0
-    defer fmt.Println(i)
-    i++
-    return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">a</span>() {
+    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>)
+    <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+    <span style="color:#66d9ef">return</span>
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func b() {
-    for i := 0; i &lt; 4; i++ {
-        defer fmt.Print(i)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">b</span>() {
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">4</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Print</span>(<span style="color:#a6e22e">i</span>)
     }
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func c() (i int) {
-    defer func() { i++ }()
-    return 1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">c</span>() (<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {
+    <span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() { <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> }()
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>
 }
-</code></pre>
-
-<p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
-
+</code></pre></div><p><code>defer</code> 语句配合 <code>panic</code> 和 <code>recover</code> 可以实现其它语言里的捕捉异常（try-catch-finally），在上面给出的链接里也有描述。</p>
 <p><code>defer</code> 实在是一个非常好用的语法糖，平时写代码时也经常（几乎不可避免）用到。实际上，<code>defer</code> 也是有些额外的开销的。</p>
-
 <p>最近在看 <a href="https://github.com/revel/revel">revel 框架</a> 的一些源代码，其 cache 模块用了 robfig 实现的一个包 go-cache。go-cache 是一个 in-memroy 的 key:value 缓存实现，<a href="https://github.com/robfig/go-cache/blob/master/cache.go#L65">其中一个方法源码如下</a>：</p>
-
-<pre><code class="language-golang">// Add an item to the cache, replacing any existing item. If the duration is 0,
-// the cache's default expiration time is used. If it is -1, the item never
-// expires.
-func (c *cache) Set(k string, x interface{}, d time.Duration) {
-    c.Lock()
-    c.set(k, x, d)
-    // TODO: Calls to mu.Unlock are currently not deferred because defer
-    // adds ~200 ns (as of go1.)
-    c.Unlock()
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// Add an item to the cache, replacing any existing item. If the duration is 0,
+</span><span style="color:#75715e">// the cache&#39;s default expiration time is used. If it is -1, the item never
+</span><span style="color:#75715e">// expires.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">cache</span>) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">x</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">d</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>) {
+    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Lock</span>()
+    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">d</span>)
+    <span style="color:#75715e">// TODO: Calls to mu.Unlock are currently not deferred because defer
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// adds ~200 ns (as of go1.)
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Unlock</span>()
 }
-</code></pre>
-
-<p>这里没有用 <code>defer</code> 来调用 <code>Unlock</code>，而且在代码里明确注释说 <code>defer</code> 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 <code>defer</code>，却从没考虑过这一点。robfig 说 <code>defer</code> 大概需要 200ns，一时兴起写了个<a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1">简单的 benchmark 测试</a>，来看看 Go 1.4 里究竟如何。</p>
-
+</code></pre></div><p>这里没有用 <code>defer</code> 来调用 <code>Unlock</code>，而且在代码里明确注释说 <code>defer</code> 会增加大约 200ns 的延迟。这是个很有意思的注释，因为平时虽然一直在用 <code>defer</code>，却从没考虑过这一点。robfig 说 <code>defer</code> 大概需要 200ns，一时兴起写了个<a href="https://gist.github.com/DeanThompson/48365dc9472e0a64dba1">简单的 benchmark 测试</a>，来看看 Go 1.4 里究竟如何。</p>
 <p>这是某一次测试的结果：</p>
-
 <pre><code>testing: warning: no tests to run
 PASS
 BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
-</code></pre>
-
-<p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p></div>
+</code></pre><p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p></div>
 					</article>
 					
 					<section id="comment">
@@ -244,13 +224,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

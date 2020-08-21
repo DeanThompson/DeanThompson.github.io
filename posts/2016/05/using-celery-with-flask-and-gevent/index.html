@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>在 Flask 项目的 celery 中使用 gevent - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,50 +127,38 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/flask"> flask </a>,
+		<a href="https://liyangliang.me/categories/flask"> flask </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/celery"> celery </a>
+	    <a href="https://liyangliang.me/categories/celery"> celery </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">在 Flask 项目的 celery 中使用 gevent</h1>
 	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
-
 <h2 id="1-使用-gevent-并发模型">1. 使用 gevent 并发模型</h2>
-
 <p>如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：</p>
-
-<pre><code class="language-bash">$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
-</code></pre>
-
-<p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ celery worker -A celery_worker.celery -P gevent -c <span style="color:#ae81ff">10</span> -l INFO
+</code></pre></div><p>上面的命令，<code>-P</code> 选项指定 pool，默认是 prefork，这里是 gevent; <code>-c</code> 设置并发数。</p>
 <h2 id="2-引用-flask-的-application-context">2. 引用 Flask 的 application context</h2>
-
 <p>这个问题也是在 <a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 中重点讨论的，在这种场景下，上文的解决方法起不到作用，仍然会报错（具体原因不太懂，知道的朋友请不吝赐教）。解决方案就是，把需要引用 Flask app 的地方（如 app.config），放到 Flask 的 application context 里执行，如：</p>
-
-<pre><code class="language-python">with app.app_context():
-    print app.config.get('SOME_CONFIG_KEY')
-</code></pre>
-
-<p>在实际应用中，我最后写了个装饰器来实现这个目的。简单介绍一下场景，项目用到了 Flask-Cache，项目启动时会创建全局单例 <code>cache</code>，并在 <code>create_app</code> 中进行初始化。在 Flask-Cache 初始化时，会把当前的 Flask app 对象绑定到实例 <code>cache</code> 中，所以可以尝试从这里获取 app 对象。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">with</span> app<span style="color:#f92672">.</span>app_context():
+    <span style="color:#66d9ef">print</span> app<span style="color:#f92672">.</span>config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;SOME_CONFIG_KEY&#39;</span>)
+</code></pre></div><p>在实际应用中，我最后写了个装饰器来实现这个目的。简单介绍一下场景，项目用到了 Flask-Cache，项目启动时会创建全局单例 <code>cache</code>，并在 <code>create_app</code> 中进行初始化。在 Flask-Cache 初始化时，会把当前的 Flask app 对象绑定到实例 <code>cache</code> 中，所以可以尝试从这里获取 app 对象。</p>
 <p>代码的目录结构与之前一样：</p>
-
 <pre><code>.
 ├── README.md
 ├── app
@@ -187,43 +175,37 @@
 ├── celery_worker.py
 ├── manage.py
 └── wsgi.py
-</code></pre>
+</code></pre><p>装饰器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">with_app_context</span>(task):
+    memo <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;app&#39;</span>: None}
 
-<p>装饰器：</p>
+    <span style="color:#a6e22e">@functools.wraps</span>(task)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> memo[<span style="color:#e6db74">&#39;app&#39;</span>]:
+            <span style="color:#66d9ef">try</span>:
+                <span style="color:#75715e"># 尝试从 cache 中获取 app 对象，如果得到的不是 None，就不需要重复创建了</span>
+                app <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span>app
+                _ <span style="color:#f92672">=</span> app<span style="color:#f92672">.</span>name
+            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span>:
+                <span style="color:#f92672">from</span> app <span style="color:#f92672">import</span> create_app
 
-<pre><code class="language-python">def with_app_context(task):
-    memo = {'app': None}
+                app <span style="color:#f92672">=</span> create_app()
+            memo[<span style="color:#e6db74">&#39;app&#39;</span>] <span style="color:#f92672">=</span> app
+        <span style="color:#66d9ef">else</span>:
+            app <span style="color:#f92672">=</span> memo[<span style="color:#e6db74">&#39;app&#39;</span>]
 
-    @functools.wraps(task)
-    def _wrapper(*args, **kwargs):
-        if not memo['app']:
-            try:
-                # 尝试从 cache 中获取 app 对象，如果得到的不是 None，就不需要重复创建了
-                app = cache.app
-                _ = app.name
-            except Exception:
-                from app import create_app
+        <span style="color:#75715e"># 把 task 放到 application context 环境中运行</span>
+        <span style="color:#66d9ef">with</span> app<span style="color:#f92672">.</span>app_context():
+            <span style="color:#66d9ef">return</span> task(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs)
 
-                app = create_app()
-            memo['app'] = app
-        else:
-            app = memo['app']
-
-        # 把 task 放到 application context 环境中运行
-        with app.app_context():
-            return task(*args, **kwargs)
-
-    return _wrapper
-</code></pre>
-
-<p>使用：</p>
-
-<pre><code class="language-python">@celery.task()
-@with_app_context
-def add(x, y):
-    print app.config.get('SOME_CONFIG_KEY')
-    return x + y
-</code></pre></div>
+    <span style="color:#66d9ef">return</span> _wrapper
+</code></pre></div><p>使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@celery.task</span>()
+<span style="color:#a6e22e">@with_app_context</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(x, y):
+    <span style="color:#66d9ef">print</span> app<span style="color:#f92672">.</span>config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;SOME_CONFIG_KEY&#39;</span>)
+    <span style="color:#66d9ef">return</span> x <span style="color:#f92672">+</span> y
+</code></pre></div></div>
 					</article>
 					
 					<section id="comment">
@@ -264,13 +246,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

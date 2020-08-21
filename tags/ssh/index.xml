@@ -1,31 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ssh on 李林克斯</title>
-    <link>http://liyangliang.me/tags/ssh/</link>
-    <description>Recent content in Ssh on 李林克斯</description>
+    <title>ssh on 李林克斯</title>
+    <link>https://liyangliang.me/tags/ssh/</link>
+    <description>Recent content in ssh on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sun, 15 Mar 2015 13:31:49 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/ssh/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/ssh/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>重用 SSH 连接</title>
-      <link>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
+      <link>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
       <pubDate>Sun, 15 Mar 2015 13:31:49 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
+      <guid>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
       <description>&lt;p&gt;平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 &lt;code&gt;git pull&lt;/code&gt; 和 &lt;code&gt;git push&lt;/code&gt;，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。&lt;/p&gt;
-
 &lt;p&gt;实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。&lt;/p&gt;
-
 &lt;p&gt;修改 &lt;code&gt;~/.ssh/config&lt;/code&gt; 文件，添加如下配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34;&gt;Host *
+&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34; data-lang=&#34;sshconfig&#34;&gt;Host *
     ControlMaster auto
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600

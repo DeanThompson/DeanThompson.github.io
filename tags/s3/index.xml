@@ -1,33 +1,29 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>S3 on 李林克斯</title>
-    <link>http://liyangliang.me/tags/s3/</link>
-    <description>Recent content in S3 on 李林克斯</description>
+    <title>s3 on 李林克斯</title>
+    <link>https://liyangliang.me/tags/s3/</link>
+    <description>Recent content in s3 on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 23 Oct 2019 10:53:00 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/s3/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/s3/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>AWS S3 Bucket 指定权限</title>
-      <link>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
+      <link>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
       <pubDate>Wed, 23 Oct 2019 10:53:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
+      <guid>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
       <description>&lt;p&gt;有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。&lt;/p&gt;
-
 &lt;h2 id=&#34;创建-iam-用户&#34;&gt;创建 IAM 用户&lt;/h2&gt;
-
 &lt;p&gt;创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 &lt;code&gt;arn:aws-cn:iam::123456789012:user/exampleuser&lt;/code&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;配置-s3-bucket-权限&#34;&gt;配置 S3 bucket 权限&lt;/h2&gt;
-
-&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket&lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
+&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket &lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -1,34 +1,29 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Gevent on 李林克斯</title>
-    <link>http://liyangliang.me/tags/gevent/</link>
-    <description>Recent content in Gevent on 李林克斯</description>
+    <title>gevent on 李林克斯</title>
+    <link>https://liyangliang.me/tags/gevent/</link>
+    <description>Recent content in gevent on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Tue, 17 May 2016 16:42:37 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/gevent/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/gevent/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
+      <link>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
       <pubDate>Tue, 17 May 2016 16:42:37 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
-
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -l INFO
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -1,42 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Security on 李林克斯</title>
-    <link>http://liyangliang.me/tags/security/</link>
-    <description>Recent content in Security on 李林克斯</description>
+    <title>security on 李林克斯</title>
+    <link>https://liyangliang.me/tags/security/</link>
+    <description>Recent content in security on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 02 Jun 2018 15:11:15 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/security/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/security/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>CentOS 7 FirewallD</title>
-      <link>http://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
+      <link>https://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
       <pubDate>Sat, 02 Jun 2018 15:11:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
+      <guid>https://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
       <description>&lt;h2 id=&#34;背景故事&#34;&gt;背景故事&lt;/h2&gt;
-
 &lt;p&gt;线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。&lt;/p&gt;
-
 &lt;p&gt;因为没有防火墙，其实也发生过几次安全事故：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；&lt;/li&gt;
 &lt;li&gt;某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序&lt;/li&gt;
 &lt;li&gt;某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 &lt;code&gt;0.0.0.0&lt;/code&gt;，加上没有开启认证，很容易被拖库。&lt;/p&gt;
-
 &lt;h2 id=&#34;firewalld&#34;&gt;FirewallD&lt;/h2&gt;
-
 &lt;p&gt;最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 &lt;a href=&#34;http://www.firewalld.org/&#34;&gt;FirewallD&lt;/a&gt;，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。&lt;/p&gt;
-
 &lt;p&gt;FirewallD 有很多种 zone policy，直接使用默认的 &lt;code&gt;public&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     

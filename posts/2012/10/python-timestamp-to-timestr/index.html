@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Python 时间戳和日期相互转换 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,69 +127,50 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Python 时间戳和日期相互转换</h1>
 	<div class="entry-content" itemprop="articleBody"><p>在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
-
 <p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
-
 <blockquote>
 <p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
 </blockquote>
-
 <p>在Python里，时间戳可以通过 <code>time</code> 模块里的 <code>time()</code> 方法获得，比如:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#ae81ff">1</span>]: <span style="color:#f92672">import</span> time
 
-<pre><code class="language-python">In [1]: import time
+In [<span style="color:#ae81ff">2</span>]: time<span style="color:#f92672">.</span>time()
+Out[<span style="color:#ae81ff">2</span>]: <span style="color:#ae81ff">1350816710.8050799</span>
+</code></pre></div><p>这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 <code>time.strftime()</code> 函数来达到这个目的。根据 <code>strftime()</code> 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 <code>time.localtime()</code> 的返回值。而那个9元组其实是 <code>struct_time</code>，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#ae81ff">5</span>]: <span style="color:#f92672">import</span> time
 
-In [2]: time.time()
-Out[2]: 1350816710.8050799
-</code></pre>
+In [<span style="color:#ae81ff">6</span>]: time<span style="color:#f92672">.</span>localtime()
+Out[<span style="color:#ae81ff">6</span>]: time<span style="color:#f92672">.</span>struct_time(tm_year<span style="color:#f92672">=</span><span style="color:#ae81ff">2012</span>, tm_mon<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, tm_mday<span style="color:#f92672">=</span><span style="color:#ae81ff">21</span>, tm_hour<span style="color:#f92672">=</span><span style="color:#ae81ff">19</span>, tm_min<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, tm_sec<span style="color:#f92672">=</span><span style="color:#ae81ff">25</span>, tm_wday<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span>, tm_yday<span style="color:#f92672">=</span><span style="color:#ae81ff">295</span>, tm_isdst<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</code></pre></div><p>具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#ae81ff">8</span>]: <span style="color:#f92672">import</span> time
 
-<p>这个值对人来说是不友好的，所以有时候需要转换为一定的格式方便人理解。我们可以调用 <code>time.strftime()</code> 函数来达到这个目的。根据 <code>strftime()</code> 函数的文档，我猜这个名称应该是 “string format time” 的简写，也就是字符串格式的时间。这个方法需要两个参数，其中一个是时间格式，一个是一个9元组，第二个参数可选，默认为 <code>time.localtime()</code> 的返回值。而那个9元组其实是 <code>struct_time</code>，由9个元素组成的元组(tuple)，也是一种时间表示的格式。比如</p>
+In [<span style="color:#ae81ff">9</span>]: st <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>localtime(<span style="color:#ae81ff">1350816710.8050799</span>)
 
-<pre><code class="language-python">In [5]: import time
-
-In [6]: time.localtime()
-Out[6]: time.struct_time(tm_year=2012, tm_mon=10, tm_mday=21, tm_hour=19, tm_min=4, tm_sec=25, tm_wday=6, tm_yday=295, tm_isdst=0)
-</code></pre>
-
-<p>具体的含义，前6个应该很明显，那么后三个分别是：weekday(0-6)，在一年中的第几天(1-366)，是否是夏令时（默认-1）。现在再来看看如何把时间戳转换为指定格式的字符串形式。很简单，直接上代码</p>
-
-<pre><code class="language-python">In [8]: import time
-
-In [9]: st = time.localtime(1350816710.8050799)
-
-In [10]: time.strftime('%Y-%m-%d %H:%M:%S', st)
-Out[10]: '2012-10-21 18:51:50'
-</code></pre>
-
-<p>先用 <code>localtime()</code> 把时间戳转换为 <code>struct_time</code>， 然后传给 <code>strftime</code> 转换为指定格式的字符串。那么反过来呢？
+In [<span style="color:#ae81ff">10</span>]: time<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H:%M:%S&#39;</span>, st)
+Out[<span style="color:#ae81ff">10</span>]: <span style="color:#e6db74">&#39;2012-10-21 18:51:50&#39;</span>
+</code></pre></div><p>先用 <code>localtime()</code> 把时间戳转换为 <code>struct_time</code>， 然后传给 <code>strftime</code> 转换为指定格式的字符串。那么反过来呢？
 同样需要先转换为 <code>struct_time</code>，这个工作由 <code>time.strptime()</code> 函数完成。<code>strptime</code> 中的 <code>p</code> 应该是 parse 的意思，原型是:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">strptime(string, format) <span style="color:#f92672">-&gt;</span> struct_time
+</code></pre></div><p>把字符串形式的时间按照指定格式解析，转换为 <code>struct_time</code>。然后传给<code>time.mktime()</code> 完成最后的工作，整个过程是:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">In [<span style="color:#ae81ff">12</span>]: <span style="color:#f92672">import</span> time
 
-<pre><code class="language-python">strptime(string, format) -&gt; struct_time
-</code></pre>
+In [<span style="color:#ae81ff">13</span>]: st <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>strptime(<span style="color:#e6db74">&#39;2012-10-21 18:51:50&#39;</span>, <span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H:%M:%S&#39;</span>)
 
-<p>把字符串形式的时间按照指定格式解析，转换为 <code>struct_time</code>。然后传给<code>time.mktime()</code> 完成最后的工作，整个过程是:</p>
-
-<pre><code class="language-python">In [12]: import time
-
-In [13]: st = time.strptime('2012-10-21 18:51:50', '%Y-%m-%d %H:%M:%S')
-
-In [14]: time.mktime(st)
-Out[14]: 1350816710.0
-</code></pre>
-
-<p>最后，有两篇参考文章：</p>
-
+In [<span style="color:#ae81ff">14</span>]: time<span style="color:#f92672">.</span>mktime(st)
+Out[<span style="color:#ae81ff">14</span>]: <span style="color:#ae81ff">1350816710.0</span>
+</code></pre></div><p>最后，有两篇参考文章：</p>
 <ul>
 <li>Python中时间戳与时间字符串互相转化: <a href="http://www.coder4.com/archives/2239">http://www.coder4.com/archives/2239</a></li>
 <li>Python中time模块详解（很好）:<a href="http://qinxuye.me/article/details-about-time-module-in-python/">http://qinxuye.me/article/details-about-time-module-in-python/</a></li>
@@ -234,13 +215,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

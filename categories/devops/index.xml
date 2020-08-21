@@ -1,28 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Devops on 李林克斯</title>
-    <link>http://liyangliang.me/categories/devops/</link>
-    <description>Recent content in Devops on 李林克斯</description>
+    <title>devops on 李林克斯</title>
+    <link>https://liyangliang.me/categories/devops/</link>
+    <description>Recent content in devops on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 27 Apr 2019 14:02:16 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/categories/devops/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>一个轻量级通用的数据同步方案</title>
-      <link>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
+      <link>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
       <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
+      <guid>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
       <description>&lt;p&gt;在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。&lt;/p&gt;
-
 &lt;p&gt;首先梳理一下需求和目标：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度&lt;/li&gt;
 &lt;li&gt;扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等&lt;/li&gt;
@@ -34,16 +32,13 @@
     
     <item>
       <title>聊聊幂等</title>
-      <link>http://liyangliang.me/posts/2019/03/idempotence/</link>
+      <link>https://liyangliang.me/posts/2019/03/idempotence/</link>
       <pubDate>Sun, 17 Mar 2019 23:38:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/idempotence/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/idempotence/</guid>
       <description>&lt;p&gt;计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，&lt;code&gt;a = 1&lt;/code&gt; 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。&lt;/p&gt;
-
 &lt;h2 id=&#34;http-的幂等性&#34;&gt;HTTP 的幂等性&lt;/h2&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP RFC 规范&lt;/a&gt;里有关于幂等方法的讨论：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;Methods can also have the property of &amp;ldquo;idempotence&amp;rdquo; in that (aside from error or expiration issues) the side-effects of N &amp;gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.&lt;/p&gt;
 &lt;/blockquote&gt;</description>
@@ -51,119 +46,90 @@
     
     <item>
       <title>字节跳动（今日头条） 2018 校招后端第二批算法题</title>
-      <link>http://liyangliang.me/posts/2019/03/2018-holiday/</link>
+      <link>https://liyangliang.me/posts/2019/03/2018-holiday/</link>
       <pubDate>Sun, 10 Mar 2019 22:24:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/2018-holiday/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/2018-holiday/</guid>
       <description>&lt;p&gt;逛 V2EX 的时候无意间看到了有个叫 &lt;a href=&#34;https://www.nowcoder.com&#34;&gt;牛客网&lt;/a&gt; 的网站，里面有很多公司的笔试真题和大家分享的面经。
 出于好奇，看了一下 &lt;a href=&#34;https://www.nowcoder.com/test/8537209/summary&#34;&gt;字节跳动（今日头条）的后端题&lt;/a&gt;。&lt;/p&gt;
-
 &lt;p&gt;一共有 5 题，3 道编程，2 道问答。时候发现前面 4 题跟算法有关，其中 3 道要实现，1 道是纠错和优化，最后一题是系统设计。
 做得比较差，只完成了前面两道算法题。用 Go 语言实现，代码如下。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</title>
-      <link>http://liyangliang.me/posts/2019/03/data-encoding/</link>
+      <link>https://liyangliang.me/posts/2019/03/data-encoding/</link>
       <pubDate>Sat, 02 Mar 2019 16:40:45 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/data-encoding/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/data-encoding/</guid>
       <description>&lt;p&gt;最近一段时间都在读 &lt;em&gt;Designing Data-Intensive Applications&lt;/em&gt; 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 &lt;em&gt;Encoding and Evolution&lt;/em&gt; （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。&lt;/p&gt;
-
 &lt;h2 id=&#34;编码和解码&#34;&gt;编码和解码&lt;/h2&gt;
-
 &lt;p&gt;在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。&lt;/p&gt;
-
 &lt;p&gt;从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CentOS 7 FirewallD</title>
-      <link>http://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
+      <link>https://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
       <pubDate>Sat, 02 Jun 2018 15:11:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
+      <guid>https://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
       <description>&lt;h2 id=&#34;背景故事&#34;&gt;背景故事&lt;/h2&gt;
-
 &lt;p&gt;线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。&lt;/p&gt;
-
 &lt;p&gt;因为没有防火墙，其实也发生过几次安全事故：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；&lt;/li&gt;
 &lt;li&gt;某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序&lt;/li&gt;
 &lt;li&gt;某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 &lt;code&gt;0.0.0.0&lt;/code&gt;，加上没有开启认证，很容易被拖库。&lt;/p&gt;
-
 &lt;h2 id=&#34;firewalld&#34;&gt;FirewallD&lt;/h2&gt;
-
 &lt;p&gt;最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 &lt;a href=&#34;http://www.firewalld.org/&#34;&gt;FirewallD&lt;/a&gt;，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。&lt;/p&gt;
-
 &lt;p&gt;FirewallD 有很多种 zone policy，直接使用默认的 &lt;code&gt;public&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redshift Snippets</title>
-      <link>http://liyangliang.me/posts/2018/02/redshift-snippets/</link>
+      <link>https://liyangliang.me/posts/2018/02/redshift-snippets/</link>
       <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
+      <guid>https://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;查询所有 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT * FROM stv_sessions;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_sessions;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;终止 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT pg_terminate_backend(32281);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; pg_terminate_backend(&lt;span style=&#34;color:#ae81ff&#34;&gt;32281&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
 &lt;p&gt;权限：普通用户只能终止自己的 session，超级用户能终止任意 session.&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;查询正在运行的 queries&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;类似 MySQL 的 &lt;code&gt;SHOW PROCESSLIST&lt;/code&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; stv_recents.userid, stv_recents.status, stv_recents.starttime,
        stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
        stv_recents.query, stv_recents.pid
-FROM stv_recents
-WHERE stv_recents.status = &#39;Running&#39;::bpchar;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_recents
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; stv_recents.status &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Running&amp;#39;&lt;/span&gt;::bpchar;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Centos 7 安装配置 Rundeck</title>
-      <link>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
+      <link>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
       <pubDate>Tue, 20 Jun 2017 14:59:27 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
+      <guid>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
       <description>&lt;h2 id=&#34;通过-yum-安装&#34;&gt;通过 yum 安装：&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo yum install java-1.8.0
 $ sudo rpm -Uvh http://repo.rundeck.org/latest.rpm
 $ sudo yum install rundeck
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
 &lt;p&gt;安装完成后可以立即运行：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo service rundeckd start
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ sudo su - rundeck
 $ cd /etc/rundeck/
 $ ll

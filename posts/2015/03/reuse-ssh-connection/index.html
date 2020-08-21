@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>重用 SSH 连接 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2015/03/reuse-ssh-connection/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,39 +127,29 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/linux"> linux </a>
+	    <a href="https://liyangliang.me/categories/linux"> linux </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">重用 SSH 连接</h1>
 	<div class="entry-content" itemprop="articleBody"><p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
-
 <p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
-
 <p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
-
-<pre><code class="language-sshconfig">Host *
+<pre><code class="language-sshconfig" data-lang="sshconfig">Host *
     ControlMaster auto
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600
-</code></pre>
-
-<p>意思也很好理解：</p>
-
+</code></pre><p>意思也很好理解：</p>
 <p><code>Host *</code> 这一行表示下面这些配置和规则影响到的 host，<code>*</code> 表示所有的远程 host 都生效。如果要指定某个（些）特定的 host，可以使用类似 <code>Host *.example.com</code> 的配置。</p>
-
 <p><code>ControlMaster auto</code> 这个选项告诉 SSH 客户端尝试重用现有的连接（master connection）。</p>
-
 <p><code>ControlPath</code> 指定了这个连接的 socket 保存的路径，这里配置的是在 /tmp 目录，实际上可以在任何有读写权限的路径下。<code>/tmp/ssh_mux_%h_%p_%r</code> 配置了 socket 文件名，<code>%h</code> 表示远程主机名（host），<code>%p</code> 表示远程 SSH 服务器的端口（port），<code>%r</code> 表示登录的远程用户名（remote user name）。这些 socket 可以随时删掉（<code>rm</code>），删除后首次会话又会创建新的 master 连接。曾经遇到过这种情况，本地断网了，打开的几个远程终端都卡死，网络恢复后也一直这样，甚至打开新的终端也登录不上。这个时候只需要把之前的 socket 文件都删掉，重新登录就可以了。</p>
-
 <p><code>ControlPersist</code> 这个选项比较重要，表示在创建首个连接（master connection）的会话退出后，master 连接仍然在后台保留，以便其他复用该连接的会话不会出现问题。这个特性在使用 Git 的时候就非常有用，在频繁提交和拉代码的时候，每次 SSH 会话都是很短暂的，如果 master 连接能保持在后台，后续的操作就会如丝般顺滑。</p>
-
 <p>只需要添加上面几行配置，SSH 的体验就瞬间上升了好几个档次，简直是懒人必备。</p></div>
 					</article>
 					
@@ -201,13 +191,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

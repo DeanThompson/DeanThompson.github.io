@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>使用 supervisor 管理进程 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/06/using-supervisor/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2015/06/using-supervisor/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,185 +127,130 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/development"> development </a>,
+		<a href="https://liyangliang.me/categories/development"> development </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/tools"> tools </a>
+	    <a href="https://liyangliang.me/categories/tools"> tools </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/06/using-supervisor/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2015/06/using-supervisor/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">使用 supervisor 管理进程</h1>
 	<div class="entry-content" itemprop="articleBody"><p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
-
 <h2 id="安装">安装</h2>
-
 <p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :</p>
-
-<pre><code class="language-bash">sudo pip install supervisor
-</code></pre>
-
-<p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pip install supervisor
+</code></pre></div><p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
 <h2 id="supervisord-配置">supervisord 配置</h2>
-
 <p>Supervisor 相当强大，提供了很丰富的功能，不过我们可能只需要用到其中一小部分。安装完成之后，可以编写配置文件，来满足自己的需求。为了方便，我们把配置分成两部分：supervisord（supervisor 是一个 C/S 模型的程序，这是 server 端，对应的有 client 端：supervisorctl）和应用程序（即我们要管理的程序）。</p>
-
 <p>首先来看 supervisord 的配置文件。安装完 supervisor 之后，可以运行<code>echo_supervisord_conf</code> 命令输出默认的配置项，也可以重定向到一个配置文件里：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">echo_supervisord_conf &gt; /etc/supervisord.conf
+</code></pre></div><p>去除里面大部分注释和“不相关”的部分，我们可以先看这些配置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#66d9ef">[unix_http_server]</span>
+<span style="color:#a6e22e">file</span><span style="color:#f92672">=</span><span style="color:#e6db74">/tmp/supervisor.sock   ; UNIX socket 文件，supervisorctl 会使用</span>
+<span style="color:#75715e">;chmod=0700                 ; socket 文件的 mode，默认是 0700</span>
+<span style="color:#75715e">;chown=nobody:nogroup       ; socket 文件的 owner，格式： uid:gid</span>
 
-<pre><code class="language-bash">echo_supervisord_conf &gt; /etc/supervisord.conf
-</code></pre>
+<span style="color:#75715e">;[inet_http_server]         ; HTTP 服务器，提供 web 管理界面</span>
+<span style="color:#75715e">;port=127.0.0.1:9001        ; Web 管理后台运行的 IP 和端口，如果开放到公网，需要注意安全性</span>
+<span style="color:#75715e">;username=user              ; 登录管理后台的用户名</span>
+<span style="color:#75715e">;password=123               ; 登录管理后台的密码</span>
 
-<p>去除里面大部分注释和“不相关”的部分，我们可以先看这些配置：</p>
+<span style="color:#66d9ef">[supervisord]</span>
+<span style="color:#a6e22e">logfile</span><span style="color:#f92672">=</span><span style="color:#e6db74">/tmp/supervisord.log ; 日志文件，默认是 $CWD/supervisord.log</span>
+<span style="color:#a6e22e">logfile_maxbytes</span><span style="color:#f92672">=</span><span style="color:#e6db74">50MB        ; 日志文件大小，超出会 rotate，默认 50MB</span>
+<span style="color:#a6e22e">logfile_backups</span><span style="color:#f92672">=</span><span style="color:#e6db74">10           ; 日志文件保留备份数量默认 10</span>
+<span style="color:#a6e22e">loglevel</span><span style="color:#f92672">=</span><span style="color:#e6db74">info                ; 日志级别，默认 info，其它: debug,warn,trace</span>
+<span style="color:#a6e22e">pidfile</span><span style="color:#f92672">=</span><span style="color:#e6db74">/tmp/supervisord.pid ; pid 文件</span>
+<span style="color:#a6e22e">nodaemon</span><span style="color:#f92672">=</span><span style="color:#e6db74">false               ; 是否在前台启动，默认是 false，即以 daemon 的方式启动</span>
+<span style="color:#a6e22e">minfds</span><span style="color:#f92672">=</span><span style="color:#e6db74">1024                  ; 可以打开的文件描述符的最小值，默认 1024</span>
+<span style="color:#a6e22e">minprocs</span><span style="color:#f92672">=</span><span style="color:#e6db74">200                 ; 可以打开的进程数的最小值，默认 200</span>
 
-<pre><code class="language-ini">[unix_http_server]
-file=/tmp/supervisor.sock   ; UNIX socket 文件，supervisorctl 会使用
-;chmod=0700                 ; socket 文件的 mode，默认是 0700
-;chown=nobody:nogroup       ; socket 文件的 owner，格式： uid:gid
+<span style="color:#75715e">; the below section must remain in the config file for RPC</span>
+<span style="color:#75715e">; (supervisorctl/web interface) to work, additional interfaces may be</span>
+<span style="color:#75715e">; added by defining them in separate rpcinterface: sections</span>
+<span style="color:#66d9ef">[rpcinterface:supervisor]</span>
+<span style="color:#a6e22e">supervisor.rpcinterface_factory</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">supervisor.rpcinterface:make_main_rpcinterface</span>
 
-;[inet_http_server]         ; HTTP 服务器，提供 web 管理界面
-;port=127.0.0.1:9001        ; Web 管理后台运行的 IP 和端口，如果开放到公网，需要注意安全性
-;username=user              ; 登录管理后台的用户名
-;password=123               ; 登录管理后台的密码
+<span style="color:#66d9ef">[supervisorctl]</span>
+<span style="color:#a6e22e">serverurl</span><span style="color:#f92672">=</span><span style="color:#e6db74">unix:///tmp/supervisor.sock ; 通过 UNIX socket 连接 supervisord，路径与 unix_http_server 部分的 file 一致</span>
+<span style="color:#75715e">;serverurl=http://127.0.0.1:9001 ; 通过 HTTP 的方式连接 supervisord</span>
 
-[supervisord]
-logfile=/tmp/supervisord.log ; 日志文件，默认是 $CWD/supervisord.log
-logfile_maxbytes=50MB        ; 日志文件大小，超出会 rotate，默认 50MB
-logfile_backups=10           ; 日志文件保留备份数量默认 10
-loglevel=info                ; 日志级别，默认 info，其它: debug,warn,trace
-pidfile=/tmp/supervisord.pid ; pid 文件
-nodaemon=false               ; 是否在前台启动，默认是 false，即以 daemon 的方式启动
-minfds=1024                  ; 可以打开的文件描述符的最小值，默认 1024
-minprocs=200                 ; 可以打开的进程数的最小值，默认 200
-
-; the below section must remain in the config file for RPC
-; (supervisorctl/web interface) to work, additional interfaces may be
-; added by defining them in separate rpcinterface: sections
-[rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
-
-[supervisorctl]
-serverurl=unix:///tmp/supervisor.sock ; 通过 UNIX socket 连接 supervisord，路径与 unix_http_server 部分的 file 一致
-;serverurl=http://127.0.0.1:9001 ; 通过 HTTP 的方式连接 supervisord
-
-; 包含其他的配置文件
-[include]
-files = relative/directory/*.ini    ; 可以是 *.conf 或 *.ini
-</code></pre>
-
-<p>我们把上面这部分配置保存到 /etc/supervisord.conf（或其他任意有权限访问的文件），然后启动 supervisord（通过 -c 选项指定配置文件路径，如果不指定会按照这个顺序查找配置文件：$CWD/supervisord.conf, $CWD/etc/supervisord.conf, /etc/supervisord.conf）：</p>
-
-<pre><code class="language-bash">supervisord -c /etc/supervisord.conf
-</code></pre>
-
-<p>查看 supervisord 是否在运行：</p>
-
-<pre><code class="language-bash">ps aux | grep supervisord
-</code></pre>
-
-<h2 id="program-配置">program 配置</h2>
-
+<span style="color:#75715e">; 包含其他的配置文件</span>
+<span style="color:#66d9ef">[include]</span>
+<span style="color:#a6e22e">files</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">relative/directory/*.ini    ; 可以是 *.conf 或 *.ini</span>
+</code></pre></div><p>我们把上面这部分配置保存到 /etc/supervisord.conf（或其他任意有权限访问的文件），然后启动 supervisord（通过 -c 选项指定配置文件路径，如果不指定会按照这个顺序查找配置文件：$CWD/supervisord.conf, $CWD/etc/supervisord.conf, /etc/supervisord.conf）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">supervisord -c /etc/supervisord.conf
+</code></pre></div><p>查看 supervisord 是否在运行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ps aux | grep supervisord
+</code></pre></div><h2 id="program-配置">program 配置</h2>
 <p>上面我们已经把 supervisrod 运行起来了，现在可以添加我们要管理的进程的配置文件。这些配置可以都写到 supervisord.conf 文件里，如果应用程序很多，最好通过 include 的方式把不同的程序（组）写到不同的配置文件里。</p>
-
 <p>为了举例，我们新建一个目录 /etc/supervisor/ 用于存放这些配置文件，相应的，把 /etc/supervisord.conf 里 include 部分的的配置修改一下：</p>
-
 <pre><code>[include]
 files = /etc/supervisor/*.conf
-</code></pre>
-
-<p>假设有个用 Flask 开发的用户系统 usercenter, 生产环境使用 gunicorn 运行。项目代码位于 <code>/home/leon/projects/usercenter</code>，WSGI 对象位于 wsgi.py。在命令行启动的方式是这样的：</p>
-
-<pre><code class="language-bash">cd /home/leon/projects/usercenter
-gunicorn -w 8 -b 0.0.0.0:17510 wsgi:app
-</code></pre>
-
-<p>对应的配置文件可能是：</p>
-
-<pre><code class="language-ini">[program:usercenter]
-directory = /home/leon/projects/usercenter ; 程序的启动目录
-command = gunicorn -w 8 -b 0.0.0.0:17510 wsgi:app  ; 启动命令
-autostart = true     ; 在 supervisord 启动的时候也自动启动
-startsecs = 5        ; 启动 5 秒后没有异常退出，就当作已经正常启动了
-autorestart = true   ; 程序异常退出后自动重启
-startretries = 3     ; 启动失败自动重试次数，默认是 3
-user = leon          ; 用哪个用户启动
-redirect_stderr = true  ; 把 stderr 重定向到 stdout，默认 false
-stdout_logfile_maxbytes = 20MB  ; stdout 日志文件大小，默认 50MB
-stdout_logfile_backups = 20     ; stdout 日志文件备份数
-; stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
-stdout_logfile = /data/logs/usercenter_stdout.log
-</code></pre>
-
-<p>其中 <code>[program:usercenter]</code> 中的 <code>usercenter</code> 是应用程序的唯一标识，不能重复。对该程序的所有操作（start, restart 等）都通过名字来实现。</p>
-
+</code></pre><p>假设有个用 Flask 开发的用户系统 usercenter, 生产环境使用 gunicorn 运行。项目代码位于 <code>/home/leon/projects/usercenter</code>，WSGI 对象位于 wsgi.py。在命令行启动的方式是这样的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd /home/leon/projects/usercenter
+gunicorn -w <span style="color:#ae81ff">8</span> -b 0.0.0.0:17510 wsgi:app
+</code></pre></div><p>对应的配置文件可能是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#66d9ef">[program:usercenter]</span>
+<span style="color:#a6e22e">directory</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/home/leon/projects/usercenter ; 程序的启动目录</span>
+<span style="color:#a6e22e">command</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">gunicorn -w 8 -b 0.0.0.0:17510 wsgi:app  ; 启动命令</span>
+<span style="color:#a6e22e">autostart</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">true     ; 在 supervisord 启动的时候也自动启动</span>
+<span style="color:#a6e22e">startsecs</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">5        ; 启动 5 秒后没有异常退出，就当作已经正常启动了</span>
+<span style="color:#a6e22e">autorestart</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">true   ; 程序异常退出后自动重启</span>
+<span style="color:#a6e22e">startretries</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">3     ; 启动失败自动重试次数，默认是 3</span>
+<span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">leon          ; 用哪个用户启动</span>
+<span style="color:#a6e22e">redirect_stderr</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">true  ; 把 stderr 重定向到 stdout，默认 false</span>
+<span style="color:#a6e22e">stdout_logfile_maxbytes</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">20MB  ; stdout 日志文件大小，默认 50MB</span>
+<span style="color:#a6e22e">stdout_logfile_backups</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">20     ; stdout 日志文件备份数</span>
+<span style="color:#75715e">; stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）</span>
+<span style="color:#a6e22e">stdout_logfile</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/data/logs/usercenter_stdout.log</span>
+</code></pre></div><p>其中 <code>[program:usercenter]</code> 中的 <code>usercenter</code> 是应用程序的唯一标识，不能重复。对该程序的所有操作（start, restart 等）都通过名字来实现。</p>
 <h3 id="tips-1-python-环境">Tips 1: Python 环境</h3>
-
 <p>有两种方式指定程序使用的 Python 环境：</p>
-
 <ol>
 <li><code>command</code> 使用绝对路径。假设使用 pyenv 来管理 Python 环境，上面例子中的 gunicorn 路径可以替换为 <code>/home/leon/.pyenv/versions/usercenter/bin/gunicorn</code>. 这种方式一目了然，推荐。</li>
 <li>通过 <code>environment</code> 配置 <code>PYTHONPATH</code>. <code>environment=PYTHONPATH=$PYTHONPATH:/home/leon/.pyenv/versions/usercenter/bin/</code>. <code>environment</code> 这个配置项非常有用，可以用来给程序传入环境变量。</li>
 </ol>
-
 <h3 id="tips-2-后台进程">Tips 2: 后台进程</h3>
-
 <p>Supervisor 只能管理在前台运行的程序，所以如果应用程序有后台运行的选项，需要关闭。</p>
-
 <h3 id="tips-3-子进程">Tips 3: 子进程</h3>
-
 <p>有时候用 Supervisor 托管的程序还会有子进程（如 Tornado），如果只杀死主进程，子进程就可能变成孤儿进程。通过这两项配置来确保所有子进程都能正确停止：</p>
-
-<pre><code class="language-ini">stopasgroup=true
-killasgroup=true
-</code></pre>
-
-<h2 id="使用-supervisorctl">使用 supervisorctl</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">stopasgroup</span><span style="color:#f92672">=</span><span style="color:#e6db74">true</span>
+<span style="color:#a6e22e">killasgroup</span><span style="color:#f92672">=</span><span style="color:#e6db74">true</span>
+</code></pre></div><h2 id="使用-supervisorctl">使用 supervisorctl</h2>
 <p>Supervisorctl 是 supervisord 的一个命令行客户端工具，启动时需要指定与 supervisord 使用同一份配置文件，否则与 supervisord 一样按照顺序查找配置文件。</p>
-
-<pre><code class="language-bash">supervisorctl -c /etc/supervisord.conf
-</code></pre>
-
-<p>上面这个命令会进入 supervisorctl 的 shell 界面，然后可以执行不同的命令了：</p>
-
-<pre><code class="language-bash">&gt; status    # 查看程序状态
-&gt; stop usercenter   # 关闭 usercenter 程序
-&gt; start usercenter  # 启动 usercenter 程序
-&gt; restart usercenter    # 重启 usercenter 程序
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">supervisorctl -c /etc/supervisord.conf
+</code></pre></div><p>上面这个命令会进入 supervisorctl 的 shell 界面，然后可以执行不同的命令了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; status    <span style="color:#75715e"># 查看程序状态</span>
+&gt; stop usercenter   <span style="color:#75715e"># 关闭 usercenter 程序</span>
+&gt; start usercenter  <span style="color:#75715e"># 启动 usercenter 程序</span>
+&gt; restart usercenter    <span style="color:#75715e"># 重启 usercenter 程序</span>
 &gt; reread    ＃ 读取有更新（增加）的配置文件，不会启动新添加的程序
 &gt; update    ＃ 重启配置文件修改过的程序
-</code></pre>
-
-<p>上面这些命令都有相应的输出，除了进入 supervisorctl 的 shell 界面，也可以直接在 bash 终端运行：</p>
-
-<pre><code class="language-bash">$ supervisorctl status
+</code></pre></div><p>上面这些命令都有相应的输出，除了进入 supervisorctl 的 shell 界面，也可以直接在 bash 终端运行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ supervisorctl status
 $ supervisorctl stop usercenter
 $ supervisorctl start usercenter
 $ supervisorctl restart usercenter
 $ supervisorctl reread
 $ supervisorctl update
-</code></pre>
-
-<h2 id="其它">其它</h2>
-
+</code></pre></div><h2 id="其它">其它</h2>
 <p>除了 supervisorctl 之外，还可以配置 supervisrod 启动 web 管理界面，这个 web 后台使用 Basic Auth 的方式进行身份认证。</p>
-
 <p>除了单个进程的控制，还可以配置 group，进行分组管理。</p>
-
 <p>经常查看日志文件，包括 supervisord 的日志和各个 pragram 的日志文件，程序 crash 或抛出异常的信息一半会输出到 stderr，可以查看相应的日志文件来查找问题。</p>
-
 <p>Supervisor 有很丰富的功能，还有其他很多项配置，可以在官方文档获取更多信息：<a href="http://supervisord.org/index.html">http://supervisord.org/index.html</a></p></div>
 					</article>
 					
@@ -347,13 +292,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

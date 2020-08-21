@@ -1,35 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Dict on 李林克斯</title>
-    <link>http://liyangliang.me/tags/dict/</link>
-    <description>Recent content in Dict on 李林克斯</description>
+    <title>dict on 李林克斯</title>
+    <link>https://liyangliang.me/tags/dict/</link>
+    <description>Recent content in dict on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 01 Dec 2012 15:09:08 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/dict/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/dict/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Python字典切片</title>
-      <link>http://liyangliang.me/posts/2012/12/python-dict-slice/</link>
+      <link>https://liyangliang.me/posts/2012/12/python-dict-slice/</link>
       <pubDate>Sat, 01 Dec 2012 15:09:08 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2012/12/python-dict-slice/</guid>
+      <guid>https://liyangliang.me/posts/2012/12/python-dict-slice/</guid>
       <description>&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
-
 &lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dict_slice&lt;/span&gt;(adict, start, end):
+    keys &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; adict&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;keys()
+    dict_slice &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {}
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; k &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; keys[start:end]:
+        dict_slice[k] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; adict[k]
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; dict_slice
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>

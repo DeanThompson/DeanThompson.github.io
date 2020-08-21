@@ -1,38 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ec2 on 李林克斯</title>
-    <link>http://liyangliang.me/tags/ec2/</link>
-    <description>Recent content in Ec2 on 李林克斯</description>
+    <title>ec2 on 李林克斯</title>
+    <link>https://liyangliang.me/tags/ec2/</link>
+    <description>Recent content in ec2 on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 10 May 2017 17:41:54 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/ec2/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/ec2/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>EC2 挂载 EBS</title>
-      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:41:54 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
       <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
-
 &lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
-
 &lt;h2 id=&#34;用-lsblk-命令查看所有可用的磁盘及其安装点&#34;&gt;用 &lt;code&gt;lsblk&lt;/code&gt; 命令查看所有可用的磁盘及其安装点&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ lsblk
 NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 xvda    202:0    0   8G  0 disk
 `-xvda1 202:1    0   8G  0 part /
 xvdb    202:16   0  30G  0 disk
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
     </item>
     
   </channel>

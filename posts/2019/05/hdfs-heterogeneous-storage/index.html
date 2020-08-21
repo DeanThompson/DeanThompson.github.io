@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>HDFS 异构存储调研 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,39 +127,32 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">HDFS 异构存储调研</h1>
 	<div class="entry-content" itemprop="articleBody"><h2 id="结论">结论</h2>
-
 <ul>
 <li>HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。</li>
 <li>HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本</li>
 </ul>
-
 <h2 id="存储类型">存储类型</h2>
-
 <p>按访问速度降序：</p>
-
 <ul>
 <li>RAM_DISK: 即内存</li>
 <li>SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用</li>
 <li>DISK: 普通硬盘</li>
 <li>ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）</li>
 </ul>
-
 <h2 id="存储策略">存储策略</h2>
-
 <p>共有 6 种策略</p>
-
 <ul>
 <li><strong>Hot</strong>: 即通常意义的热数据，需要经常使用。所有副本都存在 DISK. <strong>这是默认的策略。</strong></li>
 <li><strong>Cold</strong>: 即通常意义的冷数据，很少使用，主要是归档备份。所有副本都存在 ARCHIVE.</li>
@@ -168,9 +161,7 @@
 <li><strong>One_SSD</strong>: 一个副本在 SSD，其余的放 DISK.</li>
 <li><strong>Lazy_Persist</strong>: 适用于单副本数据，放在内存。先写到 RAM_DISK, 再持久化到 DISK.</li>
 </ul>
-
 <p>按访问速度从快到慢排列</p>
-
 <table>
 <thead>
 <tr>
@@ -180,7 +171,6 @@
 <th>replicationFallbacks</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><code>Lazy_Persist</code></td>
@@ -188,35 +178,30 @@
 <td>DISK</td>
 <td>DISK</td>
 </tr>
-
 <tr>
 <td><code>All_SSD</code></td>
 <td>SSD: n</td>
 <td>DISK</td>
 <td>DISK</td>
 </tr>
-
 <tr>
 <td><code>One_SSD</code></td>
 <td>SSD: 1, DISK: n-1</td>
 <td>SSD, DISK</td>
 <td>SSD, DISK</td>
 </tr>
-
 <tr>
 <td><code>Hot</code></td>
 <td>DISK: n</td>
 <td>&lt; none &gt;</td>
 <td>ARCHIVE</td>
 </tr>
-
 <tr>
 <td><code>Warm</code></td>
 <td>DISK: 1, ARCHIVE: n-1</td>
 <td>ARCHIVE, DISK</td>
 <td>ARCHIVE, DISK</td>
 </tr>
-
 <tr>
 <td><code>Cold</code></td>
 <td>ARCHIVE: n</td>
@@ -225,30 +210,20 @@
 </tr>
 </tbody>
 </table>
-
 <blockquote>
 <p>注：creationFallbacks 是对于第一个创建的 block 的 fallback 情况时的可选存储类型；replicationFallbacks 是 block 的其余副本的 fallback 情况时的可选存储类型</p>
 </blockquote>
-
 <h2 id="配置">配置</h2>
-
 <p>每个磁盘单独挂载到不同目录，需要注意加上 <code>noatime</code> 选项。 首先配置 DataNode 的数据目录</p>
-
 <ul>
 <li><code>dfs.storage.policy.enabled</code>: 设置为 <code>true</code>，默认是 <code>true</code>.</li>
-<li><code>dfs.datanode.data.dir</code>: 可配置多个路径，用 <code>,</code> 分隔，每个路径加上存储类型标签作为前缀，如
-<br /></li>
+<li><code>dfs.datanode.data.dir</code>: 可配置多个路径，用 <code>,</code> 分隔，每个路径加上存储类型标签作为前缀，如</li>
 </ul>
-
 <pre><code>[SSD]file:///dfs/dn1,[DISK]file:///dfs/dn2,[ARCHIVE]file:///dfs/dn3
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>注: 通过 Cloudera Manager 配置不需要写 <code>file://</code>，直接使用 <code>[DISK]/dfs/dn2</code> 即可</p>
 </blockquote>
-
 <p>使用 <code>hdfs storagepolicies</code> 命令管理文件/目录的存储策略，共三个子命令。</p>
-
 <table>
 <thead>
 <tr>
@@ -256,59 +231,41 @@
 <th>作用</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td><code>hdfs storagepolicies -listPolicies</code></td>
 <td>列出所有的块存储策略</td>
 </tr>
-
 <tr>
 <td><code>hdfs storagepolicies -setStoragePolicy -path &lt;path&gt; -policy &lt;policy&gt;</code></td>
 <td>对指定路径设置存储策略，子目录会继承</td>
 </tr>
-
 <tr>
 <td><code>hdfs storagepolicies -getStoragePolicy -path &lt;path&gt;</code></td>
 <td>获取指定路径的存储策略</td>
 </tr>
 </tbody>
 </table>
-
 <h2 id="mover">Mover</h2>
-
 <p>Mover 是 HDFS 的一个数据迁移工具，类似 Balancer. 区别在于，Mover 的目的是把数据块按照存储策略迁移，Balancer 是在不同 DataNode 直接进行平衡。如果 DataNode 挂载了多种存储类型，Mover 优先尝试在本地迁移，避免网络 IO.</p>
-
 <p>使用方式: <code>hdfs mover -p &lt;path&gt;</code>，如果想一次性迁移所有数据，可把 path 指定为根路径，不过需要的时间也更长。</p>
-
 <h2 id="datanode-内的数据平衡">DataNode 内的数据平衡</h2>
-
 <p>Balancer 可用于 DataNode 间数据平衡，但没法处理同一个 DataNode 内多块硬盘的分布不均衡情况。可以使用 <code>diskbalancer</code> 命令解决。</p>
-
 <p>首先要开启 <code>dfs.disk.balancer.enabled</code>，在 Cloudera Manager 上修改配置 <strong>HDFS Service Advanced Configuration Snippet (Safety Valve) for hdfs-site.xml</strong>，设置 <code>dfs.disk.balancer.enabled</code> 为 <code>true</code>，重启 HDFS 生效。</p>
-
 <p>接下来是三部曲：plan, execute, query.</p>
-
 <ul>
 <li>Plan 生成迁移计划</li>
 </ul>
-
 <p>运行 <code>hdfs diskbalancer -plan &lt;datanode-host&gt;</code>，如 <code>hdfs diskbalancer -plan hadoop-dn-16</code>. 该命令会把计划配置以 JSON 文件输出到 HDFS 文件系统，具体路径看日志，以 <code>/system/diskbalancer/2019-Oct-13-22-49-45</code> 为例。</p>
-
 <ul>
 <li>Execute 执行迁移</li>
 </ul>
-
 <p><code>hdfs diskbalancer -execute /system/diskbalancer/2019-Oct-13-22-49-45/172.26.10.16.plan.json</code> 注意替换文件路径。</p>
-
 <ul>
 <li>Query 查看进度</li>
 </ul>
-
 <p><code>hdfs diskbalancer -query hadoop-dn-16</code> 查看进度，<code>PLAN_DONE</code> 说明平衡结束。可用 <code>df -h</code> 命令验证。</p>
-
 <h2 id="参考">参考</h2>
-
 <ul>
 <li><a href="http://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/ArchivalStorage.html">Archival Storage, SSD &amp; Memory</a></li>
 <li><a href="https://issues.apache.org/jira/browse/HDFS-2832">Enable support for heterogeneous storages in HDFS - DN as a collection of storages</a></li>
@@ -356,13 +313,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

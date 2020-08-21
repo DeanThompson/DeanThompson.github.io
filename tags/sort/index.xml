@@ -1,65 +1,63 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Sort on 李林克斯</title>
-    <link>http://liyangliang.me/tags/sort/</link>
-    <description>Recent content in Sort on 李林克斯</description>
+    <title>sort on 李林克斯</title>
+    <link>https://liyangliang.me/tags/sort/</link>
+    <description>Recent content in sort on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Tue, 03 Jun 2014 16:50:50 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/sort/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/sort/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Golang 排序</title>
-      <link>http://liyangliang.me/posts/2014/06/sort-in-golang/</link>
+      <link>https://liyangliang.me/posts/2014/06/sort-in-golang/</link>
       <pubDate>Tue, 03 Jun 2014 16:50:50 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
       <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
-
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &amp;gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;heapSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
         }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &amp;lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;--&lt;/span&gt;
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doPivot&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+        &lt;span style=&#34;color:#75715e&#34;&gt;// Avoiding recursion on the larger subproblem guarantees
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// a stack depth of at most lg(b-a).
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, mhi, b)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, a, mlo)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
     }
-    if b-a &amp;gt; 1 {
-        insertionSort(data, a, b)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;insertionSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
     }
 }
 
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &amp;gt; 0; i &amp;gt;&amp;gt;= 1 {
-        maxDepth++
+&lt;span style=&#34;color:#75715e&#34;&gt;// Sort sorts data.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// data.Less and data.Swap. The sort is not guaranteed to be stable.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Sort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;) {
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Len&lt;/span&gt;()
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
     }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>

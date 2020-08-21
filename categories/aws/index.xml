@@ -1,67 +1,56 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Aws on 李林克斯</title>
-    <link>http://liyangliang.me/categories/aws/</link>
-    <description>Recent content in Aws on 李林克斯</description>
+    <title>aws on 李林克斯</title>
+    <link>https://liyangliang.me/categories/aws/</link>
+    <description>Recent content in aws on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 23 Oct 2019 10:53:00 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/categories/aws/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/categories/aws/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>AWS S3 Bucket 指定权限</title>
-      <link>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
+      <link>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
       <pubDate>Wed, 23 Oct 2019 10:53:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
+      <guid>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
       <description>&lt;p&gt;有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。&lt;/p&gt;
-
 &lt;h2 id=&#34;创建-iam-用户&#34;&gt;创建 IAM 用户&lt;/h2&gt;
-
 &lt;p&gt;创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 &lt;code&gt;arn:aws-cn:iam::123456789012:user/exampleuser&lt;/code&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;配置-s3-bucket-权限&#34;&gt;配置 S3 bucket 权限&lt;/h2&gt;
-
-&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket&lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
+&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket &lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>EC2 挂载 EBS</title>
-      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:41:54 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
       <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
-
 &lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
-
 &lt;h2 id=&#34;用-lsblk-命令查看所有可用的磁盘及其安装点&#34;&gt;用 &lt;code&gt;lsblk&lt;/code&gt; 命令查看所有可用的磁盘及其安装点&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ lsblk
 NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 xvda    202:0    0   8G  0 disk
 `-xvda1 202:1    0   8G  0 part /
 xvdb    202:16   0  30G  0 disk
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>MySQL 数据导入到 Redshift</title>
-      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
+      <link>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
       <pubDate>Wed, 10 May 2017 17:36:29 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
       <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
-
 &lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。&lt;/li&gt;
 &lt;li&gt;FLOAT 类型改成 REAL 或 FLOAT4&lt;/li&gt;
@@ -69,34 +58,27 @@ xvdb    202:16   0  30G  0 disk
 &lt;li&gt;Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型&lt;/li&gt;
 &lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:23:55 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
-
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;AMI: Microsoft Windows Server 2012 R2 Base（简体中文）&lt;/li&gt;
 &lt;li&gt;类型: m4.4xlarge&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;启动、配置步骤略去不表，有两点需要注意：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;VPC 需要开启 3389 端口用于远程登录（RDP）&lt;/li&gt;
 &lt;li&gt;密钥对会用于解密登录密码&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
-
 &lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;</description>
     </item>
     

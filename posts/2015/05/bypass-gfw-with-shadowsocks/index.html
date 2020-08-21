@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>使用 shadowsocks 实现科学上网 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,140 +127,89 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/shadowsocks"> shadowsocks </a>,
+		<a href="https://liyangliang.me/categories/shadowsocks"> shadowsocks </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/vpn"> vpn </a>
+	    <a href="https://liyangliang.me/categories/vpn"> vpn </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">使用 shadowsocks 实现科学上网</h1>
 	<div class="entry-content" itemprop="articleBody"><h2 id="缘起">缘起</h2>
-
 <p>GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。</p>
-
 <p>我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 <a href="http://fqrouter.com/">fqrouter</a>，然而都不是很稳定和一劳永逸的解决方案。</p>
-
 <p>有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：</p>
-
 <ol>
 <li>很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）</li>
 <li>出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）</li>
 <li>想自己折腾</li>
 </ol>
-
 <p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
-
 <h2 id="购买-vps">购买 VPS</h2>
-
 <p>比较熟悉的是 Linode 和 DigitalOcean，两家的最低配置基本上差不多，但是 Linode 的价格（$10 每月）是后者的两倍。本来是想选择 DigitalOcean 的，但是在家折腾的时候，始终打不开 DigialOcean 的网站。。。于是就选择了 Linode 的 VPS。</p>
-
 <p>注册过程略去不表，选择机房的时候还是需要测试一下的。网上大家都推荐东京的机房，但是我购买的时候没有这个选项，不过亚洲有新加坡的机房。不管怎样，在<a href="https://www.linode.com/speedtest">这个页面</a> 上做一些测速就知道怎么选了。我测试后发现新加坡的速度最好（物理优势），所以就选择了新加坡的机房；不过也不用担心，如果以后想换到别的机房，也是可以迁移的。</p>
-
 <p>选好机房就可以安装系统了，我选择的是最熟悉方便的 Ubuntu 系统，安装过程非常简单，也很快。启动机器后，可以 SSH 连接上去。</p>
-
 <p>购买的是最低的配置（<a href="https://www.linode.com/pricing">https://www.linode.com/pricing</a>），不过对于个人应用，尤其是目前只有搭建 VPN 的需求来说，还是很奢侈的了。</p>
-
 <h2 id="安装-shadowsocks">安装 Shadowsocks</h2>
-
 <p>我用的是 Python 实现的版本，安装过程非常简单，文档上也有<a href="https://github.com/shadowsocks/shadowsocks">教程</a>。</p>
-
 <p>在 VPS 和本机都安装 shadowsocks：</p>
-
-<pre><code class="language-bash">pip install shadowsocks
-</code></pre>
-
-<p>编写配置文件 shadowsocks.json（把 server 和 password 替换成自己的服务器 IP 和 shadowsocks 服务器的密码）：</p>
-
-<pre><code class="language-json">{
-    &quot;server&quot;:&quot;my_server_ip&quot;,
-    &quot;server_port&quot;:8388,
-    &quot;local_address&quot;: &quot;127.0.0.1&quot;,
-    &quot;local_port&quot;:1080,
-    &quot;password&quot;:&quot;mypassword&quot;,
-    &quot;timeout&quot;:300,
-    &quot;method&quot;:&quot;aes-256-cfb&quot;,
-    &quot;fast_open&quot;: false
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pip install shadowsocks
+</code></pre></div><p>编写配置文件 shadowsocks.json（把 server 和 password 替换成自己的服务器 IP 和 shadowsocks 服务器的密码）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;server&#34;</span>:<span style="color:#e6db74">&#34;my_server_ip&#34;</span>,
+    <span style="color:#f92672">&#34;server_port&#34;</span>:<span style="color:#ae81ff">8388</span>,
+    <span style="color:#f92672">&#34;local_address&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+    <span style="color:#f92672">&#34;local_port&#34;</span>:<span style="color:#ae81ff">1080</span>,
+    <span style="color:#f92672">&#34;password&#34;</span>:<span style="color:#e6db74">&#34;mypassword&#34;</span>,
+    <span style="color:#f92672">&#34;timeout&#34;</span>:<span style="color:#ae81ff">300</span>,
+    <span style="color:#f92672">&#34;method&#34;</span>:<span style="color:#e6db74">&#34;aes-256-cfb&#34;</span>,
+    <span style="color:#f92672">&#34;fast_open&#34;</span>: <span style="color:#66d9ef">false</span>
 }
-</code></pre>
-
-<p>这份配置文件是客户端和服务端通用的，<code>local_address</code> 和 <code>local_port</code> 是客户端用的。</p>
-
+</code></pre></div><p>这份配置文件是客户端和服务端通用的，<code>local_address</code> 和 <code>local_port</code> 是客户端用的。</p>
 <p>在 VPS 上启动 shadowsocks 服务器：</p>
-
-<pre><code class="language-bash">ssserver -c /path/to/shadowsocks.json
-</code></pre>
-
-<p>在本机启动 shadowsocks 客户端：</p>
-
-<pre><code class="language-bash">sslocal -c /path/to/shadowsocks.json
-</code></pre>
-
-<p>最终使用的时候，VPN 配置的是本机的 shadowsocks，即 <code>127.0.0.1:1080</code>，而不是直接连接服务端版本。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssserver -c /path/to/shadowsocks.json
+</code></pre></div><p>在本机启动 shadowsocks 客户端：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sslocal -c /path/to/shadowsocks.json
+</code></pre></div><p>最终使用的时候，VPN 配置的是本机的 shadowsocks，即 <code>127.0.0.1:1080</code>，而不是直接连接服务端版本。</p>
 <h2 id="chrome-使用-socks-代理">Chrome 使用 socks 代理</h2>
-
 <p>Linux 系统可以配置全局的网络代理，Chrome 可以设置使用系统默认的代理配置，也可以使用 SwitchySharp 做更灵活的配置。</p>
-
 <p>使用过 GoAgent 的人应该都知道 SwitchySharp 这个 Chrome 插件。SwitchySharp 搭配使用 Shadowsocks 也很简单，只需要几步配置就可以实现：</p>
-
 <ol>
 <li>打开 SwitchySharp 的配置界面，新建一个情景模式，命名为 Shadowsocks</li>
 <li>详细配置页面，SOCKS 代理一栏，填写 IP <code>127.0.0.1</code> 和 端口 <code>1080</code>，选择 &ldquo;SOCKS v5&rdquo;，然后保存</li>
 <li>切换规则页面，把所有规则的情景模式从 GoAgent 改为 Shadowsocks，然后保存</li>
 <li>更新在线规则列表，情景模式选择 Shadowsocks；也可以手动添加规则</li>
 </ol>
-
 <p>OK，完成。此后访问规则列表里的网站，都会走 Shadowsocks 的代理。如果使用过 SwitchySharp + GoAgent，即使没有截图，上面的配置很容易理解。</p>
-
 <h2 id="命令行使用-socks-代理">命令行使用 socks 代理</h2>
-
 <p>浏览器可以自由翻墙了，终端却仍然还在墙内，使用 curl，wget 和 go get 访问墙外资源时依然失败。</p>
-
 <p>Shadowsocks 的 wiki 上提供了<a href="https://github.com/shadowsocks/shadowsocks/wiki/Using-Shadowsocks-with-Command-Line-Tools">命令行工具使用代理的教程</a>，不过我没有配置成功。后来找了另一个工具：<a href="http://www.privoxy.org/">Privoxy</a>.</p>
-
 <p>Ubuntu 安装 Privoxy 非常简单：</p>
-
-<pre><code class="language-bash">sudo apt-get install privoxy
-</code></pre>
-
-<p>安装好后会有一个 privoxy 的命令，配置文件在 /etc/privoxy/ 目录下。Privoxy 是个 web 代理工具，提供了非常复杂的配置可以用来实现很强大的功能；不过对于我来说只需要使用一小部分。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install privoxy
+</code></pre></div><p>安装好后会有一个 privoxy 的命令，配置文件在 /etc/privoxy/ 目录下。Privoxy 是个 web 代理工具，提供了非常复杂的配置可以用来实现很强大的功能；不过对于我来说只需要使用一小部分。</p>
 <p>编辑 /etc/privoxy/config 文件，在最后添加这几行配置：</p>
-
-<pre><code class="language-conf">forward-socks5  /               127.0.0.1:1080 .
+<pre><code class="language-conf" data-lang="conf">forward-socks5  /               127.0.0.1:1080 .
 listen-address  127.0.0.1:8118
 # local network do not use proxy
 forward         192.168.*.*/    .
 forward         10.*.*.*/       .
 forward         127.*.*.*/      .
-</code></pre>
-
-<p><code>forward-socks5</code> 这一行表示所有网络通过 socks5 代理，代理服务器是 <code>127.0.0.1:1080</code>，即在本机启动的 Shadowsocks 客户端服务。最后三行是本地局域网不使用代理的配置。</p>
-
+</code></pre><p><code>forward-socks5</code> 这一行表示所有网络通过 socks5 代理，代理服务器是 <code>127.0.0.1:1080</code>，即在本机启动的 Shadowsocks 客户端服务。最后三行是本地局域网不使用代理的配置。</p>
 <p>重启一下 privoxy：</p>
-
-<pre><code class="language-bash">sudo service privoxy restart
-</code></pre>
-
-<p>现在就可以在命令行里愉快的上网了，用 go get 安装各种 golang package 都非常顺利。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo service privoxy restart
+</code></pre></div><p>现在就可以在命令行里愉快的上网了，用 go get 安装各种 golang package 都非常顺利。</p>
 <h2 id="android-手机使用-socks-代理">Android 手机使用 socks 代理</h2>
-
 <p>Shadowsocks 真心人类的希望，还提供了 Android 的客户端：<a href="https://github.com/shadowsocks/shadowsocks-android">https://github.com/shadowsocks/shadowsocks-android</a>，安装和配置过程都很简单，略去不表。</p>
-
 <h2 id="后记">后记</h2>
-
 <p>经过上面的一番折腾，基本上实现了全平台的翻墙上网，这种自由进出的感觉不是一般的舒畅。同时也感到一丝悲哀，本来很自然的东西，在这里却需要想方设法曲线救国才能得到。</p>
-
 <p>感谢 Shadowsocks 的作者们，编写了一个简单而强大的代理工具，造福于民。</p></div>
 					</article>
 					
@@ -302,13 +251,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

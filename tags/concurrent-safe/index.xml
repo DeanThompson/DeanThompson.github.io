@@ -1,40 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Concurrent Safe on 李林克斯</title>
-    <link>http://liyangliang.me/tags/concurrent-safe/</link>
-    <description>Recent content in Concurrent Safe on 李林克斯</description>
+    <title>concurrent-safe on 李林克斯</title>
+    <link>https://liyangliang.me/tags/concurrent-safe/</link>
+    <description>Recent content in concurrent-safe on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Mon, 12 Jan 2015 15:01:15 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/concurrent-safe/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/concurrent-safe/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
-      <link>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
+      <link>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
       <pubDate>Mon, 12 Jan 2015 15:01:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
       <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
-
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
-
 &lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;syncMap&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;items&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt;{}
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;sync&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RWMutex&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
 &lt;p&gt;但是这种设计会有些性能隐患。主要是两个方面：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;

@@ -1,104 +1,94 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Decorator on 李林克斯</title>
-    <link>http://liyangliang.me/tags/decorator/</link>
-    <description>Recent content in Decorator on 李林克斯</description>
+    <title>decorator on 李林克斯</title>
+    <link>https://liyangliang.me/tags/decorator/</link>
+    <description>Recent content in decorator on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 31 Oct 2015 01:46:10 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/decorator/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/decorator/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
-      <link>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
+      <link>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
       <pubDate>Sat, 31 Oct 2015 01:46:10 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>【翻译】理解 Python 装饰器</title>
-      <link>http://liyangliang.me/posts/2013/03/understand-python-decorators/</link>
+      <link>https://liyangliang.me/posts/2013/03/understand-python-decorators/</link>
       <pubDate>Wed, 13 Mar 2013 00:26:58 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2013/03/understand-python-decorators/</guid>
+      <guid>https://liyangliang.me/posts/2013/03/understand-python-decorators/</guid>
       <description>&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
-
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484&#34;&gt;Understanding Python decorators&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
-
+&lt;hr&gt;
+&lt;h1 id=&#34;1-python的函数是对象pythons-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
 &lt;p&gt;要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def shout(word=&amp;quot;yes&amp;quot;):
-    return word.capitalize()+&amp;quot;!&amp;quot;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;shout&lt;/span&gt;(word&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yes&amp;#34;&lt;/span&gt;):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; word&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;capitalize()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;!&amp;#34;&lt;/span&gt;
  
-print shout()
-# outputs : &#39;Yes!&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; shout()
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
  
-# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量
+&lt;span style=&#34;color:#75715e&#34;&gt;# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量&lt;/span&gt;
  
-scream = shout
+scream &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; shout
  
-# 注意我们没有用括号：我们不是在调用函数，
-# 而是把函数&#39;shout&#39;的值绑定到&#39;scream&#39;这个变量上
-# 这也意味着你可以通过&#39;scream&#39;这个变量来调用&#39;shout&#39;函数
+&lt;span style=&#34;color:#75715e&#34;&gt;# 注意我们没有用括号：我们不是在调用函数，&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 而是把函数&amp;#39;shout&amp;#39;的值绑定到&amp;#39;scream&amp;#39;这个变量上&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 这也意味着你可以通过&amp;#39;scream&amp;#39;这个变量来调用&amp;#39;shout&amp;#39;函数&lt;/span&gt;
  
-print scream()
-# outputs : &#39;Yes!&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; scream()
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
  
-# 不仅如此，这也还意味着你可以把原来的名字&#39;shout&#39;删掉，
-# 而这个函数仍然可以通过&#39;scream&#39;来访问
-del shout
-try:
-    print shout()
-except NameError, e:
-    print e
-    #outputs: &amp;quot;name &#39;shout&#39; is not defined&amp;quot;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 不仅如此，这也还意味着你可以把原来的名字&amp;#39;shout&amp;#39;删掉，&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 而这个函数仍然可以通过&amp;#39;scream&amp;#39;来访问&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;del&lt;/span&gt; shout
+&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; shout()
+&lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;NameError&lt;/span&gt;, e:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; e
+    &lt;span style=&#34;color:#75715e&#34;&gt;#outputs: &amp;#34;name &amp;#39;shout&amp;#39; is not defined&amp;#34;&lt;/span&gt;
  
-print scream()
-outputs: &#39;Yes!&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def talk():
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; scream()
+outputs: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Yes!&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;talk&lt;/span&gt;():
  
-    # 你可以在 &#39;talk&#39; 里动态的(on the fly)定义一个函数...
-    def whisper(word=&amp;quot;yes&amp;quot;):
-        return word.lower()+&amp;quot;...&amp;quot;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# 你可以在 &amp;#39;talk&amp;#39; 里动态的(on the fly)定义一个函数...&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;whisper&lt;/span&gt;(word&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yes&amp;#34;&lt;/span&gt;):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; word&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;lower()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;...&amp;#34;&lt;/span&gt;
  
-    # ... 然后马上调用它！
+    &lt;span style=&#34;color:#75715e&#34;&gt;# ... 然后马上调用它！&lt;/span&gt;
  
-    print whisper()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; whisper()
  
-# 每当调用&#39;talk&#39;，都会定义一次&#39;whisper&#39;，然后&#39;whisper&#39;在&#39;talk&#39;里被调用
+&lt;span style=&#34;color:#75715e&#34;&gt;# 每当调用&amp;#39;talk&amp;#39;，都会定义一次&amp;#39;whisper&amp;#39;，然后&amp;#39;whisper&amp;#39;在&amp;#39;talk&amp;#39;里被调用&lt;/span&gt;
 talk()
-# outputs:
-# &amp;quot;yes...&amp;quot;
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# &amp;#34;yes...&amp;#34;&lt;/span&gt;
  
-# 但是&amp;quot;whisper&amp;quot; 在 &amp;quot;talk&amp;quot;外并不存在:
+&lt;span style=&#34;color:#75715e&#34;&gt;# 但是&amp;#34;whisper&amp;#34; 在 &amp;#34;talk&amp;#34;外并不存在:&lt;/span&gt;
  
-try:
-    print whisper()
-except NameError, e:
-    print e
-    #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; whisper()
+&lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;NameError&lt;/span&gt;, e:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; e
+    &lt;span style=&#34;color:#75715e&#34;&gt;#outputs : &amp;#34;name &amp;#39;whisper&amp;#39; is not defined&amp;#34;*&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>

@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Tornado 和 Flask 应用缓存响应结果 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,207 +127,174 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/flask"> flask </a>,
+		<a href="https://liyangliang.me/categories/flask"> flask </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/tornado"> tornado </a>,
+		<a href="https://liyangliang.me/categories/tornado"> tornado </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/cache"> cache </a>
+	    <a href="https://liyangliang.me/categories/cache"> cache </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Tornado 和 Flask 应用缓存响应结果</h1>
 	<div class="entry-content" itemprop="articleBody"><p>写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。</p>
-
 <p>如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。</p>
-
 <p>对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：</p>
-
 <ul>
 <li>GET 查询</li>
 <li>查询很耗时</li>
 <li>相同条件、不同时间（或某段时间内）的查询结果是一致的</li>
 </ul>
-
 <p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
-
 <h2 id="基本思想">基本思想</h2>
-
 <p>“一码胜千言”，直接上代码描述一下：</p>
-
-<pre><code class="language-python">def cachable_get(kwargs, on_cache_missing, timeout=300):
-    key = make_key(kwargs)	# 计算出一个 key
-    value = cache.get(key)	# 查询缓存
-    if not value:
-        value = on_cache_missing(kwargs)	# 缓存没有命中，计算一次
-        cache.set(key, value, timeout)	# 把计算结果写入缓存
-    return value
-</code></pre>
-
-<p>实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cachable_get</span>(kwargs, on_cache_missing, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>):
+    key <span style="color:#f92672">=</span> make_key(kwargs)	<span style="color:#75715e"># 计算出一个 key</span>
+    value <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span>get(key)	<span style="color:#75715e"># 查询缓存</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> value:
+        value <span style="color:#f92672">=</span> on_cache_missing(kwargs)	<span style="color:#75715e"># 缓存没有命中，计算一次</span>
+        cache<span style="color:#f92672">.</span>set(key, value, timeout)	<span style="color:#75715e"># 把计算结果写入缓存</span>
+    <span style="color:#66d9ef">return</span> value
+</code></pre></div><p>实际上也就是：先查缓存，如果有缓存没命中，再计算并把结果写入缓存。这种机制类似于中间件，或 Python 里的装饰器。</p>
 <h2 id="tornado-的实现">Tornado 的实现</h2>
-
 <p>Tornado 的 <code>tornado.web.RequestHandler</code> 有两个方法：<code>prepare</code> 和 <code>write</code>。前者会在执行业务代码前执行，后者用于写入响应结果。所以可以在 <code>prepare</code> 里查询缓存，如果命中就直接返回。没有命中的请求会执行业务代码，然后在 <code>write</code> 里顺便写入缓存。</p>
-
 <p>在 Tornado 项目里，通常的做法是从 <code>tornado.web.RequestHandler</code> 派生一个 <code>BaseHandler</code> 用于项目内 Handler 的统一基类，方便在 <code>BaseHandler</code> 里做一些统一的处理。如果在 <code>BaseHandler</code> 的 <code>prepare</code> 和 <code>write</code> 方法实现缓存机制，会影响到所有子类的表现，这样可控性和扩展性就会差一点。推荐的做法是用 Mixin.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># -*- coding: utf-8 -*-</span>
 
-<pre><code class="language-python"># -*- coding: utf-8 -*-
+<span style="color:#66d9ef">try</span>:
+    <span style="color:#f92672">import</span> cPickle <span style="color:#f92672">as</span> pickle
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span>:
+    <span style="color:#f92672">import</span> pickle
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-
-import functools
-from hashlib import sha1
-
-
-class CacheMixin(object):
-    @property
-    def cache(self):
-        return self.application.cache
-
-    def _generate_key(self):
-        key = pickle.dumps((self.request.path, self.request.arguments))
-        return self._with_prefix(sha1(key).hexdigest())
-
-    def _with_prefix(self, key):
-        return '%s:%s' % (self.request.path.strip('/'), key)
-
-    def write_cache(self, chunk):
-        super(CacheMixin, self).write(chunk)
-
-    def prepare(self):
-        super(CacheMixin, self).prepare()
-        key = self._generate_key()
-        cached = self.cache.get(key)
-        if cached is not None:
-            self.write_cache(pickle.loads(cached))
-            self.finish()
-
-    def write(self, chunk):
-        key = self._generate_key()
-        expiration = getattr(self, 'expiration', 300)
-        self.cache.set(key, pickle.dumps(chunk), expiration)
-        super(CacheMixin, self).write(chunk)
+<span style="color:#f92672">import</span> functools
+<span style="color:#f92672">from</span> hashlib <span style="color:#f92672">import</span> sha1
 
 
-def set_cache_timeout(expiration=300):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(handler, *args, **kwargs):
-            handler.expiration = expiration
-            return func(handler, *args, **kwargs)
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CacheMixin</span>(object):
+    <span style="color:#a6e22e">@property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cache</span>(self):
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>application<span style="color:#f92672">.</span>cache
 
-        return wrapper
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_generate_key</span>(self):
+        key <span style="color:#f92672">=</span> pickle<span style="color:#f92672">.</span>dumps((self<span style="color:#f92672">.</span>request<span style="color:#f92672">.</span>path, self<span style="color:#f92672">.</span>request<span style="color:#f92672">.</span>arguments))
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_with_prefix(sha1(key)<span style="color:#f92672">.</span>hexdigest())
 
-    return decorator
-</code></pre>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_with_prefix</span>(self, key):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (self<span style="color:#f92672">.</span>request<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>strip(<span style="color:#e6db74">&#39;/&#39;</span>), key)
 
-<p><code>CacheMixin</code> 在定义 Handler 时作为基类传入，覆盖 <code>tornado.web.RequestHandler</code> 的 <code>prepare</code> 和 <code>write</code>，实现缓存机制。<code>self.application.cache</code> 意味着初始化 <code>tornado.web.Application</code> 时需要配置一个 <code>cache</code> 属性，至少需要实现 <code>get</code> 和支持超时的 <code>set</code> 方法。常见的是定义一个 <code>CacheBackend</code> 和一套 <code>get</code>, <code>set</code> 接口，然后封装不同的缓存实现，比如 Redis，Memcache 等。</p>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write_cache</span>(self, chunk):
+        super(CacheMixin, self)<span style="color:#f92672">.</span>write(chunk)
 
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">prepare</span>(self):
+        super(CacheMixin, self)<span style="color:#f92672">.</span>prepare()
+        key <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_generate_key()
+        cached <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>cache<span style="color:#f92672">.</span>get(key)
+        <span style="color:#66d9ef">if</span> cached <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+            self<span style="color:#f92672">.</span>write_cache(pickle<span style="color:#f92672">.</span>loads(cached))
+            self<span style="color:#f92672">.</span>finish()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write</span>(self, chunk):
+        key <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_generate_key()
+        expiration <span style="color:#f92672">=</span> getattr(self, <span style="color:#e6db74">&#39;expiration&#39;</span>, <span style="color:#ae81ff">300</span>)
+        self<span style="color:#f92672">.</span>cache<span style="color:#f92672">.</span>set(key, pickle<span style="color:#f92672">.</span>dumps(chunk), expiration)
+        super(CacheMixin, self)<span style="color:#f92672">.</span>write(chunk)
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_cache_timeout</span>(expiration<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator</span>(func):
+        <span style="color:#a6e22e">@functools.wraps</span>(func)
+        <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(handler, <span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
+            handler<span style="color:#f92672">.</span>expiration <span style="color:#f92672">=</span> expiration
+            <span style="color:#66d9ef">return</span> func(handler, <span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs)
+
+        <span style="color:#66d9ef">return</span> wrapper
+
+    <span style="color:#66d9ef">return</span> decorator
+</code></pre></div><p><code>CacheMixin</code> 在定义 Handler 时作为基类传入，覆盖 <code>tornado.web.RequestHandler</code> 的 <code>prepare</code> 和 <code>write</code>，实现缓存机制。<code>self.application.cache</code> 意味着初始化 <code>tornado.web.Application</code> 时需要配置一个 <code>cache</code> 属性，至少需要实现 <code>get</code> 和支持超时的 <code>set</code> 方法。常见的是定义一个 <code>CacheBackend</code> 和一套 <code>get</code>, <code>set</code> 接口，然后封装不同的缓存实现，比如 Redis，Memcache 等。</p>
 <p><code>set_cache_timeout</code> 提供了自定义缓存失效时间的能力，这个装饰器不是必须的，与之等价的方式是在 Handler 的 <code>get</code> 方法的第一行（或第一个调用 <code>self.write</code> 语句前）加上：<code>self.expiration = TIMEOUT_IN_SECONDS</code>.</p>
-
 <p>一个没什么实际意义的使用示例：</p>
-
-<pre><code class="language-python">Class HelloHandler(CacheMixin, tornado.web.RequestHandler):
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">Class HelloHandler(CacheMixin, tornado<span style="color:#f92672">.</span>web<span style="color:#f92672">.</span>RequestHandler):
     
-    @set_cache_timeout(86400)
-    def get(self):
-        self.write(&quot;Hello world!&quot;)
-</code></pre>
-
-<h2 id="flask-的实现">Flask 的实现</h2>
-
+    <span style="color:#a6e22e">@set_cache_timeout</span>(<span style="color:#ae81ff">86400</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get</span>(self):
+        self<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#34;Hello world!&#34;</span>)
+</code></pre></div><h2 id="flask-的实现">Flask 的实现</h2>
 <p>Flask 里可以用 <code>before_request</code> 和 <code>after_request</code> 这两个 hooks 实现 Tornado 里覆盖 <code>prepare</code> 和 <code>write</code> 来缓存所有请求，具体实现大同小异。也可以用装饰器来获得更好的灵活性。</p>
-
 <p>在看具体实现之前，先推荐一个 Flask 的缓存扩展：<a href="https://pythonhosted.org/Flask-Cache/">Flask-Cache</a>. Flask-Cache 基于 <code>werkzeug.contrib.cache</code>，后者定义了一套缓存接口和实现了多种不同 Backend 的缓存实现；Flask-Cache 在此基础上针对 Flask 做了一些应用性集成以及提供了一些其他的辅助函数。</p>
-
 <p>下面的例子用的是 Flask-Cache，后端用 Redis，具体的配置见 Flask-Cache 的官方文档。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">try</span>:
+    <span style="color:#f92672">import</span> cPickle <span style="color:#f92672">as</span> pickle
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ImportError</span>:
+    <span style="color:#f92672">import</span> pickle
 
-<pre><code class="language-python">try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+<span style="color:#f92672">import</span> hashlib
+<span style="color:#f92672">import</span> functools
 
-import hashlib
-import functools
-
-from flask import g
+<span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> g
 
 
-class cached_response(object):
-    def __init__(self, timeout=300):
-        self.timeout = timeout or 300
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">cached_response</span>(object):
+    <span style="color:#66d9ef">def</span> __init__(self, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>):
+        self<span style="color:#f92672">.</span>timeout <span style="color:#f92672">=</span> timeout <span style="color:#f92672">or</span> <span style="color:#ae81ff">300</span>
 
-    def _generate_key(self):
-        data = pickle.dumps((request.path, request.values))
-        key = hashlib.sha1(data).hexdigest()
-        return self._with_prefix(key)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_generate_key</span>(self):
+        data <span style="color:#f92672">=</span> pickle<span style="color:#f92672">.</span>dumps((request<span style="color:#f92672">.</span>path, request<span style="color:#f92672">.</span>values))
+        key <span style="color:#f92672">=</span> hashlib<span style="color:#f92672">.</span>sha1(data)<span style="color:#f92672">.</span>hexdigest()
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_with_prefix(key)
 
-    @staticmethod
-    def _with_prefix(key):
-        return '%s:%s' % (request.path, key)
+    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_with_prefix</span>(key):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (request<span style="color:#f92672">.</span>path, key)
 
-    def __call__(self, view_func):
-        @functools.wraps(view_func)
-        def decorator(*args, **kwargs):
-            key = self._generate_key()
-            response = cache.get(key)
-            if response:
-                return response
+    <span style="color:#66d9ef">def</span> __call__(self, view_func):
+        <span style="color:#a6e22e">@functools.wraps</span>(view_func)
+        <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decorator</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
+            key <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_generate_key()
+            response <span style="color:#f92672">=</span> cache<span style="color:#f92672">.</span>get(key)
+            <span style="color:#66d9ef">if</span> response:
+                <span style="color:#66d9ef">return</span> response
 
-            response = view_func(*args, **kwargs)
+            response <span style="color:#f92672">=</span> view_func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs)
 
-            # 允许 view 函数通过设置 g.disable_cache = True 来控制不缓存本次请求的结果
-            if getattr(g, 'disable_cache', False):
-                return response
+            <span style="color:#75715e"># 允许 view 函数通过设置 g.disable_cache = True 来控制不缓存本次请求的结果</span>
+            <span style="color:#66d9ef">if</span> getattr(g, <span style="color:#e6db74">&#39;disable_cache&#39;</span>, False):
+                <span style="color:#66d9ef">return</span> response
             
-            # 只缓存 200 的请求结果
-            if response.status_code == 200:
-                cache.set(key, response, self.timeout)
+            <span style="color:#75715e"># 只缓存 200 的请求结果</span>
+            <span style="color:#66d9ef">if</span> response<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>:
+                cache<span style="color:#f92672">.</span>set(key, response, self<span style="color:#f92672">.</span>timeout)
         
-            return response
+            <span style="color:#66d9ef">return</span> response
 
-        return decorator
-</code></pre>
-
-<p><code>cached_response</code> 是一个基于类的装饰器实现，接受 <code>timeout</code> 参数指定缓存失效时间。用 <code>request.path</code> 和 <code>request.values</code> 序列化后的哈希值来标示相同的参数的请求（与 Tornado 版本类似）。上面的实现还展现出了一些可定制性：</p>
-
+        <span style="color:#66d9ef">return</span> decorator
+</code></pre></div><p><code>cached_response</code> 是一个基于类的装饰器实现，接受 <code>timeout</code> 参数指定缓存失效时间。用 <code>request.path</code> 和 <code>request.values</code> 序列化后的哈希值来标示相同的参数的请求（与 Tornado 版本类似）。上面的实现还展现出了一些可定制性：</p>
 <ul>
 <li>只缓存 StatusCode 为 200 的请求结果</li>
 <li>允许 endpoint 通过设置 <code>g.disable_cache = True</code> 来控制不缓存</li>
 </ul>
-
 <p>除了这两点，还可以做其他定制，比如通过请求参数传入 <code>nocache=1</code> 来控制获取实时结果，通过设置 <code>g.cache_timeout = 100</code> 来覆盖默认的缓存失效时间。</p>
-
 <p>使用起来也很简单，只需要注册一个装饰器就可以：</p>
-
-<pre><code class="language-python">@app.route('/hello/')
-@cached_response(86400)
-def hello():
-    return &quot;Hello, world!&quot;
-</code></pre>
-
-<h2 id="结语">结语</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#39;/hello/&#39;</span>)
+<span style="color:#a6e22e">@cached_response</span>(<span style="color:#ae81ff">86400</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello</span>():
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Hello, world!&#34;</span>
+</code></pre></div><h2 id="结语">结语</h2>
 <p>上面展示了在 Tornado 和 Flask 项目里缓存请求结果的实现方法，实际使用的时候，还是要结合具体情况做定制和调整。缓存也是一把双刃剑，在享受缓存带来性能提升的同时也要注意可能引入的问题。</p></div>
 					</article>
 					
@@ -369,13 +336,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

@@ -1,44 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Nginx on 李林克斯</title>
-    <link>http://liyangliang.me/tags/nginx/</link>
-    <description>Recent content in Nginx on 李林克斯</description>
+    <title>nginx on 李林克斯</title>
+    <link>https://liyangliang.me/tags/nginx/</link>
+    <description>Recent content in nginx on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Thu, 14 Apr 2016 15:33:52 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
-      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
+      <link>https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
       <pubDate>Thu, 14 Apr 2016 15:33:52 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
+      <guid>https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
       <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;两个域名：api.example.com, web.example.com&lt;/li&gt;
 &lt;li&gt;环境：AWS + ELB + Nginx&lt;/li&gt;
 &lt;li&gt;后端：Python + Django + Gunicorn&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;                      proxy_pass         backends                      proxy_pass
 APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backend Nginx(s) ------------&amp;gt; Gunicorn(s)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    proxy_pass http://name.of.elb.aws.com;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-nginx&#34; data-lang=&#34;nginx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;location&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;/test&lt;/span&gt; {
+    &lt;span style=&#34;color:#f92672&#34;&gt;proxy_pass&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;http://name.of.elb.aws.com&lt;/span&gt;;
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>clickhouse on 李林克斯</title>
+    <link>https://liyangliang.me/tags/clickhouse/</link>
+    <description>Recent content in clickhouse on 李林克斯</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
+    <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
+    <lastBuildDate>Fri, 21 Aug 2020 13:48:05 +0800</lastBuildDate>
+    
+	<atom:link href="https://liyangliang.me/tags/clickhouse/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>记一次 ClickHouse 数据迁移</title>
+      <link>https://liyangliang.me/posts/2020/08/clickhouse-migration/</link>
+      <pubDate>Fri, 21 Aug 2020 13:48:05 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>https://liyangliang.me/posts/2020/08/clickhouse-migration/</guid>
+      <description>背景 大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。
+方案调研 迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。
+拷贝数据目录 先观察一下 ClickHouse 在文件系统上的目录结构（配置文件 /ect/clickhouse-server/config.xml 里面配置的 &amp;lt;path&amp;gt;），为了便于查看，只保留了 data 和 metadata 目录。
+. ├── data │ ├── default │ ├── system │ │ ├── asynchronous_metric_log │ │ ├── metric_log │ │ ├── query_log │ │ ├── query_thread_log │ │ └── trace_log ├── metadata │ ├── default │ │ └── v_table_size.</description>
+    </item>
+    
+  </channel>
+</rss>

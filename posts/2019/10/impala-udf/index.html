@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Impala 添加和使用 UDF - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2019/10/impala-udf/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2019/10/impala-udf/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,61 +127,47 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/bigdata"> bigdata </a>
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2019/10/impala-udf/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2019/10/impala-udf/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Impala 添加和使用 UDF</h1>
 	<div class="entry-content" itemprop="articleBody"><p>Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。</p>
-
 <ul>
 <li>首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去</li>
 </ul>
-
 <pre><code>hdfs dfs -mkdir /user/hive/udfs
 
 hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
-</code></pre>
-
-<ul>
+</code></pre><ul>
 <li>进入 Impala 注册函数</li>
 </ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">DATABASE</span> udfs;
 
-<pre><code class="language-sql">CREATE DATABASE udfs;
-
-CREATE FUNCTION udfs.f_get_json_object(STRING, STRING) RETURNS STRING LOCATION '/user/hive/udfs/hive-builtins.jar' SYMBOL='org.apache.hadoop.hive.ql.udf.UDFJson';
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">FUNCTION</span> udfs.f_get_json_object(STRING, STRING) <span style="color:#66d9ef">RETURNS</span> STRING <span style="color:#66d9ef">LOCATION</span> <span style="color:#e6db74">&#39;/user/hive/udfs/hive-builtins.jar&#39;</span> SYMBOL<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;org.apache.hadoop.hive.ql.udf.UDFJson&#39;</span>;
 
 REFRESH FUNCTIONS udfs;
 
-SHOW FUNCTIONS IN udfs;
-</code></pre>
-
-<ul>
+<span style="color:#66d9ef">SHOW</span> FUNCTIONS <span style="color:#66d9ef">IN</span> udfs;
+</code></pre></div><ul>
 <li>使用</li>
 </ul>
-
 <pre><code>SELECT id,
        udfs.f_get_json_object(user_info, '$.city') AS user_city
        user_info
 FROM user
 LIMIT 100
-</code></pre>
-
-<ul>
+</code></pre><ul>
 <li>删除</li>
 </ul>
-
 <pre><code>DROP FUNCTION IF EXISTS udfs.f_get_json_object(STRING, STRING)
-</code></pre>
-
-<h2 id="references">References</h2>
-
+</code></pre><h2 id="references">References</h2>
 <ul>
 <li><a href="https://www.cloudera.com/documentation/enterprise/5-14-x/topics/impala_udf.html">Impala User-Defined Functions (UDFs)</a></li>
 <li><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF">Hive Operators and User-Defined Functions (UDFs)</a></li>
@@ -228,13 +214,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

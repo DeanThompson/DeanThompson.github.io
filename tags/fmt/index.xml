@@ -1,61 +1,54 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Fmt on 李林克斯</title>
-    <link>http://liyangliang.me/tags/fmt/</link>
-    <description>Recent content in Fmt on 李林克斯</description>
+    <title>fmt on 李林克斯</title>
+    <link>https://liyangliang.me/tags/fmt/</link>
+    <description>Recent content in fmt on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 11 Jun 2014 15:50:41 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/fmt/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/fmt/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
+      <link>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
       <pubDate>Wed, 11 Jun 2014 15:50:41 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
       <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
-
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
-
 &lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
-
 &lt;p&gt;比较一下 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 和 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 的时间开销：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;strconv&amp;quot;
-    &amp;quot;time&amp;quot;
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
 )
 
-const LOOP = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-var num int64 = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int64&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-func main() {
-    startTime := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%d&amp;quot;, num)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt.Sprintf taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 
-    startTime = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;strconv&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;FormatInt&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;strconv.FormatInt taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv.FormatInt taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;</description>

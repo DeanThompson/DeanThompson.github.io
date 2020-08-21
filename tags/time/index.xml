@@ -1,41 +1,39 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Time on 李林克斯</title>
-    <link>http://liyangliang.me/tags/time/</link>
-    <description>Recent content in Time on 李林克斯</description>
+    <title>time on 李林克斯</title>
+    <link>https://liyangliang.me/tags/time/</link>
+    <description>Recent content in time on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sat, 02 Jun 2018 16:03:26 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/time/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/time/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Python 日期和时间处理</title>
-      <link>http://liyangliang.me/posts/2018/06/python-date-time/</link>
+      <link>https://liyangliang.me/posts/2018/06/python-date-time/</link>
       <pubDate>Sat, 02 Jun 2018 16:03:26 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/06/python-date-time/</guid>
-      <description> 2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
+      <guid>https://liyangliang.me/posts/2018/06/python-date-time/</guid>
+      <description>2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
 首先再次回答「Python 时间戳和日期相互转换」的问题。
-时间戳转日期 import datetime import time t = time.time() print(&#39;Timestamp&#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&#39;Datetime&#39;, dt)  输出：
-Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622  日期转时间戳 import datetime now = datetime.datetime.now() print(&#39;Datetime&#39;, now) print(&#39;Timestamp&#39;, now.timestamp())  输出：
-Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874  </description>
+时间戳转日期 import datetime import time t = time.time() print(&amp;#39;Timestamp&amp;#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&amp;#39;Datetime&amp;#39;, dt) 输出：
+Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622 日期转时间戳 import datetime now = datetime.datetime.now() print(&amp;#39;Datetime&amp;#39;, now) print(&amp;#39;Timestamp&amp;#39;, now.timestamp()) 输出：
+Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874 </description>
     </item>
     
     <item>
       <title>Python 时间戳和日期相互转换</title>
-      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</link>
+      <link>https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</link>
       <pubDate>Sun, 21 Oct 2012 18:53:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</guid>
+      <guid>https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</guid>
       <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
-
 &lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93&#34;&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;</description>

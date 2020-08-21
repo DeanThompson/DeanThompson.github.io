@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>在 AWS 上安装 Tableau Server - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,60 +127,44 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/aws"> aws </a>,
+		<a href="https://liyangliang.me/categories/aws"> aws </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/tableau"> tableau </a>
+	    <a href="https://liyangliang.me/categories/tableau"> tableau </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">在 AWS 上安装 Tableau Server</h1>
 	<div class="entry-content" itemprop="articleBody"><h2 id="启动-ec2-实例">启动 EC2 实例</h2>
-
 <p>先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。</p>
-
 <ul>
 <li>AMI: Microsoft Windows Server 2012 R2 Base（简体中文）</li>
 <li>类型: m4.4xlarge</li>
 </ul>
-
 <p>启动、配置步骤略去不表，有两点需要注意：</p>
-
 <ul>
 <li>VPC 需要开启 3389 端口用于远程登录（RDP）</li>
 <li>密钥对会用于解密登录密码</li>
 </ul>
-
 <h2 id="安装-tableau-server">安装 Tableau Server</h2>
-
 <p>从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。</p>
-
-<h2 id="可选-安装-mysql-驱动">（可选）安装 MySQL 驱动</h2>
-
+<h2 id="可选安装-mysql-驱动">（可选）安装 MySQL 驱动</h2>
 <p>在 <a href="https://www.tableau.com/zh-cn/support/drivers">这个页面</a>可以找到所有数据源需要的驱动程序.</p>
-
 <p>下载好驱动程序，如 mysql-connector-odbc-5.3.7-winx64.msi，双击安装，提示错误。搜索了一番，应该是缺少 Visual C++ 的运行库。试过 Visual C++ Redistributable for Visual Studio 2012 Update 4 和 Visual C++ Redistributable Packages for Visual Studio 2013，最后发现后者才有用。</p>
-
 <p>安装完 <a href="https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=40784">Visual C++ Redistributable Packages for Visual Studio 2013</a> 之后，可以成功安装mysql-connector-odbc-5.3.7-winx64.msi 。</p>
-
 <h2 id="安装-aws-命令行程序">安装 AWS 命令行程序</h2>
-
 <p>从这里下载：<a href="https://s3.amazonaws.com/aws-cli/AWSCLI64.msi">https://s3.amazonaws.com/aws-cli/AWSCLI64.msi</a></p>
-
 <p>安装完后打开 cmd，运行 <code>aws configure</code> 进行配置，要有上传 S3 的权限。完成后可以运行 <code>aws s3 ls</code> 验证。</p>
-
 <h2 id="编写备份脚本">编写备份脚本</h2>
-
 <p>自动备份并且把备份文件上传到 S3。</p>
-
 <pre><code>@echo OFF
 set Binpath=&quot;C:\Program Files\Tableau\Tableau Server\10.2\bin&quot;
 set Backuppath=&quot;C:\Backups\Tablea Server\nightly&quot;
@@ -199,21 +183,13 @@ aws s3 cp %Backuppath% s3://tableau-server-backup/ --recursive --exclude &quot;*
 
 echo %date% %time%: *** Housekeeping completed ***
 timeout 5
-</code></pre>
-
-<h2 id="从备份恢复">从备份恢复</h2>
-
+</code></pre><h2 id="从备份恢复">从备份恢复</h2>
 <p>如果是从其他的 Tableau Server 迁移过来，可以使用备份文件迁移数据。</p>
-
 <pre><code>C:\Users\Administrator&gt;&quot;C:\Program Files\Tableau\Tableau Server\10.2\bin\tabadmi
 n.bat&quot; restore --no-config Downloads\ts_backup-2017-04-05.tsbak
-</code></pre>
-
-<p>restore 操作会关闭 Tableau Server，恢复完成后需要手动开启。</p>
-
+</code></pre><p>restore 操作会关闭 Tableau Server，恢复完成后需要手动开启。</p>
 <h2 id="自动备份">自动备份</h2>
-
-<p>使用 Task Scheduler 实现，详情见官方文档：<a href="http://technet.microsoft.com/en-us/library/cc766428.aspx">http://technet.microsoft.com/en-us/library/cc766428.aspx</a></p></div>
+<p>使用 Task Scheduler 实现，详情见官方文档：http://technet.microsoft.com/en-us/library/cc766428.aspx</p></div>
 					</article>
 					
 					<section id="comment">
@@ -254,13 +230,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

@@ -1,38 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vpn on 李林克斯</title>
-    <link>http://liyangliang.me/categories/vpn/</link>
-    <description>Recent content in Vpn on 李林克斯</description>
+    <title>vpn on 李林克斯</title>
+    <link>https://liyangliang.me/categories/vpn/</link>
+    <description>Recent content in vpn on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sun, 24 May 2015 22:27:49 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/categories/vpn/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/categories/vpn/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用 shadowsocks 实现科学上网</title>
-      <link>http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</link>
+      <link>https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</link>
       <pubDate>Sun, 24 May 2015 22:27:49 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</guid>
+      <guid>https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</guid>
       <description>&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
-
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
-
 &lt;p&gt;我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 &lt;a href=&#34;http://fqrouter.com/&#34;&gt;fqrouter&lt;/a&gt;，然而都不是很稳定和一劳永逸的解决方案。&lt;/p&gt;
-
 &lt;p&gt;有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）&lt;/li&gt;
 &lt;li&gt;出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）&lt;/li&gt;
 &lt;li&gt;想自己折腾&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;</description>
     </item>
     

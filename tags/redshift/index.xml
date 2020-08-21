@@ -1,66 +1,54 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Redshift on 李林克斯</title>
-    <link>http://liyangliang.me/tags/redshift/</link>
-    <description>Recent content in Redshift on 李林克斯</description>
+    <title>redshift on 李林克斯</title>
+    <link>https://liyangliang.me/tags/redshift/</link>
+    <description>Recent content in redshift on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sun, 04 Feb 2018 19:36:03 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/redshift/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/redshift/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Redshift Snippets</title>
-      <link>http://liyangliang.me/posts/2018/02/redshift-snippets/</link>
+      <link>https://liyangliang.me/posts/2018/02/redshift-snippets/</link>
       <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
+      <guid>https://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;查询所有 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT * FROM stv_sessions;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_sessions;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;终止 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT pg_terminate_backend(32281);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; pg_terminate_backend(&lt;span style=&#34;color:#ae81ff&#34;&gt;32281&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
 &lt;p&gt;权限：普通用户只能终止自己的 session，超级用户能终止任意 session.&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;查询正在运行的 queries&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;类似 MySQL 的 &lt;code&gt;SHOW PROCESSLIST&lt;/code&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; stv_recents.userid, stv_recents.status, stv_recents.starttime,
        stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
        stv_recents.query, stv_recents.pid
-FROM stv_recents
-WHERE stv_recents.status = &#39;Running&#39;::bpchar;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_recents
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; stv_recents.status &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Running&amp;#39;&lt;/span&gt;::bpchar;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>MySQL 数据导入到 Redshift</title>
-      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
+      <link>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
       <pubDate>Wed, 10 May 2017 17:36:29 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
       <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
-
 &lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。&lt;/li&gt;
 &lt;li&gt;FLOAT 类型改成 REAL 或 FLOAT4&lt;/li&gt;
@@ -68,7 +56,6 @@ WHERE stv_recents.status = &#39;Running&#39;::bpchar;
 &lt;li&gt;Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型&lt;/li&gt;
 &lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;</description>
     </item>
     

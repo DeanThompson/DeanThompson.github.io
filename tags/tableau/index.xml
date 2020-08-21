@@ -1,42 +1,36 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tableau on 李林克斯</title>
-    <link>http://liyangliang.me/tags/tableau/</link>
-    <description>Recent content in Tableau on 李林克斯</description>
+    <title>tableau on 李林克斯</title>
+    <link>https://liyangliang.me/tags/tableau/</link>
+    <description>Recent content in tableau on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 10 May 2017 17:23:55 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/tableau/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/tableau/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:23:55 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
-
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;AMI: Microsoft Windows Server 2012 R2 Base（简体中文）&lt;/li&gt;
 &lt;li&gt;类型: m4.4xlarge&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;启动、配置步骤略去不表，有两点需要注意：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;VPC 需要开启 3389 端口用于远程登录（RDP）&lt;/li&gt;
 &lt;li&gt;密钥对会用于解密登录密码&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
-
 &lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;</description>
     </item>
     

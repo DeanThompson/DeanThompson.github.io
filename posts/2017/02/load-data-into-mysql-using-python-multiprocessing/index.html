@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Python 多进程导入数据到 MySQL - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,18 +127,18 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/mysql"> mysql </a>
+	    <a href="https://liyangliang.me/categories/mysql"> mysql </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -146,7 +146,6 @@
 	<div class="entry-content" itemprop="articleBody"><p>前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
 分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
 会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：</p>
-
 <ul>
 <li>批量插入而不是逐条插入</li>
 <li>为了加快插入速度，先不要建索引</li>
@@ -156,161 +155,159 @@
 <li>原始数据是 GBK 编码，所以还要注意转换成 UTF-8</li>
 <li>用 <a href="http://click.pocoo.org/5/">click</a> 封装命令行工具</li>
 </ul>
-
 <p>具体的代码实现如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+<span style="color:#75715e"># -*- coding: utf-8 -*-</span>
 
-<pre><code class="language-python">#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+<span style="color:#f92672">import</span> codecs
+<span style="color:#f92672">import</span> csv
+<span style="color:#f92672">import</span> logging
+<span style="color:#f92672">import</span> multiprocessing
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> warnings
 
-import codecs
-import csv
-import logging
-import multiprocessing
-import os
-import warnings
+<span style="color:#f92672">import</span> click
+<span style="color:#f92672">import</span> MySQLdb
+<span style="color:#f92672">import</span> sqlalchemy
 
-import click
-import MySQLdb
-import sqlalchemy
+warnings<span style="color:#f92672">.</span>filterwarnings(<span style="color:#e6db74">&#39;ignore&#39;</span>, category<span style="color:#f92672">=</span>MySQLdb<span style="color:#f92672">.</span>Warning)
 
-warnings.filterwarnings('ignore', category=MySQLdb.Warning)
+<span style="color:#75715e"># 批量插入的记录数量</span>
+BATCH <span style="color:#f92672">=</span> <span style="color:#ae81ff">5000</span>
 
-# 批量插入的记录数量
-BATCH = 5000
+DB_URI <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;mysql://root@localhost:3306/example?charset=utf8&#39;</span>
 
-DB_URI = 'mysql://root@localhost:3306/example?charset=utf8'
-
-engine = sqlalchemy.create_engine(DB_URI)
-
-
-def get_table_cols(table):
-    sql = 'SELECT * FROM `{table}` LIMIT 0'.format(table=table)
-    res = engine.execute(sql)
-    return res.keys()
+engine <span style="color:#f92672">=</span> sqlalchemy<span style="color:#f92672">.</span>create_engine(DB_URI)
 
 
-def insert_many(table, cols, rows, cursor):
-    sql = 'INSERT INTO `{table}` ({cols}) VALUES ({marks})'.format(
-            table=table,
-            cols=', '.join(cols),
-            marks=', '.join(['%s'] * len(cols)))
-    cursor.execute(sql, *rows)
-    logging.info('process %s inserted %s rows into table %s', os.getpid(), len(rows), table)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_table_cols</span>(table):
+    sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;SELECT * FROM `{table}` LIMIT 0&#39;</span><span style="color:#f92672">.</span>format(table<span style="color:#f92672">=</span>table)
+    res <span style="color:#f92672">=</span> engine<span style="color:#f92672">.</span>execute(sql)
+    <span style="color:#66d9ef">return</span> res<span style="color:#f92672">.</span>keys()
 
 
-def insert_worker(table, cols, queue):
-    rows = []
-    # 每个子进程创建自己的 engine 对象
-    cursor = sqlalchemy.create_engine(DB_URI)
-    while True:
-        row = queue.get()
-        if row is None:
-            if rows:
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">insert_many</span>(table, cols, rows, cursor):
+    sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;INSERT INTO `{table}` ({cols}) VALUES ({marks})&#39;</span><span style="color:#f92672">.</span>format(
+            table<span style="color:#f92672">=</span>table,
+            cols<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;, &#39;</span><span style="color:#f92672">.</span>join(cols),
+            marks<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;, &#39;</span><span style="color:#f92672">.</span>join([<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">*</span> len(cols)))
+    cursor<span style="color:#f92672">.</span>execute(sql, <span style="color:#f92672">*</span>rows)
+    logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;process </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> inserted </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> rows into table </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, os<span style="color:#f92672">.</span>getpid(), len(rows), table)
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">insert_worker</span>(table, cols, queue):
+    rows <span style="color:#f92672">=</span> []
+    <span style="color:#75715e"># 每个子进程创建自己的 engine 对象</span>
+    cursor <span style="color:#f92672">=</span> sqlalchemy<span style="color:#f92672">.</span>create_engine(DB_URI)
+    <span style="color:#66d9ef">while</span> True:
+        row <span style="color:#f92672">=</span> queue<span style="color:#f92672">.</span>get()
+        <span style="color:#66d9ef">if</span> row <span style="color:#f92672">is</span> None:
+            <span style="color:#66d9ef">if</span> rows:
                 insert_many(table, cols, rows, cursor)
-            break
+            <span style="color:#66d9ef">break</span>
 
-        rows.append(row)
-        if len(rows) == BATCH:
+        rows<span style="color:#f92672">.</span>append(row)
+        <span style="color:#66d9ef">if</span> len(rows) <span style="color:#f92672">==</span> BATCH:
             insert_many(table, cols, rows, cursor)
-            rows = []
+            rows <span style="color:#f92672">=</span> []
 
 
-def insert_parallel(table, reader, w=10):
-    cols = get_table_cols(table)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">insert_parallel</span>(table, reader, w<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>):
+    cols <span style="color:#f92672">=</span> get_table_cols(table)
 
-    # 数据队列，主进程读文件并往里写数据，worker 进程从队列读数据
-    # 注意一下控制队列的大小，避免消费太慢导致堆积太多数据，占用过多内存
-    queue = multiprocessing.Queue(maxsize=w*BATCH*2)
-    workers = []
-    for i in range(w):
-        p = multiprocessing.Process(target=insert_worker, args=(table, cols, queue))
-        p.start()
-        workers.append(p)
-        logging.info('starting # %s worker process, pid: %s...', i + 1, p.pid)
+    <span style="color:#75715e"># 数据队列，主进程读文件并往里写数据，worker 进程从队列读数据</span>
+    <span style="color:#75715e"># 注意一下控制队列的大小，避免消费太慢导致堆积太多数据，占用过多内存</span>
+    queue <span style="color:#f92672">=</span> multiprocessing<span style="color:#f92672">.</span>Queue(maxsize<span style="color:#f92672">=</span>w<span style="color:#f92672">*</span>BATCH<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>)
+    workers <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(w):
+        p <span style="color:#f92672">=</span> multiprocessing<span style="color:#f92672">.</span>Process(target<span style="color:#f92672">=</span>insert_worker, args<span style="color:#f92672">=</span>(table, cols, queue))
+        p<span style="color:#f92672">.</span>start()
+        workers<span style="color:#f92672">.</span>append(p)
+        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;starting # </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> worker process, pid: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">...&#39;</span>, i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, p<span style="color:#f92672">.</span>pid)
 
-    dirty_data_file = './{}_dirty_rows.csv'.format(table)
-    xf = open(dirty_data_file, 'w')
-    writer = csv.writer(xf, delimiter=reader.dialect.delimiter)
+    dirty_data_file <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;./{}_dirty_rows.csv&#39;</span><span style="color:#f92672">.</span>format(table)
+    xf <span style="color:#f92672">=</span> open(dirty_data_file, <span style="color:#e6db74">&#39;w&#39;</span>)
+    writer <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>writer(xf, delimiter<span style="color:#f92672">=</span>reader<span style="color:#f92672">.</span>dialect<span style="color:#f92672">.</span>delimiter)
 
-    for line in reader:
-        # 记录并跳过脏数据: 键值数量不一致
-        if len(line) != len(cols):
-            writer.writerow(line)
-            continue
+    <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> reader:
+        <span style="color:#75715e"># 记录并跳过脏数据: 键值数量不一致</span>
+        <span style="color:#66d9ef">if</span> len(line) <span style="color:#f92672">!=</span> len(cols):
+            writer<span style="color:#f92672">.</span>writerow(line)
+            <span style="color:#66d9ef">continue</span>
 
-        # 把 None 值替换为 'NULL'
-        clean_line = [None if x == 'NULL' else x for x in line]
+        <span style="color:#75715e"># 把 None 值替换为 &#39;NULL&#39;</span>
+        clean_line <span style="color:#f92672">=</span> [None <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;NULL&#39;</span> <span style="color:#66d9ef">else</span> x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> line]
 
-        # 往队列里写数据
-        queue.put(tuple(clean_line))
-        if reader.line_num % 500000 == 0:
-            logging.info('put %s tasks into queue.', reader.line_num)
+        <span style="color:#75715e"># 往队列里写数据</span>
+        queue<span style="color:#f92672">.</span>put(tuple(clean_line))
+        <span style="color:#66d9ef">if</span> reader<span style="color:#f92672">.</span>line_num <span style="color:#f92672">%</span> <span style="color:#ae81ff">500000</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;put </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> tasks into queue.&#39;</span>, reader<span style="color:#f92672">.</span>line_num)
 
-    xf.close()
+    xf<span style="color:#f92672">.</span>close()
 
-    # 给每个 worker 发送任务结束的信号
-    logging.info('send close signal to worker processes')
-    for i in range(w):
-        queue.put(None)
+    <span style="color:#75715e"># 给每个 worker 发送任务结束的信号</span>
+    logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;send close signal to worker processes&#39;</span>)
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(w):
+        queue<span style="color:#f92672">.</span>put(None)
 
-    for p in workers:
-        p.join()
-
-
-def convert_file_to_utf8(f, rv_file=None):
-    if not rv_file:
-        name, ext = os.path.splitext(f)
-        if isinstance(name, unicode):
-            name = name.encode('utf8')
-        rv_file = '{}_utf8{}'.format(name, ext)
-    logging.info('start to process file %s', f)
-    with open(f) as infd:
-        with open(rv_file, 'w') as outfd:
-            lines = []
-            loop = 0
-            chunck = 200000
-            first_line = infd.readline().strip(codecs.BOM_UTF8).strip() + '\n'
-            lines.append(first_line)
-            for line in infd:
-                clean_line = line.decode('gb18030').encode('utf8')
-                clean_line = clean_line.rstrip() + '\n'
-                lines.append(clean_line)
-                if len(lines) == chunck:
-                    outfd.writelines(lines)
-                    lines = []
-                    loop += 1
-                    logging.info('processed %s lines.', loop * chunck)
-
-            outfd.writelines(lines)
-            logging.info('processed %s lines.', loop * chunck + len(lines))
+    <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> workers:
+        p<span style="color:#f92672">.</span>join()
 
 
-@click.group()
-def cli():
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">convert_file_to_utf8</span>(f, rv_file<span style="color:#f92672">=</span>None):
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> rv_file:
+        name, ext <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>splitext(f)
+        <span style="color:#66d9ef">if</span> isinstance(name, unicode):
+            name <span style="color:#f92672">=</span> name<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf8&#39;</span>)
+        rv_file <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;{}_utf8{}&#39;</span><span style="color:#f92672">.</span>format(name, ext)
+    logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;start to process file </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span>, f)
+    <span style="color:#66d9ef">with</span> open(f) <span style="color:#66d9ef">as</span> infd:
+        <span style="color:#66d9ef">with</span> open(rv_file, <span style="color:#e6db74">&#39;w&#39;</span>) <span style="color:#66d9ef">as</span> outfd:
+            lines <span style="color:#f92672">=</span> []
+            loop <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+            chunck <span style="color:#f92672">=</span> <span style="color:#ae81ff">200000</span>
+            first_line <span style="color:#f92672">=</span> infd<span style="color:#f92672">.</span>readline()<span style="color:#f92672">.</span>strip(codecs<span style="color:#f92672">.</span>BOM_UTF8)<span style="color:#f92672">.</span>strip() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+            lines<span style="color:#f92672">.</span>append(first_line)
+            <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> infd:
+                clean_line <span style="color:#f92672">=</span> line<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;gb18030&#39;</span>)<span style="color:#f92672">.</span>encode(<span style="color:#e6db74">&#39;utf8&#39;</span>)
+                clean_line <span style="color:#f92672">=</span> clean_line<span style="color:#f92672">.</span>rstrip() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+                lines<span style="color:#f92672">.</span>append(clean_line)
+                <span style="color:#66d9ef">if</span> len(lines) <span style="color:#f92672">==</span> chunck:
+                    outfd<span style="color:#f92672">.</span>writelines(lines)
+                    lines <span style="color:#f92672">=</span> []
+                    loop <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+                    logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;processed </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> lines.&#39;</span>, loop <span style="color:#f92672">*</span> chunck)
+
+            outfd<span style="color:#f92672">.</span>writelines(lines)
+            logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#39;processed </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> lines.&#39;</span>, loop <span style="color:#f92672">*</span> chunck <span style="color:#f92672">+</span> len(lines))
 
 
-@cli.command('gbk_to_utf8')
-@click.argument('f')
-def convert_gbk_to_utf8(f):
+<span style="color:#a6e22e">@click.group</span>()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cli</span>():
+    logging<span style="color:#f92672">.</span>basicConfig(level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>INFO,
+                        format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">%(name)s</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#39;</span>)
+
+
+<span style="color:#a6e22e">@cli.command</span>(<span style="color:#e6db74">&#39;gbk_to_utf8&#39;</span>)
+<span style="color:#a6e22e">@click.argument</span>(<span style="color:#e6db74">&#39;f&#39;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">convert_gbk_to_utf8</span>(f):
     convert_file_to_utf8(f)
 
 
-@cli.command('load')
-@click.option('-t', '--table', required=True, help='表名')
-@click.option('-i', '--filename', required=True, help='输入文件')
-@click.option('-w', '--workers', default=10, help='worker 数量，默认 10')
-def load_fac_day_pro_nos_sal_table(table, filename, workers):
-    with open(filename) as fd:
-        fd.readline()   # skip header
-        reader = csv.reader(fd)
-        insert_parallel(table, reader, w=workers)
+<span style="color:#a6e22e">@cli.command</span>(<span style="color:#e6db74">&#39;load&#39;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#39;-t&#39;</span>, <span style="color:#e6db74">&#39;--table&#39;</span>, required<span style="color:#f92672">=</span>True, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;表名&#39;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#39;-i&#39;</span>, <span style="color:#e6db74">&#39;--filename&#39;</span>, required<span style="color:#f92672">=</span>True, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;输入文件&#39;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#39;-w&#39;</span>, <span style="color:#e6db74">&#39;--workers&#39;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;worker 数量，默认 10&#39;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">load_fac_day_pro_nos_sal_table</span>(table, filename, workers):
+    <span style="color:#66d9ef">with</span> open(filename) <span style="color:#66d9ef">as</span> fd:
+        fd<span style="color:#f92672">.</span>readline()   <span style="color:#75715e"># skip header</span>
+        reader <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>reader(fd)
+        insert_parallel(table, reader, w<span style="color:#f92672">=</span>workers)
 
 
-if __name__ == '__main__':
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
     cli()
-</code></pre></div>
+</code></pre></div></div>
 					</article>
 					
 					<section id="comment">
@@ -351,13 +348,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

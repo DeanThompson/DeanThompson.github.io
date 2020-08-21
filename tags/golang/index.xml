@@ -1,40 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Golang on 李林克斯</title>
-    <link>http://liyangliang.me/tags/golang/</link>
-    <description>Recent content in Golang on 李林克斯</description>
+    <title>golang on 李林克斯</title>
+    <link>https://liyangliang.me/tags/golang/</link>
+    <description>Recent content in golang on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Mon, 12 Jan 2015 15:01:15 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
-      <link>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
+      <link>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
       <pubDate>Mon, 12 Jan 2015 15:01:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
       <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
-
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
-
 &lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;syncMap&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;items&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt;{}
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;sync&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RWMutex&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
 &lt;p&gt;但是这种设计会有些性能隐患。主要是两个方面：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
@@ -43,91 +36,75 @@
     
     <item>
       <title>Golang 的 defer 语句</title>
-      <link>http://liyangliang.me/posts/2014/12/defer-in-golang/</link>
+      <link>https://liyangliang.me/posts/2014/12/defer-in-golang/</link>
       <pubDate>Thu, 18 Dec 2014 15:35:38 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/12/defer-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2014/12/defer-in-golang/</guid>
       <description>&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;http://blog.golang.org/defer-panic-and-recover&#34;&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;传递给 &lt;code&gt;defer&lt;/code&gt; 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 &lt;code&gt;0&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func a() {
-    i := 0
-    defer fmt.Println(i)
-    i++
-    return
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;多个 &lt;code&gt;defer&lt;/code&gt; 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 &lt;code&gt;3210&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func b() {
-    for i := 0; i &amp;lt; 4; i++ {
-        defer fmt.Print(i)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;() {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;)
     }
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;defer&lt;/code&gt; 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 &lt;code&gt;2&lt;/code&gt; ，而不是 &lt;code&gt;1&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func c() (i int) {
-    defer func() { i++ }()
-    return 1
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;() (&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() { &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; }()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
+      <link>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
       <pubDate>Wed, 11 Jun 2014 15:50:41 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
       <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
-
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
-
 &lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
-
 &lt;p&gt;比较一下 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 和 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 的时间开销：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;strconv&amp;quot;
-    &amp;quot;time&amp;quot;
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
 )
 
-const LOOP = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-var num int64 = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int64&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-func main() {
-    startTime := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%d&amp;quot;, num)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt.Sprintf taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 
-    startTime = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;strconv&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;FormatInt&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;strconv.FormatInt taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv.FormatInt taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;</description>
@@ -135,51 +112,49 @@ strconv.FormatInt taken: 1.057318ms
     
     <item>
       <title>Golang 排序</title>
-      <link>http://liyangliang.me/posts/2014/06/sort-in-golang/</link>
+      <link>https://liyangliang.me/posts/2014/06/sort-in-golang/</link>
       <pubDate>Tue, 03 Jun 2014 16:50:50 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
       <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
-
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &amp;gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;heapSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
         }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &amp;lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;--&lt;/span&gt;
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doPivot&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+        &lt;span style=&#34;color:#75715e&#34;&gt;// Avoiding recursion on the larger subproblem guarantees
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// a stack depth of at most lg(b-a).
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, mhi, b)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, a, mlo)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
     }
-    if b-a &amp;gt; 1 {
-        insertionSort(data, a, b)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;insertionSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
     }
 }
 
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &amp;gt; 0; i &amp;gt;&amp;gt;= 1 {
-        maxDepth++
+&lt;span style=&#34;color:#75715e&#34;&gt;// Sort sorts data.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// data.Less and data.Swap. The sort is not guaranteed to be stable.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Sort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;) {
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Len&lt;/span&gt;()
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
     }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>

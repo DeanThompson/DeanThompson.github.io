@@ -1,42 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Web on 李林克斯</title>
-    <link>http://liyangliang.me/tags/web/</link>
-    <description>Recent content in Web on 李林克斯</description>
+    <title>web on 李林克斯</title>
+    <link>https://liyangliang.me/tags/web/</link>
+    <description>Recent content in web on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 26 Feb 2014 23:15:42 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/web/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/web/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Flask 路由做范围限制</title>
-      <link>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</link>
+      <link>https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</link>
       <pubDate>Wed, 26 Feb 2014 23:15:42 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</guid>
+      <guid>https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</guid>
       <description>&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
-
 &lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
-
 &lt;p&gt;原题在这里：&lt;a href=&#34;http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/&#34;&gt;How to validate integer range in Flask routing (Werkzeug)?&lt;/a&gt;&lt;/p&gt;
-
 &lt;p&gt;简单翻译一下，大致如下：&lt;/p&gt;
-
 &lt;p&gt;Flask 应用里面有一个这样的路由&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; foo &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; get_foo
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from foo import get_foo
-
-@app.route(&amp;quot;/foo/&amp;lt;int:id&amp;gt;&amp;quot;)
-def foo_id(id):
-    return render_template(&#39;foo.html&#39;, foo = get_foo(id))
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;</description>
+&lt;span style=&#34;color:#a6e22e&#34;&gt;@app.route&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/foo/&amp;lt;int:id&amp;gt;&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo_id&lt;/span&gt;(id):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; render_template(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo.html&amp;#39;&lt;/span&gt;, foo &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_foo(id))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
   </channel>

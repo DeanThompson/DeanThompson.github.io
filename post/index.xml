@@ -1,47 +1,53 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on 李林克斯</title>
-    <link>http://liyangliang.me/post/</link>
+    <link>https://liyangliang.me/post/</link>
     <description>Recent content in Posts on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Wed, 23 Oct 2019 10:53:00 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 13:48:05 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>记一次 ClickHouse 数据迁移</title>
+      <link>https://liyangliang.me/posts/2020/08/clickhouse-migration/</link>
+      <pubDate>Fri, 21 Aug 2020 13:48:05 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>https://liyangliang.me/posts/2020/08/clickhouse-migration/</guid>
+      <description>背景 大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。
+方案调研 迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。
+拷贝数据目录 先观察一下 ClickHouse 在文件系统上的目录结构（配置文件 /ect/clickhouse-server/config.xml 里面配置的 &amp;lt;path&amp;gt;），为了便于查看，只保留了 data 和 metadata 目录。
+. ├── data │ ├── default │ ├── system │ │ ├── asynchronous_metric_log │ │ ├── metric_log │ │ ├── query_log │ │ ├── query_thread_log │ │ └── trace_log ├── metadata │ ├── default │ │ └── v_table_size.</description>
+    </item>
+    
+    <item>
       <title>AWS S3 Bucket 指定权限</title>
-      <link>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
+      <link>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</link>
       <pubDate>Wed, 23 Oct 2019 10:53:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
+      <guid>https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/</guid>
       <description>&lt;p&gt;有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。&lt;/p&gt;
-
 &lt;h2 id=&#34;创建-iam-用户&#34;&gt;创建 IAM 用户&lt;/h2&gt;
-
 &lt;p&gt;创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 &lt;code&gt;arn:aws-cn:iam::123456789012:user/exampleuser&lt;/code&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;配置-s3-bucket-权限&#34;&gt;配置 S3 bucket 权限&lt;/h2&gt;
-
-&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket&lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
+&lt;p&gt;创建 S3 bucket，假设名字为 &lt;code&gt;example-bucket&lt;/code&gt;，于是对应的 ARN 为 &lt;code&gt;arn:aws-cn:s3:::example-bucket &lt;/code&gt;. 进入 Permissions 页面，编辑 Bucket Policy.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Impala 添加和使用 UDF</title>
-      <link>http://liyangliang.me/posts/2019/10/impala-udf/</link>
+      <link>https://liyangliang.me/posts/2019/10/impala-udf/</link>
       <pubDate>Fri, 11 Oct 2019 14:09:28 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/10/impala-udf/</guid>
+      <guid>https://liyangliang.me/posts/2019/10/impala-udf/</guid>
       <description>&lt;p&gt;Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;pre&gt;&lt;code&gt;hdfs dfs -mkdir /user/hive/udfs
 
 hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
@@ -50,21 +56,17 @@ hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-c
     
     <item>
       <title>HDFS 异构存储调研</title>
-      <link>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</link>
+      <link>https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</link>
       <pubDate>Tue, 07 May 2019 15:47:04 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</guid>
+      <guid>https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/</guid>
       <description>&lt;h2 id=&#34;结论&#34;&gt;结论&lt;/h2&gt;
-
 &lt;ul&gt;
 &lt;li&gt;HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。&lt;/li&gt;
 &lt;li&gt;HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;存储类型&#34;&gt;存储类型&lt;/h2&gt;
-
 &lt;p&gt;按访问速度降序：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;RAM_DISK: 即内存&lt;/li&gt;
 &lt;li&gt;SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用&lt;/li&gt;
@@ -75,14 +77,12 @@ hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-c
     
     <item>
       <title>一个轻量级通用的数据同步方案</title>
-      <link>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
+      <link>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
       <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
+      <guid>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
       <description>&lt;p&gt;在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。&lt;/p&gt;
-
 &lt;p&gt;首先梳理一下需求和目标：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度&lt;/li&gt;
 &lt;li&gt;扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等&lt;/li&gt;
@@ -94,16 +94,13 @@ hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-c
     
     <item>
       <title>聊聊幂等</title>
-      <link>http://liyangliang.me/posts/2019/03/idempotence/</link>
+      <link>https://liyangliang.me/posts/2019/03/idempotence/</link>
       <pubDate>Sun, 17 Mar 2019 23:38:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/idempotence/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/idempotence/</guid>
       <description>&lt;p&gt;计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，&lt;code&gt;a = 1&lt;/code&gt; 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。&lt;/p&gt;
-
 &lt;h2 id=&#34;http-的幂等性&#34;&gt;HTTP 的幂等性&lt;/h2&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html&#34;&gt;HTTP RFC 规范&lt;/a&gt;里有关于幂等方法的讨论：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;Methods can also have the property of &amp;ldquo;idempotence&amp;rdquo; in that (aside from error or expiration issues) the side-effects of N &amp;gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.&lt;/p&gt;
 &lt;/blockquote&gt;</description>
@@ -111,165 +108,128 @@ hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-c
     
     <item>
       <title>字节跳动（今日头条） 2018 校招后端第二批算法题</title>
-      <link>http://liyangliang.me/posts/2019/03/2018-holiday/</link>
+      <link>https://liyangliang.me/posts/2019/03/2018-holiday/</link>
       <pubDate>Sun, 10 Mar 2019 22:24:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/2018-holiday/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/2018-holiday/</guid>
       <description>&lt;p&gt;逛 V2EX 的时候无意间看到了有个叫 &lt;a href=&#34;https://www.nowcoder.com&#34;&gt;牛客网&lt;/a&gt; 的网站，里面有很多公司的笔试真题和大家分享的面经。
 出于好奇，看了一下 &lt;a href=&#34;https://www.nowcoder.com/test/8537209/summary&#34;&gt;字节跳动（今日头条）的后端题&lt;/a&gt;。&lt;/p&gt;
-
 &lt;p&gt;一共有 5 题，3 道编程，2 道问答。时候发现前面 4 题跟算法有关，其中 3 道要实现，1 道是纠错和优化，最后一题是系统设计。
 做得比较差，只完成了前面两道算法题。用 Go 语言实现，代码如下。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</title>
-      <link>http://liyangliang.me/posts/2019/03/data-encoding/</link>
+      <link>https://liyangliang.me/posts/2019/03/data-encoding/</link>
       <pubDate>Sat, 02 Mar 2019 16:40:45 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/03/data-encoding/</guid>
+      <guid>https://liyangliang.me/posts/2019/03/data-encoding/</guid>
       <description>&lt;p&gt;最近一段时间都在读 &lt;em&gt;Designing Data-Intensive Applications&lt;/em&gt; 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 &lt;em&gt;Encoding and Evolution&lt;/em&gt; （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。&lt;/p&gt;
-
 &lt;h2 id=&#34;编码和解码&#34;&gt;编码和解码&lt;/h2&gt;
-
 &lt;p&gt;在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。&lt;/p&gt;
-
 &lt;p&gt;从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Python 日期和时间处理</title>
-      <link>http://liyangliang.me/posts/2018/06/python-date-time/</link>
+      <link>https://liyangliang.me/posts/2018/06/python-date-time/</link>
       <pubDate>Sat, 02 Jun 2018 16:03:26 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/06/python-date-time/</guid>
-      <description> 2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
+      <guid>https://liyangliang.me/posts/2018/06/python-date-time/</guid>
+      <description>2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
 首先再次回答「Python 时间戳和日期相互转换」的问题。
-时间戳转日期 import datetime import time t = time.time() print(&#39;Timestamp&#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&#39;Datetime&#39;, dt)  输出：
-Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622  日期转时间戳 import datetime now = datetime.datetime.now() print(&#39;Datetime&#39;, now) print(&#39;Timestamp&#39;, now.timestamp())  输出：
-Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874  </description>
+时间戳转日期 import datetime import time t = time.time() print(&amp;#39;Timestamp&amp;#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&amp;#39;Datetime&amp;#39;, dt) 输出：
+Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622 日期转时间戳 import datetime now = datetime.datetime.now() print(&amp;#39;Datetime&amp;#39;, now) print(&amp;#39;Timestamp&amp;#39;, now.timestamp()) 输出：
+Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874 </description>
     </item>
     
     <item>
       <title>CentOS 7 FirewallD</title>
-      <link>http://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
+      <link>https://liyangliang.me/posts/2018/06/centos7-firewalld/</link>
       <pubDate>Sat, 02 Jun 2018 15:11:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
+      <guid>https://liyangliang.me/posts/2018/06/centos7-firewalld/</guid>
       <description>&lt;h2 id=&#34;背景故事&#34;&gt;背景故事&lt;/h2&gt;
-
 &lt;p&gt;线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。&lt;/p&gt;
-
 &lt;p&gt;因为没有防火墙，其实也发生过几次安全事故：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；&lt;/li&gt;
 &lt;li&gt;某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序&lt;/li&gt;
 &lt;li&gt;某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 &lt;code&gt;0.0.0.0&lt;/code&gt;，加上没有开启认证，很容易被拖库。&lt;/p&gt;
-
 &lt;h2 id=&#34;firewalld&#34;&gt;FirewallD&lt;/h2&gt;
-
 &lt;p&gt;最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 &lt;a href=&#34;http://www.firewalld.org/&#34;&gt;FirewallD&lt;/a&gt;，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。&lt;/p&gt;
-
 &lt;p&gt;FirewallD 有很多种 zone policy，直接使用默认的 &lt;code&gt;public&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redshift Snippets</title>
-      <link>http://liyangliang.me/posts/2018/02/redshift-snippets/</link>
+      <link>https://liyangliang.me/posts/2018/02/redshift-snippets/</link>
       <pubDate>Sun, 04 Feb 2018 19:36:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
+      <guid>https://liyangliang.me/posts/2018/02/redshift-snippets/</guid>
       <description>&lt;ul&gt;
 &lt;li&gt;查询所有 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT * FROM stv_sessions;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_sessions;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;终止 session&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT pg_terminate_backend(32281);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; pg_terminate_backend(&lt;span style=&#34;color:#ae81ff&#34;&gt;32281&lt;/span&gt;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;即，调用 &lt;code&gt;pg_terminate_backend&lt;/code&gt; 函数，传入 process_id。&lt;/p&gt;
 &lt;p&gt;权限：普通用户只能终止自己的 session，超级用户能终止任意 session.&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;查询正在运行的 queries&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;类似 MySQL 的 &lt;code&gt;SHOW PROCESSLIST&lt;/code&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sql&#34;&gt;SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;SELECT&lt;/span&gt; stv_recents.userid, stv_recents.status, stv_recents.starttime,
        stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
        stv_recents.query, stv_recents.pid
-FROM stv_recents
-WHERE stv_recents.status = &#39;Running&#39;::bpchar;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;span style=&#34;color:#66d9ef&#34;&gt;FROM&lt;/span&gt; stv_recents
+&lt;span style=&#34;color:#66d9ef&#34;&gt;WHERE&lt;/span&gt; stv_recents.status &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Running&amp;#39;&lt;/span&gt;::bpchar;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Pyenv 使用笔记</title>
-      <link>http://liyangliang.me/posts/2017/06/pyenv-notes/</link>
+      <link>https://liyangliang.me/posts/2017/06/pyenv-notes/</link>
       <pubDate>Tue, 20 Jun 2017 15:09:27 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/06/pyenv-notes/</guid>
+      <guid>https://liyangliang.me/posts/2017/06/pyenv-notes/</guid>
       <description>&lt;p&gt;应用使用虚拟环境是每个 Python 程序员都应该要掌握的技能。
 &lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;pyenv&lt;/a&gt; 是一个非常好用的 Python 环境管理工具。有这些主要特性：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;方便的安装、管理不同版本的 Python，而且不需要 sudo 权限，不会污染系统的 Python 版本&lt;/li&gt;
 &lt;li&gt;可以修改当前用户使用的默认 Python 版本&lt;/li&gt;
 &lt;li&gt;集成 virtualenv，自动安装、激活&lt;/li&gt;
 &lt;li&gt;命令行自动补全&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;详细内容见 &lt;a href=&#34;https://github.com/pyenv/pyenv&#34;&gt;Github - pyenv/pyenv&lt;/a&gt;.&lt;/p&gt;
-
 &lt;h2 id=&#34;安装-pyenv&#34;&gt;安装 pyenv&lt;/h2&gt;
-
 &lt;p&gt;最简单的方式是使用 &lt;a href=&#34;https://github.com/pyenv/pyenv-installer&#34;&gt;pyenv-installer&lt;/a&gt;:&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;然后在 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.zshrc&lt;/code&gt; 中添加如下内容：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export PATH=&amp;quot;~/.pyenv/bin:$PATH&amp;quot;
-eval &amp;quot;$(pyenv init -)&amp;quot;
-eval &amp;quot;$(pyenv virtualenv-init -)&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后在 &lt;code&gt;~/.bashrc&lt;/code&gt; 或 &lt;code&gt;~/.zshrc&lt;/code&gt; 中添加如下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;export PATH&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;~/.pyenv/bin:&lt;/span&gt;$PATH&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+eval &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;pyenv init -&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+eval &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;pyenv virtualenv-init -&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Centos 7 安装配置 Rundeck</title>
-      <link>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
+      <link>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</link>
       <pubDate>Tue, 20 Jun 2017 14:59:27 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
+      <guid>https://liyangliang.me/posts/2017/06/centos7-install-rundeck/</guid>
       <description>&lt;h2 id=&#34;通过-yum-安装&#34;&gt;通过 yum 安装：&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo yum install java-1.8.0
 $ sudo rpm -Uvh http://repo.rundeck.org/latest.rpm
 $ sudo yum install rundeck
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果已经安装了 Java，第一步可以略过。安装过程中有几个步骤需要确认，一路同意（输入 y）即可。&lt;/p&gt;
 &lt;p&gt;安装完成后可以立即运行：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;$ sudo service rundeckd start
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但生产环境还是要修改一些默认配置。上面的安装过程会添加一个名为 rundeck 的用户和组。配置文件位于 &lt;code&gt;/etc/rundeck&lt;/code&gt;:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;$ sudo su - rundeck
 $ cd /etc/rundeck/
 $ ll
@@ -289,76 +249,64 @@ drwxr-x---. 2 rundeck rundeck   27 Jun 19 16:52 ssl
     
     <item>
       <title>Flask 应用国际化</title>
-      <link>http://liyangliang.me/posts/2017/05/flask-i18n/</link>
+      <link>https://liyangliang.me/posts/2017/05/flask-i18n/</link>
       <pubDate>Wed, 10 May 2017 17:48:17 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/flask-i18n/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/flask-i18n/</guid>
       <description>&lt;h2 id=&#34;babel&#34;&gt;Babel&lt;/h2&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;ul&gt;
-&lt;li&gt;文档：&lt;a href=&#34;http://babel.pocoo.org/en/latest/&#34;&gt;http://babel.pocoo.org/en/latest/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/babel&#34;&gt;https://github.com/python-babel/babel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;文档：http://babel.pocoo.org/en/latest/&lt;/li&gt;
+&lt;li&gt;代码：https://github.com/python-babel/babel&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;flask-babel&#34;&gt;Flask-Babel&lt;/h2&gt;
-
 &lt;p&gt;Flask 的 i18n 扩展，集成 babel、pytz 等。&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;文档：&lt;a href=&#34;https://pythonhosted.org/Flask-Babel/&#34;&gt;https://pythonhosted.org/Flask-Babel/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/flask-babel&#34;&gt;https://github.com/python-babel/flask-babel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;文档：https://pythonhosted.org/Flask-Babel/&lt;/li&gt;
+&lt;li&gt;代码：https://github.com/python-babel/flask-babel&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
-
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[python: **.py]
-[jinja2: **.html]
-extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ini&#34; data-lang=&#34;ini&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;[python: **.py]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;[jinja2: **.html]&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;extensions&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>EC2 挂载 EBS</title>
-      <link>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:41:54 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/</guid>
       <description>&lt;p&gt;创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。&lt;/p&gt;
-
 &lt;p&gt;详情见 &lt;a href=&#34;http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html&#34;&gt;EBS 的文档&lt;/a&gt;&lt;/p&gt;
-
 &lt;h2 id=&#34;用-lsblk-命令查看所有可用的磁盘及其安装点&#34;&gt;用 &lt;code&gt;lsblk&lt;/code&gt; 命令查看所有可用的磁盘及其安装点&lt;/h2&gt;
-
 &lt;pre&gt;&lt;code&gt;$ lsblk
 NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 xvda    202:0    0   8G  0 disk
 `-xvda1 202:1    0   8G  0 part /
 xvdb    202:16   0  30G  0 disk
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 &lt;code&gt;xvda1&lt;/code&gt; 是根设备，挂载到了 &lt;code&gt;/&lt;/code&gt;；&lt;code&gt;xvdb&lt;/code&gt; 是刚才添加的 EBS 卷，还没有挂载。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>MySQL 数据导入到 Redshift</title>
-      <link>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
+      <link>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</link>
       <pubDate>Wed, 10 May 2017 17:36:29 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/transfer-data-from-mysql-to-redshift/</guid>
       <description>&lt;h2 id=&#34;设计表&#34;&gt;设计表&lt;/h2&gt;
-
 &lt;p&gt;首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。&lt;/li&gt;
 &lt;li&gt;FLOAT 类型改成 REAL 或 FLOAT4&lt;/li&gt;
@@ -366,47 +314,39 @@ xvdb    202:16   0  30G  0 disk
 &lt;li&gt;Redshift 的 CHAR 类型只能包含单字节 ASCII 字符，对于非 ASCII 数据需要把 CHAR 改成 VARCHAR 类型&lt;/li&gt;
 &lt;li&gt;有可能 MySQL 中存的是 unicode，而 Redshift 中存的是 bytes，所以 VARCHAR 的长度也要调整，避免溢出。最简单的，可以用 MySQL 的字段长度 * 3.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;关于 sort key, dist key 等设计，只属于 Redshift 范畴，参考官网文档即可。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 AWS 上安装 Tableau Server</title>
-      <link>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
+      <link>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</link>
       <pubDate>Wed, 10 May 2017 17:23:55 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/install-tableau-server-on-aws-ec2/</guid>
       <description>&lt;h2 id=&#34;启动-ec2-实例&#34;&gt;启动 EC2 实例&lt;/h2&gt;
-
 &lt;p&gt;先根据 Tableau Server 的使用情况确定需要的配置，从而确定实例类型。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;AMI: Microsoft Windows Server 2012 R2 Base（简体中文）&lt;/li&gt;
 &lt;li&gt;类型: m4.4xlarge&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;启动、配置步骤略去不表，有两点需要注意：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;VPC 需要开启 3389 端口用于远程登录（RDP）&lt;/li&gt;
 &lt;li&gt;密钥对会用于解密登录密码&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;安装-tableau-server&#34;&gt;安装 Tableau Server&lt;/h2&gt;
-
 &lt;p&gt;从 Tableau 官网下载然后安装，配置、激活过程比较简单，略去不表。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Python 多进程导入数据到 MySQL</title>
-      <link>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
+      <link>https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</link>
       <pubDate>Sat, 25 Feb 2017 16:16:14 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
+      <guid>https://liyangliang.me/posts/2017/02/load-data-into-mysql-using-python-multiprocessing/</guid>
       <description>&lt;p&gt;前段时间帮同事处理了一个把 CSV 数据导入到 MySQL 的需求。两个很大的 CSV 文件，
 分别有 3GB、2100 万条记录和 7GB、3500 万条记录。对于这个量级的数据，用简单的单进程／单线程导入
 会耗时很久，最终用了多进程的方式来实现。具体过程不赘述，记录一下几个要点：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;批量插入而不是逐条插入&lt;/li&gt;
 &lt;li&gt;为了加快插入速度，先不要建索引&lt;/li&gt;
@@ -416,41 +356,31 @@ xvdb    202:16   0  30G  0 disk
 &lt;li&gt;原始数据是 GBK 编码，所以还要注意转换成 UTF-8&lt;/li&gt;
 &lt;li&gt;用 &lt;a href=&#34;http://click.pocoo.org/5/&#34;&gt;click&lt;/a&gt; 封装命令行工具&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;具体的代码实现如下：&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
+      <link>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
       <pubDate>Tue, 17 May 2016 16:42:37 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
-
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -l INFO
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>MongoDB Replica Set 重新同步</title>
-      <link>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</link>
+      <link>https://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</link>
       <pubDate>Fri, 15 Apr 2016 11:47:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</guid>
+      <guid>https://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/</guid>
       <description>&lt;p&gt;生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;为什么会挂掉？&lt;/li&gt;
 &lt;li&gt;如何修复？&lt;/li&gt;
@@ -459,84 +389,70 @@ xvdb    202:16   0  30G  0 disk
     
     <item>
       <title>Nginx AWS ELB 域名解析</title>
-      <link>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
+      <link>https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</link>
       <pubDate>Thu, 14 Apr 2016 15:33:52 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
+      <guid>https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/</guid>
       <description>&lt;p&gt;最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;两个域名：api.example.com, web.example.com&lt;/li&gt;
 &lt;li&gt;环境：AWS + ELB + Nginx&lt;/li&gt;
 &lt;li&gt;后端：Python + Django + Gunicorn&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：&lt;/p&gt;
-
 &lt;pre&gt;&lt;code&gt;                      proxy_pass         backends                      proxy_pass
 APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backend Nginx(s) ------------&amp;gt; Gunicorn(s)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-nginx&#34;&gt;location /test {
-    proxy_pass http://name.of.elb.aws.com;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 API 的 Nginx 配置大概是这样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-nginx&#34; data-lang=&#34;nginx&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;location&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;/test&lt;/span&gt; {
+    &lt;span style=&#34;color:#f92672&#34;&gt;proxy_pass&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;http://name.of.elb.aws.com&lt;/span&gt;;
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>zhihu-go 源码解析：用 goquery 解析 HTML</title>
-      <link>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</link>
+      <link>https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</link>
       <pubDate>Wed, 30 Mar 2016 23:02:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2016/03/zhihu-go/&#34;&gt;上一篇博客&lt;/a&gt; 简单介绍了 &lt;a href=&#34;https://github.com/DeanThompson/zhihu-go&#34;&gt;zhihu-go&lt;/a&gt; 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。&lt;/p&gt;
 &lt;p&gt;因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 &lt;a href=&#34;https://github.com/PuerkitoBio/goquery&#34;&gt;goquery&lt;/a&gt;.&lt;/p&gt;
-
 &lt;p&gt;goquery 是 &amp;ldquo;a little like that j-thing, only in Go&amp;rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>zhihu-go: 知乎非官方 API库 with Go</title>
-      <link>http://liyangliang.me/posts/2016/03/zhihu-go/</link>
+      <link>https://liyangliang.me/posts/2016/03/zhihu-go/</link>
       <pubDate>Mon, 28 Mar 2016 23:35:58 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/03/zhihu-go/</guid>
+      <guid>https://liyangliang.me/posts/2016/03/zhihu-go/</guid>
       <description>&lt;p&gt;我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 &lt;a href=&#34;https://github.com/egrcc/zhihu-python&#34;&gt;zhihu-python&lt;/a&gt;. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>极光推送 Go SDK</title>
-      <link>http://liyangliang.me/posts/2015/11/jpush-api-go-client/</link>
+      <link>https://liyangliang.me/posts/2015/11/jpush-api-go-client/</link>
       <pubDate>Sat, 28 Nov 2015 22:32:35 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/jpush-api-go-client/</guid>
+      <guid>https://liyangliang.me/posts/2015/11/jpush-api-go-client/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://www.jpush.cn/&#34;&gt;极光推送&lt;/a&gt; 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 &lt;a href=&#34;http://docs.jpush.io/server/server_overview/&#34;&gt;官方文档&lt;/a&gt;。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。&lt;/p&gt;
-
 &lt;p&gt;实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近几天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。&lt;/p&gt;
-
 &lt;p&gt;啰嗦了一大堆，差点忘了最重要的东西，下面给出链接：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;源代码和示例：&lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client&#34;&gt;https://github.com/DeanThompson/jpush-api-go-client&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;官方文档：&lt;a href=&#34;http://docs.jpush.io/server/rest_api_v3_push/&#34;&gt;http://docs.jpush.io/server/rest_api_v3_push/&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;欢迎使用，并 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/issues&#34;&gt;反馈 issues&lt;/a&gt; 或 &lt;a href=&#34;https://github.com/DeanThompson/jpush-api-go-client/pulls&#34;&gt;创建 pull request&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 Flask 项目中使用 Celery</title>
-      <link>http://liyangliang.me/posts/2015/11/using-celery-with-flask/</link>
+      <link>https://liyangliang.me/posts/2015/11/using-celery-with-flask/</link>
       <pubDate>Sat, 14 Nov 2015 16:57:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/using-celery-with-flask/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2015/11/using-celery-with-flask/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
@@ -545,184 +461,152 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
     
     <item>
       <title>Celery 使用简介</title>
-      <link>http://liyangliang.me/posts/2015/11/a-introduction-to-celery/</link>
+      <link>https://liyangliang.me/posts/2015/11/a-introduction-to-celery/</link>
       <pubDate>Sat, 14 Nov 2015 16:44:34 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/a-introduction-to-celery/</guid>
+      <guid>https://liyangliang.me/posts/2015/11/a-introduction-to-celery/</guid>
       <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
-
 &lt;h3 id=&#34;分布式任务队列&#34;&gt;分布式任务队列&lt;/h3&gt;
-
 &lt;p&gt;Celery 是一个分布式任务队列，下面是 &lt;a href=&#34;http://www.celeryproject.org/&#34;&gt;官网&lt;/a&gt; 的一段描述：&lt;/p&gt;
-
 &lt;blockquote&gt;
-&lt;p&gt;Celery is an asynchronous task queue/job queue based on distributed message passing.  It is focused on real-time operation, but supports scheduling as well.&lt;/p&gt;
+&lt;p&gt;Celery is an asynchronous task queue/job queue based on distributed message passing.	It is focused on real-time operation, but supports scheduling as well.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。&lt;/p&gt;
-
 &lt;h3 id=&#34;何为任务队列&#34;&gt;何为任务队列？&lt;/h3&gt;
-
 &lt;p&gt;摘自 Celery 官方文档的 &lt;a href=&#34;http://docs.jinkan.org/docs/celery/getting-started/introduction.html&#34;&gt;中文翻译&lt;/a&gt;：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;任务队列是一种在线程或机器间分发任务的机制。&lt;/p&gt;
-
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;p&gt;消息队列的输入是工作的一个单元，称为任务，独立的职程（Worker）进程持续监视队列中是否有需要处理的新任务。&lt;/p&gt;
-
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;p&gt;Celery 用消息通信，通常使用中间人（Broker）在客户端和职程间斡旋。这个过程从客户端向队列添加消息开始，之后中间人把消息派送给职程。&lt;/p&gt;
-
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;p&gt;Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。&lt;/p&gt;
 &lt;/blockquote&gt;</description>
     </item>
     
     <item>
       <title>Tornado 和 Flask 应用缓存响应结果</title>
-      <link>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
+      <link>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
       <pubDate>Thu, 05 Nov 2015 16:52:12 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
       <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
-
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
-
 &lt;p&gt;对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;GET 查询&lt;/li&gt;
 &lt;li&gt;查询很耗时&lt;/li&gt;
 &lt;li&gt;相同条件、不同时间（或某段时间内）的查询结果是一致的&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
-      <link>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
+      <link>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
       <pubDate>Sat, 31 Oct 2015 01:46:10 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Python 编码规范</title>
-      <link>http://liyangliang.me/posts/2015/08/simple-python-style-guide/</link>
+      <link>https://liyangliang.me/posts/2015/08/simple-python-style-guide/</link>
       <pubDate>Mon, 10 Aug 2015 22:36:42 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/08/simple-python-style-guide/</guid>
+      <guid>https://liyangliang.me/posts/2015/08/simple-python-style-guide/</guid>
       <description>&lt;p&gt;遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。&lt;/p&gt;
-
 &lt;p&gt;网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://www.python.org/dev/peps/pep-0008/&#34;&gt;PEP 0008 &amp;ndash; Style Guide for Python Code&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/&#34;&gt;Google 的 Python 风格指南&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://docs.python-guide.org/en/latest/writing/style/&#34;&gt;Python Guide - Code Style&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://flask.pocoo.org/docs/0.10/styleguide/&#34;&gt;Pocoo Styleguide&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;除了在编码时主动遵循规范，还有很多有用的工具：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;IntelliJ IDEA 和 PyCharm 的格式化代码功能&lt;/li&gt;
 &lt;li&gt;Google 开源的 Python 文件格式化工具：&lt;a href=&#34;https://github.com/google/yapf&#34;&gt;github.com/google/yapf&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;pyflakes, pylint 等工具及各种编辑器的插件&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>用 Fabric 实现自动化部署</title>
-      <link>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</link>
+      <link>https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</link>
       <pubDate>Fri, 12 Jun 2015 14:00:13 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</guid>
+      <guid>https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/</guid>
       <description>&lt;p&gt;写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？&lt;/p&gt;
-
 &lt;p&gt;部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。&lt;/p&gt;
-
 &lt;p&gt;上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
-
 &lt;ul&gt;
 &lt;li&gt;配置复杂，命令行参数多&lt;/li&gt;
 &lt;li&gt;需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
-
 &lt;ul&gt;
 &lt;li&gt;不能增量更新，每次都是全部传输&lt;/li&gt;
 &lt;li&gt;不能配置忽略文件（.git 怎么办？）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;http://www.fabfile.org/&#34;&gt;Fabric&lt;/a&gt; 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>使用 supervisor 管理进程</title>
-      <link>http://liyangliang.me/posts/2015/06/using-supervisor/</link>
+      <link>https://liyangliang.me/posts/2015/06/using-supervisor/</link>
       <pubDate>Tue, 09 Jun 2015 17:30:20 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/06/using-supervisor/</guid>
+      <guid>https://liyangliang.me/posts/2015/06/using-supervisor/</guid>
       <description>&lt;p&gt;Supervisor (&lt;a href=&#34;http://supervisord.org&#34;&gt;http://supervisord.org&lt;/a&gt;) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。&lt;/p&gt;
-
 &lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
-
 &lt;p&gt;Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo pip install supervisor
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo pip install supervisor
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果是 Ubuntu 系统，还可以使用 apt-get 安装。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>使用 shadowsocks 实现科学上网</title>
-      <link>http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</link>
+      <link>https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</link>
       <pubDate>Sun, 24 May 2015 22:27:49 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</guid>
+      <guid>https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/</guid>
       <description>&lt;h2 id=&#34;缘起&#34;&gt;缘起&lt;/h2&gt;
-
 &lt;p&gt;GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。&lt;/p&gt;
-
 &lt;p&gt;我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 &lt;a href=&#34;http://fqrouter.com/&#34;&gt;fqrouter&lt;/a&gt;，然而都不是很稳定和一劳永逸的解决方案。&lt;/p&gt;
-
 &lt;p&gt;有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）&lt;/li&gt;
 &lt;li&gt;出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）&lt;/li&gt;
 &lt;li&gt;想自己折腾&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;所以就选择了国外 VPS + Shadowsocks 的解决方案。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>重用 SSH 连接</title>
-      <link>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
+      <link>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
       <pubDate>Sun, 15 Mar 2015 13:31:49 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
+      <guid>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
       <description>&lt;p&gt;平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 &lt;code&gt;git pull&lt;/code&gt; 和 &lt;code&gt;git push&lt;/code&gt;，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。&lt;/p&gt;
-
 &lt;p&gt;实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。&lt;/p&gt;
-
 &lt;p&gt;修改 &lt;code&gt;~/.ssh/config&lt;/code&gt; 文件，添加如下配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34;&gt;Host *
+&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34; data-lang=&#34;sshconfig&#34;&gt;Host *
     ControlMaster auto
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600
@@ -731,26 +615,19 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
     
     <item>
       <title>Golang 并发安全的 map 实现</title>
-      <link>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
+      <link>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</link>
       <pubDate>Mon, 12 Jan 2015 15:01:15 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/</guid>
       <description>&lt;p&gt;Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：&lt;a href=&#34;http://golang.org/doc/faq#atomic_maps&#34;&gt;Why are map operations not defined to be atomic?&lt;/a&gt;. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。&lt;/p&gt;
-
 &lt;h2 id=&#34;并发安全&#34;&gt;并发安全&lt;/h2&gt;
-
 &lt;p&gt;实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 &lt;code&gt;sync.RWMutex&lt;/code&gt; 保护一下就是很好的选择：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;syncMap&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;items&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#66d9ef&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#66d9ef&#34;&gt;interface&lt;/span&gt;{}
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;sync&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;RWMutex&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 &lt;code&gt;Get&lt;/code&gt;，&lt;code&gt;Set&lt;/code&gt;，&lt;code&gt;Delete&lt;/code&gt; 等方法，这个设计是能够工作的，而且大多数时候能表现不错。&lt;/p&gt;
 &lt;p&gt;但是这种设计会有些性能隐患。主要是两个方面：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。&lt;/li&gt;
 &lt;li&gt;如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。&lt;/li&gt;
@@ -759,91 +636,75 @@ APP -----&amp;gt; API Nginx -------------&amp;gt; ELB -----------&amp;gt; Backen
     
     <item>
       <title>Golang 的 defer 语句</title>
-      <link>http://liyangliang.me/posts/2014/12/defer-in-golang/</link>
+      <link>https://liyangliang.me/posts/2014/12/defer-in-golang/</link>
       <pubDate>Thu, 18 Dec 2014 15:35:38 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/12/defer-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2014/12/defer-in-golang/</guid>
       <description>&lt;p&gt;Golang 的 &lt;code&gt;defer&lt;/code&gt; 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;http://blog.golang.org/defer-panic-and-recover&#34;&gt;这篇 Go Blog&lt;/a&gt; 用例子讲解了 &lt;code&gt;defer&lt;/code&gt; 的用途和使用规则。总结一下主要就是三点：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;传递给 &lt;code&gt;defer&lt;/code&gt; 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 &lt;code&gt;0&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func a() {
-    i := 0
-    defer fmt.Println(i)
-    i++
-    return
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;多个 &lt;code&gt;defer&lt;/code&gt; 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 &lt;code&gt;3210&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func b() {
-    for i := 0; i &amp;lt; 4; i++ {
-        defer fmt.Print(i)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;() {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Print&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;)
     }
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;defer&lt;/code&gt; 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 &lt;code&gt;2&lt;/code&gt; ，而不是 &lt;code&gt;1&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func c() (i int) {
-    defer func() { i++ }()
-    return 1
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;() (&lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt;() { &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; }()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>不要用 fmt.Sprintf 做类型转换</title>
-      <link>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
+      <link>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</link>
       <pubDate>Wed, 11 Jun 2014 15:50:41 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/</guid>
       <description>&lt;p&gt;严格的讲，应该是在把 &lt;code&gt;int&lt;/code&gt;，&lt;code&gt;float&lt;/code&gt;等类型转换为字符串时，不要用 &lt;code&gt;fmt.Sprintf&lt;/code&gt;，更好的做法是用标准库函数。&lt;code&gt;fmt.Sprintf&lt;/code&gt; 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，&lt;code&gt;fmt.Sprintf&lt;/code&gt; 需要更大的开销。大多数类型转换的函数都可以在 &lt;code&gt;strconv&lt;/code&gt; 包里找到。&lt;/p&gt;
-
 &lt;h2 id=&#34;int-to-string&#34;&gt;int to string&lt;/h2&gt;
-
 &lt;p&gt;整数类型转换为字符串，推荐使用 &lt;code&gt;strconv.FormatInt&lt;/code&gt;（&lt;code&gt;int64&lt;/code&gt;），对于 &lt;code&gt;int&lt;/code&gt; 类型，&lt;code&gt;strconv.Itoa&lt;/code&gt; 对前者做了一个封装。&lt;/p&gt;
-
 &lt;p&gt;比较一下 &lt;code&gt;strconv.FormatInt&lt;/code&gt; 和 &lt;code&gt;fmt.Sprintf&lt;/code&gt; 的时间开销：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;package&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
-
-import (
-    &amp;quot;fmt&amp;quot;
-    &amp;quot;strconv&amp;quot;
-    &amp;quot;time&amp;quot;
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
 )
 
-const LOOP = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-var num int64 = 10000
+&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int64&lt;/span&gt; = &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
 
-func main() {
-    startTime := time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        fmt.Sprintf(&amp;quot;%d&amp;quot;, num)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;fmt.Sprintf taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;fmt.Sprintf taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 
-    startTime = time.Now()
-    for i := 0; i &amp;lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Now&lt;/span&gt;()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;LOOP&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;strconv&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;FormatInt&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;num&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
     }
-    fmt.Printf(&amp;quot;strconv.FormatInt taken: %v\n&amp;quot;, time.Since(startTime))
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;fmt&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;strconv.FormatInt taken: %v\n&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;time&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Since&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;startTime&lt;/span&gt;))
 }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中某一次运行结果：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 &lt;/code&gt;&lt;/pre&gt;</description>
@@ -851,253 +712,213 @@ strconv.FormatInt taken: 1.057318ms
     
     <item>
       <title>Golang 排序</title>
-      <link>http://liyangliang.me/posts/2014/06/sort-in-golang/</link>
+      <link>https://liyangliang.me/posts/2014/06/sort-in-golang/</link>
       <pubDate>Tue, 03 Jun 2014 16:50:50 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
+      <guid>https://liyangliang.me/posts/2014/06/sort-in-golang/</guid>
       <description>&lt;h2 id=&#34;interface-接口&#34;&gt;Interface 接口&lt;/h2&gt;
-
 &lt;p&gt;Go 语言标准库提供了排序的package sort，也实现了对 &lt;code&gt;int&lt;/code&gt;， &lt;code&gt;float64&lt;/code&gt; 和 &lt;code&gt;string&lt;/code&gt; 三种基础类型的排序接口。所有排序调用 &lt;code&gt;sort.Sort&lt;/code&gt;，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &amp;gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt; {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;heapSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;
         }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &amp;lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;--&lt;/span&gt;
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;doPivot&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
+        &lt;span style=&#34;color:#75715e&#34;&gt;// Avoiding recursion on the larger subproblem guarantees
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// a stack depth of at most lg(b-a).
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;lt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, mhi, b)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;mhi&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
+            &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; = &lt;span style=&#34;color:#a6e22e&#34;&gt;mlo&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;// i.e., quickSort(data, a, mlo)
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
     }
-    if b-a &amp;gt; 1 {
-        insertionSort(data, a, b)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;insertionSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;)
     }
 }
 
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &amp;gt; 0; i &amp;gt;&amp;gt;= 1 {
-        maxDepth++
+&lt;span style=&#34;color:#75715e&#34;&gt;// Sort sorts data.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// data.Less and data.Swap. The sort is not guaranteed to be stable.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Sort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Interface&lt;/span&gt;) {
+    &lt;span style=&#34;color:#75715e&#34;&gt;// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;Len&lt;/span&gt;()
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &amp;gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; &lt;span style=&#34;color:#a6e22e&#34;&gt;i&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; {
+        &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;
     }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+    &lt;span style=&#34;color:#a6e22e&#34;&gt;quickSort&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;data&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;n&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;maxDepth&lt;/span&gt;)
 }
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</title>
-      <link>http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/</link>
+      <link>https://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/</link>
       <pubDate>Sun, 02 Mar 2014 16:16:04 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/</guid>
+      <guid>https://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/</guid>
       <description>&lt;p&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 和 &lt;code&gt;sync_binlog&lt;/code&gt; 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。&lt;/p&gt;
-
-&lt;h2 id=&#34;1-innodb-flush-log-at-trx-commit&#34;&gt;1. innodb_flush_log_at_trx_commit&lt;/h2&gt;
-
+&lt;h2 id=&#34;1-innodb_flush_log_at_trx_commit&#34;&gt;1. innodb_flush_log_at_trx_commit&lt;/h2&gt;
 &lt;p&gt;简而言之，&lt;a href=&#34;http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit&#34;&gt;&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt;&lt;/a&gt; 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;当 &lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt; 取值为 &lt;code&gt;0&lt;/code&gt; 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
 &lt;li&gt;当取值为 &lt;code&gt;1&lt;/code&gt; 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。&lt;/li&gt;
 &lt;li&gt;当取值为 &lt;code&gt;2&lt;/code&gt; 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。&lt;/li&gt;
 &lt;/ol&gt;
-
 &lt;p&gt;上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 &lt;code&gt;2&lt;/code&gt; 就足够了；如果为了最高性能，可以设置为 &lt;code&gt;0&lt;/code&gt;。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Flask 路由做范围限制</title>
-      <link>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</link>
+      <link>https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</link>
       <pubDate>Wed, 26 Feb 2014 23:15:42 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</guid>
+      <guid>https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/</guid>
       <description>&lt;p&gt;这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。&lt;/p&gt;
-
 &lt;h1 id=&#34;1-what&#34;&gt;1. What&lt;/h1&gt;
-
 &lt;p&gt;原题在这里：&lt;a href=&#34;http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/&#34;&gt;How to validate integer range in Flask routing (Werkzeug)?&lt;/a&gt;&lt;/p&gt;
-
 &lt;p&gt;简单翻译一下，大致如下：&lt;/p&gt;
-
 &lt;p&gt;Flask 应用里面有一个这样的路由&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; foo &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; get_foo
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from foo import get_foo
-
-@app.route(&amp;quot;/foo/&amp;lt;int:id&amp;gt;&amp;quot;)
-def foo_id(id):
-    return render_template(&#39;foo.html&#39;, foo = get_foo(id))
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;</description>
+&lt;span style=&#34;color:#a6e22e&#34;&gt;@app.route&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/foo/&amp;lt;int:id&amp;gt;&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo_id&lt;/span&gt;(id):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; render_template(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo.html&amp;#39;&lt;/span&gt;, foo &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; get_foo(id))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中 &lt;code&gt;id&lt;/code&gt; 的取值是 &lt;code&gt;1～300&lt;/code&gt;，如何在路由层级做这个验证？也就是一个类似于这样的东西 &lt;code&gt;@app.route(&amp;quot;/foo/&amp;lt;int:id(1-300)&amp;quot;)&lt;/code&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>less 命令支持语法高亮和行号</title>
-      <link>http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</link>
+      <link>https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</link>
       <pubDate>Sun, 03 Nov 2013 00:30:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</guid>
+      <guid>https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</guid>
       <description>&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;less is more&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;h1 id=&#34;1-how&#34;&gt;1. How&lt;/h1&gt;
-
 &lt;p&gt;less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，&lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;source-highlight&lt;/a&gt; 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install source-highlight
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# less hightlight
-export LESSOPEN=&amp;quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;quot;
-export LESS=&amp;quot; -R &amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo apt-get install source-highlight
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# less hightlight&lt;/span&gt;
+export LESSOPEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;#34;&lt;/span&gt;
+export LESS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; -R &amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
 &lt;p&gt;使配置生效：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;source ~/.bashrc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;source ~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>【翻译】理解 Python 装饰器</title>
-      <link>http://liyangliang.me/posts/2013/03/understand-python-decorators/</link>
+      <link>https://liyangliang.me/posts/2013/03/understand-python-decorators/</link>
       <pubDate>Wed, 13 Mar 2013 00:26:58 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2013/03/understand-python-decorators/</guid>
+      <guid>https://liyangliang.me/posts/2013/03/understand-python-decorators/</guid>
       <description>&lt;h2 id=&#34;note&#34;&gt;Note&lt;/h2&gt;
-
 &lt;p&gt;前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484&#34;&gt;Understanding Python decorators&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-
-&lt;hr /&gt;
-
-&lt;h1 id=&#34;1-python的函数是对象-python-s-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
-
+&lt;hr&gt;
+&lt;h1 id=&#34;1-python的函数是对象pythons-functions-are-objects&#34;&gt;1. python的函数是对象（Python&amp;rsquo;s functions are objects）&lt;/h1&gt;
 &lt;p&gt;要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def shout(word=&amp;quot;yes&amp;quot;):
-    return word.capitalize()+&amp;quot;!&amp;quot;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;shout&lt;/span&gt;(word&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yes&amp;#34;&lt;/span&gt;):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; word&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;capitalize()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;!&amp;#34;&lt;/span&gt;
  
-print shout()
-# outputs : &#39;Yes!&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; shout()
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
  
-# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量
+&lt;span style=&#34;color:#75715e&#34;&gt;# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量&lt;/span&gt;
  
-scream = shout
+scream &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; shout
  
-# 注意我们没有用括号：我们不是在调用函数，
-# 而是把函数&#39;shout&#39;的值绑定到&#39;scream&#39;这个变量上
-# 这也意味着你可以通过&#39;scream&#39;这个变量来调用&#39;shout&#39;函数
+&lt;span style=&#34;color:#75715e&#34;&gt;# 注意我们没有用括号：我们不是在调用函数，&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 而是把函数&amp;#39;shout&amp;#39;的值绑定到&amp;#39;scream&amp;#39;这个变量上&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 这也意味着你可以通过&amp;#39;scream&amp;#39;这个变量来调用&amp;#39;shout&amp;#39;函数&lt;/span&gt;
  
-print scream()
-# outputs : &#39;Yes!&#39;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; scream()
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs : &amp;#39;Yes!&amp;#39;&lt;/span&gt;
  
-# 不仅如此，这也还意味着你可以把原来的名字&#39;shout&#39;删掉，
-# 而这个函数仍然可以通过&#39;scream&#39;来访问
-del shout
-try:
-    print shout()
-except NameError, e:
-    print e
-    #outputs: &amp;quot;name &#39;shout&#39; is not defined&amp;quot;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 不仅如此，这也还意味着你可以把原来的名字&amp;#39;shout&amp;#39;删掉，&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# 而这个函数仍然可以通过&amp;#39;scream&amp;#39;来访问&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;del&lt;/span&gt; shout
+&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; shout()
+&lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;NameError&lt;/span&gt;, e:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; e
+    &lt;span style=&#34;color:#75715e&#34;&gt;#outputs: &amp;#34;name &amp;#39;shout&amp;#39; is not defined&amp;#34;&lt;/span&gt;
  
-print scream()
-outputs: &#39;Yes!&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def talk():
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; scream()
+outputs: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Yes!&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;talk&lt;/span&gt;():
  
-    # 你可以在 &#39;talk&#39; 里动态的(on the fly)定义一个函数...
-    def whisper(word=&amp;quot;yes&amp;quot;):
-        return word.lower()+&amp;quot;...&amp;quot;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# 你可以在 &amp;#39;talk&amp;#39; 里动态的(on the fly)定义一个函数...&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;whisper&lt;/span&gt;(word&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;yes&amp;#34;&lt;/span&gt;):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; word&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;lower()&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;...&amp;#34;&lt;/span&gt;
  
-    # ... 然后马上调用它！
+    &lt;span style=&#34;color:#75715e&#34;&gt;# ... 然后马上调用它！&lt;/span&gt;
  
-    print whisper()
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; whisper()
  
-# 每当调用&#39;talk&#39;，都会定义一次&#39;whisper&#39;，然后&#39;whisper&#39;在&#39;talk&#39;里被调用
+&lt;span style=&#34;color:#75715e&#34;&gt;# 每当调用&amp;#39;talk&amp;#39;，都会定义一次&amp;#39;whisper&amp;#39;，然后&amp;#39;whisper&amp;#39;在&amp;#39;talk&amp;#39;里被调用&lt;/span&gt;
 talk()
-# outputs:
-# &amp;quot;yes...&amp;quot;
+&lt;span style=&#34;color:#75715e&#34;&gt;# outputs:&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# &amp;#34;yes...&amp;#34;&lt;/span&gt;
  
-# 但是&amp;quot;whisper&amp;quot; 在 &amp;quot;talk&amp;quot;外并不存在:
+&lt;span style=&#34;color:#75715e&#34;&gt;# 但是&amp;#34;whisper&amp;#34; 在 &amp;#34;talk&amp;#34;外并不存在:&lt;/span&gt;
  
-try:
-    print whisper()
-except NameError, e:
-    print e
-    #outputs : &amp;quot;name &#39;whisper&#39; is not defined&amp;quot;*
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt;:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; whisper()
+&lt;span style=&#34;color:#66d9ef&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;NameError&lt;/span&gt;, e:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt; e
+    &lt;span style=&#34;color:#75715e&#34;&gt;#outputs : &amp;#34;name &amp;#39;whisper&amp;#39; is not defined&amp;#34;*&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>用 openpyxl 处理 xlsx 文件</title>
-      <link>http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/</link>
+      <link>https://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/</link>
       <pubDate>Mon, 25 Feb 2013 16:39:55 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/</guid>
+      <guid>https://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/</guid>
       <description>&lt;p&gt;久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。&lt;/p&gt;
-
 &lt;p&gt;&lt;code&gt;openpyxl&lt;/code&gt; 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。&lt;code&gt;openpyxl&lt;/code&gt; 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 &lt;code&gt;.xlsx/.xlsm&lt;/code&gt; 格式的表格文件。顺便提一下，&lt;code&gt;xls&lt;/code&gt; 和 &lt;code&gt;xlsx&lt;/code&gt; 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。&lt;code&gt;xlsx&lt;/code&gt; 中最后一个 &lt;code&gt;x&lt;/code&gt; 的意义就在于此。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Python字典切片</title>
-      <link>http://liyangliang.me/posts/2012/12/python-dict-slice/</link>
+      <link>https://liyangliang.me/posts/2012/12/python-dict-slice/</link>
       <pubDate>Sat, 01 Dec 2012 15:09:08 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2012/12/python-dict-slice/</guid>
+      <guid>https://liyangliang.me/posts/2012/12/python-dict-slice/</guid>
       <description>&lt;p&gt;python 的 &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;string&lt;/code&gt;, &lt;code&gt;tuple&lt;/code&gt; 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 &lt;code&gt;dict&lt;/code&gt; 没有提供类似的切片操作，所以就得要自己实现。&lt;/p&gt;
-
 &lt;p&gt;其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;dict_slice&lt;/span&gt;(adict, start, end):
+    keys &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; adict&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;keys()
+    dict_slice &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {}
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; k &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; keys[start:end]:
+        dict_slice[k] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; adict[k]
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; dict_slice
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>Python 时间戳和日期相互转换</title>
-      <link>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</link>
+      <link>https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</link>
       <pubDate>Sun, 21 Oct 2012 18:53:51 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</guid>
+      <guid>https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/</guid>
       <description>&lt;p&gt;在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。&lt;/p&gt;
-
 &lt;p&gt;首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93&#34;&gt;为什么计算机时间要从1970年1月1日开始算起？&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;</description>

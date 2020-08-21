@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Flask 路由做范围限制 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,46 +127,33 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Flask 路由做范围限制</h1>
 	<div class="entry-content" itemprop="articleBody"><p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
-
 <h1 id="1-what">1. What</h1>
-
 <p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
-
 <p>简单翻译一下，大致如下：</p>
-
 <p>Flask 应用里面有一个这样的路由</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> foo <span style="color:#f92672">import</span> get_foo
 
-<pre><code class="language-python">from foo import get_foo
-
-@app.route(&quot;/foo/&lt;int:id&gt;&quot;)
-def foo_id(id):
-    return render_template('foo.html', foo = get_foo(id))
-</code></pre>
-
-<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
-
+<span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/foo/&lt;int:id&gt;&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo_id</span>(id):
+    <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;foo.html&#39;</span>, foo <span style="color:#f92672">=</span> get_foo(id))
+</code></pre></div><p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
 <h1 id="2-how">2. How</h1>
-
 <p>这个问题其实对我很有启发，虽然平时都在用 Flask 做项目，但是没有考虑过在 router 层面做验证。虽然在应用场景中可能用处不大，但至少可能存在这个选项，在一些特殊的场景下可以很方便的处理非法请求。</p>
-
 <p>虽然没用过参数验证，但是对 Flask 的路由规则还是比较熟悉的，也用过转换器（converter）。整体而言，Flask 基于一个 <a href="http://werkzeug.pocoo.org/">WSGI Utility Library: Werkzeug</a> 和 <a href="http://jinja.pocoo.org">模板引擎 Jinja2</a>，其中路由规则就是基于 Werkzeug 的。Werkzeug 提供了几种 builtin converters 用于将 URL 里的参数转换成对应 python 的数据类型，而事实上这就已经进行了一次类型检查。</p>
-
-<h2 id="2-1-builtin-converters">2.1 Builtin Converters</h2>
-
+<h2 id="21-builtin-converters">2.1 Builtin Converters</h2>
 <p>如前所述，Werkzeug 提供了几种 <a href="http://werkzeug.pocoo.org/docs/routing/#builtin-converters">builtin converters</a>，分别是：</p>
-
 <ul>
 <li><code>class werkzeug.routing.UnicodeConverter(map, minlength=1, maxlength=None, length=None)</code>：字符串转换器，接受除了路径类型（含有 <code>/</code>）的所有字符串，这也是默认的转换器。</li>
 <li><code>class werkzeug.routing.PathConverter(map)</code>：路径类型转换器，一般用得不多吧。</li>
@@ -174,24 +161,16 @@ def foo_id(id):
 <li><code>class werkzeug.routing.FloatConverter(map, min=None, max=None)</code>：浮点型转换器，接受并转换成 <code>float</code> 类型，不支持负数。</li>
 <li><code>class werkzeug.routing.AnyConverter(map, *items)</code>：匹配任意一个给定的选项，这些选项可以是 python 标识符或字符串。</li>
 </ul>
-
 <p>从文档里可以看到，有些转换器是支持一些简单的范围验证。如 UnicodeConverter 可以检查字符串的最小长度（<code>minlength</code>）、最大长度（<code>maxlength</code>）或者指定长度（<code>length</code>）。IntergerConverter 和 FloatConverter 都可以指定最小值（<code>min</code>）和最大值（<code>max</code>）。所以看完这些，就可以解决最开始的问题了。</p>
-
-<h2 id="2-2-solution">2.2 Solution</h2>
-
+<h2 id="22-solution">2.2 Solution</h2>
 <p>回到原题，是需要对 <code>id</code> 做范围限制（<code>1～300</code>），因此路由就可以这样写了（<a href="http://stackoverflow.com/a/19076418/1461780">我的回答</a>）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> foo <span style="color:#f92672">import</span> get_foo
 
-<pre><code class="language-python">from foo import get_foo
-
-@app.route(&quot;/foo/&lt;int(min=1, max=300):id&gt;&quot;)
-def foo_id(id):
-    return render_template('foo.html', foo = get_foo(id))
-</code></pre>
-
-<p>这个路由就限定了 <code>id</code> 的范围，对于超出范围的请求，如 <code>/foo/1024/</code>，就会找不到对应的路由，因此会返回 <code>404</code>。</p>
-
+<span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/foo/&lt;int(min=1, max=300):id&gt;&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo_id</span>(id):
+    <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;foo.html&#39;</span>, foo <span style="color:#f92672">=</span> get_foo(id))
+</code></pre></div><p>这个路由就限定了 <code>id</code> 的范围，对于超出范围的请求，如 <code>/foo/1024/</code>，就会找不到对应的路由，因此会返回 <code>404</code>。</p>
 <h1 id="3-end">3. End</h1>
-
 <p>题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 <code>404</code>，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。</p></div>
 					</article>
 					
@@ -233,13 +212,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

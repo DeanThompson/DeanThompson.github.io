@@ -1,31 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux on 李林克斯</title>
-    <link>http://liyangliang.me/tags/linux/</link>
-    <description>Recent content in Linux on 李林克斯</description>
+    <title>linux on 李林克斯</title>
+    <link>https://liyangliang.me/tags/linux/</link>
+    <description>Recent content in linux on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Sun, 15 Mar 2015 13:31:49 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>重用 SSH 连接</title>
-      <link>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
+      <link>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</link>
       <pubDate>Sun, 15 Mar 2015 13:31:49 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
+      <guid>https://liyangliang.me/posts/2015/03/reuse-ssh-connection/</guid>
       <description>&lt;p&gt;平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 &lt;code&gt;git pull&lt;/code&gt; 和 &lt;code&gt;git push&lt;/code&gt;，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。&lt;/p&gt;
-
 &lt;p&gt;实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。&lt;/p&gt;
-
 &lt;p&gt;修改 &lt;code&gt;~/.ssh/config&lt;/code&gt; 文件，添加如下配置：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34;&gt;Host *
+&lt;pre&gt;&lt;code class=&#34;language-sshconfig&#34; data-lang=&#34;sshconfig&#34;&gt;Host *
     ControlMaster auto
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600
@@ -34,38 +31,25 @@
     
     <item>
       <title>less 命令支持语法高亮和行号</title>
-      <link>http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</link>
+      <link>https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</link>
       <pubDate>Sun, 03 Nov 2013 00:30:00 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</guid>
+      <guid>https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/</guid>
       <description>&lt;p&gt;首先来一句装X的话：&lt;/p&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;less is more&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;h1 id=&#34;1-how&#34;&gt;1. How&lt;/h1&gt;
-
 &lt;p&gt;less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，&lt;a href=&#34;http://www.gnu.org/software/src-highlite/&#34;&gt;source-highlight&lt;/a&gt; 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo apt-get install source-highlight
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# less hightlight
-export LESSOPEN=&amp;quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;quot;
-export LESS=&amp;quot; -R &amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;sudo apt-get install source-highlight
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# less hightlight&lt;/span&gt;
+export LESSOPEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&amp;#34;&lt;/span&gt;
+export LESS&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34; -R &amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;要注意的是 &lt;code&gt;/usr/share/source-highlight/src-hilite-lesspipe.sh&lt;/code&gt; 是 &lt;code&gt;src-hilite-lesspipe.sh&lt;/code&gt; 脚本的路径，不同的系统可能不一样，可以查找一下（&lt;code&gt;find / -name src-hilite-lesspipe.sh&lt;/code&gt;）。&lt;/p&gt;
 &lt;p&gt;使配置生效：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;source ~/.bashrc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;source ~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样就可以在之后使用 &lt;code&gt;less filename&lt;/code&gt; 查看文件内容时，支持语法高亮。&lt;/p&gt;</description>
     </item>
     
   </channel>

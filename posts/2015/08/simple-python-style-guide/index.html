@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Python 编码规范 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2015/08/simple-python-style-guide/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,48 +127,39 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2015/08/simple-python-style-guide/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Python 编码规范</h1>
 	<div class="entry-content" itemprop="articleBody"><p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
-
 <p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
-
 <ul>
 <li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
 <li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
 <li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
 <li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
 </ul>
-
 <p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
-
 <ul>
 <li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
 <li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
 <li>pyflakes, pylint 等工具及各种编辑器的插件</li>
 </ul>
-
 <p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
-
 <h2 id="缩进">缩进</h2>
-
 <ul>
 <li>不要使用 tab 缩进</li>
 <li>使用任何编辑器写 Python，请把一个 tab 展开为 4 个空格</li>
 <li>绝对不要混用 tab 和空格，否则容易出现 <code>IndentationError</code></li>
 </ul>
-
 <h2 id="空格">空格</h2>
-
 <ul>
 <li>在 list, dict, tuple, set, 参数列表的 <code>,</code> 后面加一个空格</li>
 <li>在 dict 的 <code>:</code> 后面加一个空格</li>
@@ -177,9 +168,7 @@
 <li>接上一条，在参数列表里的 <code>=</code> 两端不需要空格</li>
 <li>括号（<code>()</code>, <code>{}</code>, <code>[]</code>）内的两端不需要空格</li>
 </ul>
-
 <h2 id="空行">空行</h2>
-
 <ul>
 <li>function 和 class 顶上两个空行</li>
 <li>class 的 method 之间一个空行</li>
@@ -187,33 +176,29 @@
 <li>不要把多个语句写在一行，然后用 <code>;</code> 隔开</li>
 <li>if/for/while 语句中，即使执行语句只有一句，也要另起一行</li>
 </ul>
-
 <h2 id="换行">换行</h2>
-
 <ul>
-<li>每一行代码控制在 80 字符以内</li>
-
-<li><p>使用 <code>\</code> 或 <code>()</code> 控制换行，举例：</p>
-
-<pre><code class="language-python">def foo(first, second, third, fourth, fifth,
+<li>
+<p>每一行代码控制在 80 字符以内</p>
+</li>
+<li>
+<p>使用 <code>\</code> 或 <code>()</code> 控制换行，举例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo</span>(first, second, third, fourth, fifth,
         sixth, and_some_other_very_long_param):
-    user = User.objects.filter_by(first=first, second=second, third=third) \
-        .skip(100).limit(100) \
-        .all()
+    user <span style="color:#f92672">=</span> User<span style="color:#f92672">.</span>objects<span style="color:#f92672">.</span>filter_by(first<span style="color:#f92672">=</span>first, second<span style="color:#f92672">=</span>second, third<span style="color:#f92672">=</span>third) \
+        <span style="color:#f92672">.</span>skip(<span style="color:#ae81ff">100</span>)<span style="color:#f92672">.</span>limit(<span style="color:#ae81ff">100</span>) \
+        <span style="color:#f92672">.</span>all()
 
-text = ('Long strings can be made up '
-        'of several shorter strings.')
+text <span style="color:#f92672">=</span> (<span style="color:#e6db74">&#39;Long strings can be made up &#39;</span>
+        <span style="color:#e6db74">&#39;of several shorter strings.&#39;</span>)
+</code></pre></div><pre><code>
 </code></pre></li>
 </ul>
-
 <h2 id="命名">命名</h2>
-
 <ul>
 <li>使用有意义的，英文单词或词组，绝对不要使用汉语拼音</li>
 <li>package/module 名中不要出现 <code>-</code></li>
-
-<li><p>各种类型的命名规范：</p>
-
+<li>各种类型的命名规范：
 <table>
 <thead>
 <tr>
@@ -222,194 +207,193 @@ text = ('Long strings can be made up '
 <th>Internal</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td>Modules</td>
 <td><code>lower_with_under</code></td>
 <td><code>_lower_with_under</code></td>
 </tr>
-
 <tr>
 <td>Packages</td>
 <td><code>lower_with_under</code></td>
 <td></td>
 </tr>
-
 <tr>
 <td>Classes</td>
 <td><code>CapWords</code></td>
 <td><code>_CapWords</code></td>
 </tr>
-
 <tr>
 <td>Exceptions</td>
 <td><code>CapWords</code></td>
 <td></td>
 </tr>
-
 <tr>
 <td>Functions</td>
 <td><code>lower_with_under()</code></td>
 <td><code>_lower_with_under()</code></td>
 </tr>
-
 <tr>
 <td>Global/Class Constants</td>
 <td><code>CAPS_WITH_UNDER</code></td>
 <td><code>_CAPS_WITH_UNDER</code></td>
 </tr>
-
 <tr>
 <td>Global/Class Variables</td>
 <td><code>lower_with_under</code></td>
 <td><code>_lower_with_under</code></td>
 </tr>
-
 <tr>
 <td>Instance Variables</td>
 <td><code>lower_with_under</code></td>
 <td><code>_lower_with_under</code> (protected) or <code>__lower_with_under</code> (private)</td>
 </tr>
-
 <tr>
 <td>Method Names</td>
 <td><code>lower_with_under()</code></td>
 <td><code>_lower_with_under()</code> (protected) or <code>__lower_with_under()</code> (private)</td>
 </tr>
-
 <tr>
 <td>Function/Method Parameters</td>
 <td><code>lower_with_under</code></td>
 <td></td>
 </tr>
-
 <tr>
 <td>Local Variables</td>
 <td><code>lower_with_under</code></td>
 <td></td>
 </tr>
 </tbody>
-</table></li>
+</table>
+</li>
 </ul>
-
 <h2 id="import">import</h2>
-
 <ul>
-<li>所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面</li>
-<li>不要使用 <code>from foo imort *</code></li>
-<li>import 需要分组，每组之间一个空行，每个分组内的顺序尽量采用字典序，分组顺序是：
-
+<li>
+<p>所有 import 尽量放在文件开头，在 docstring 下面，其他变量定义的上面</p>
+</li>
+<li>
+<p>不要使用 <code>from foo imort *</code></p>
+</li>
+<li>
+<p>import 需要分组，每组之间一个空行，每个分组内的顺序尽量采用字典序，分组顺序是：</p>
 <ol>
 <li>标准库</li>
 <li>第三方库</li>
 <li>本项目的 package 和 module</li>
-</ol></li>
-<li>不要使用隐式的相对导入（implicit relative imports），可是使用显示的相对导入（explicit relative imports），如 <code>from ..utils import validator</code>，最好使用全路径导入（absolute imports）</li>
+</ol>
+</li>
+<li>
+<p>不要使用隐式的相对导入（implicit relative imports），可是使用显示的相对导入（explicit relative imports），如 <code>from ..utils import validator</code>，最好使用全路径导入（absolute imports）</p>
+</li>
+<li>
+<p>对于不同的 package，一个 import 单独一行，同一个 package/module 下的内容可以写一起：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># bad</span>
+<span style="color:#f92672">import</span> sys<span style="color:#f92672">,</span> os<span style="color:#f92672">,</span> time
 
-<li><p>对于不同的 package，一个 import 单独一行，同一个 package/module 下的内容可以写一起：</p>
+<span style="color:#75715e"># good</span>
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> sys
+<span style="color:#f92672">import</span> time
 
-<pre><code class="language-python"># bad
-import sys, os, time
-
-# good
-import os
-import sys
-import time
-
-# ok
-from flask import Flask, render_template, jsonify
-</code></pre></li>
-
-<li><p>为了避免可能出现的命名冲突，可以使用 <code>as</code> 或导入上一级命名空间</p></li>
-
-<li><p>不要出现循环导入(cyclic import)</p></li>
+<span style="color:#75715e"># ok</span>
+<span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask, render_template, jsonify
+</code></pre></div><pre><code></code></pre></li>
+<li>
+<p>为了避免可能出现的命名冲突，可以使用 <code>as</code> 或导入上一级命名空间</p>
+</li>
+<li>
+<p>不要出现循环导入(cyclic import)</p>
+</li>
 </ul>
-
 <h2 id="注释">注释</h2>
-
 <ul>
-<li>文档字符串 <code>docstring</code>, 是 package, module, class, method, function 级别的注释，可以通过 <code>__doc__</code> 成员访问到，注释内容在一对 <code>&quot;&quot;&quot;</code> 符号之间</li>
-<li>function, method 的文档字符串应当描述其功能、输入参数、返回值，如果有复杂的算法和实现，也需要写清楚</li>
+<li>
+<p>文档字符串 <code>docstring</code>, 是 package, module, class, method, function 级别的注释，可以通过 <code>__doc__</code> 成员访问到，注释内容在一对 <code>&quot;&quot;&quot;</code> 符号之间</p>
+</li>
+<li>
+<p>function, method 的文档字符串应当描述其功能、输入参数、返回值，如果有复杂的算法和实现，也需要写清楚</p>
+</li>
+<li>
+<p>不要写错误的注释，不要无谓的注释</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># bad 无谓的注释</span>
+x <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>		<span style="color:#75715e"># increase x by 1</span>
 
-<li><p>不要写错误的注释，不要无谓的注释</p>
-
-<pre><code class="language-python"># bad 无谓的注释
-x = x + 1       # increase x by 1
-
-# bad 错误的注释
-x = x - 1       # increase x by 1
+<span style="color:#75715e"># bad 错误的注释</span>
+x <span style="color:#f92672">=</span> x <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>		<span style="color:#75715e"># increase x by 1</span>
+</code></pre></div><pre><code>
 </code></pre></li>
-
-<li><p>优先使用英文写注释，英文不好全部写中文，否则更加看不懂</p></li>
+<li>
+<p>优先使用英文写注释，英文不好全部写中文，否则更加看不懂</p>
+</li>
 </ul>
-
 <h2 id="异常">异常</h2>
-
 <ul>
-<li>不要轻易使用 <code>try/except</code></li>
-<li><code>except</code> 后面需要指定捕捉的异常，裸露的 <code>except</code> 会捕捉所有异常，意味着会隐藏潜在的问题</li>
-<li>可以有多个 <code>except</code> 语句，捕捉多种异常，分别做异常处理</li>
-<li>使用 <code>finally</code> 子句来处理一些收尾操作</li>
+<li>
+<p>不要轻易使用 <code>try/except</code></p>
+</li>
+<li>
+<p><code>except</code> 后面需要指定捕捉的异常，裸露的 <code>except</code> 会捕捉所有异常，意味着会隐藏潜在的问题</p>
+</li>
+<li>
+<p>可以有多个 <code>except</code> 语句，捕捉多种异常，分别做异常处理</p>
+</li>
+<li>
+<p>使用 <code>finally</code> 子句来处理一些收尾操作</p>
+</li>
+<li>
+<p><code>try/except</code> 里的内容不要太多，只在可能抛出异常的地方使用，如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># bad</span>
+<span style="color:#66d9ef">try</span>:
+    user <span style="color:#f92672">=</span> User()
+    user<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;leon&#34;</span>
+    user<span style="color:#f92672">.</span>age <span style="color:#f92672">=</span> int(age)	<span style="color:#75715e"># 可能抛出异常</span>
+    user<span style="color:#f92672">.</span>created_at <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>utcnow()
 
-<li><p><code>try/except</code> 里的内容不要太多，只在可能抛出异常的地方使用，如：</p>
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>add(user)
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>commit()	<span style="color:#75715e"># 可能抛出异常</span>
+<span style="color:#66d9ef">except</span>:
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>rollback()
 
-<pre><code class="language-python"># bad
-try:
-    user = User()
-    user.name = &quot;leon&quot;
-    user.age = int(age) # 可能抛出异常
-    user.created_at = datetime.datetime.utcnow()
+<span style="color:#75715e"># better</span>
+<span style="color:#66d9ef">try</span>:
+    age <span style="color:#f92672">=</span> int(age)
+<span style="color:#66d9ef">except</span> (<span style="color:#a6e22e">TypeError</span>, <span style="color:#a6e22e">ValueError</span>):
+    <span style="color:#66d9ef">return</span> <span style="color:#75715e"># 或别的操作</span>
 
-    db.session.add(user)
-    db.session.commit() # 可能抛出异常
-except:
-    db.session.rollback()
+user <span style="color:#f92672">=</span> User()
+user<span style="color:#f92672">.</span>name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;leon&#34;</span>
+user<span style="color:#f92672">.</span>age <span style="color:#f92672">=</span> age
+user<span style="color:#f92672">.</span>created_at <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>utcnow()
+db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>add(user)
 
-# better
-try:
-    age = int(age)
-except (TypeError, ValueError):
-    return # 或别的操作
-
-user = User()
-user.name = &quot;leon&quot;
-user.age = age
-user.created_at = datetime.datetime.utcnow()
-db.session.add(user)
-
-try:
-    db.session.commit()
-except sqlalchemy.exc.SQLAlchemyError: # 或者更具体的异常
-    db.session.rollback()
-finally:
-    db.session.close()
+<span style="color:#66d9ef">try</span>:
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>commit()
+<span style="color:#66d9ef">except</span> sqlalchemy<span style="color:#f92672">.</span>exc<span style="color:#f92672">.</span>SQLAlchemyError: <span style="color:#75715e"># 或者更具体的异常</span>
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>rollback()
+<span style="color:#66d9ef">finally</span>:
+    db<span style="color:#f92672">.</span>session<span style="color:#f92672">.</span>close()
+</code></pre></div><pre><code>
 </code></pre></li>
-
-<li><p>从 <code>Exception</code> 而不是 <code>BaseException</code> 继承自定义的异常类</p></li>
+<li>
+<p>从 <code>Exception</code> 而不是 <code>BaseException</code> 继承自定义的异常类</p>
+</li>
 </ul>
-
-<h2 id="class-类">Class（类）</h2>
-
+<h2 id="class类">Class（类）</h2>
 <ul>
 <li>显示的写明父类，如果不是继承自别的类，就继承自 <code>object</code> 类</li>
 <li>使用 <code>super</code> 调用父类的方法</li>
 <li>支持多继承，即同时有多个父类，建议使用 Mixin</li>
 </ul>
-
 <h2 id="编码建议">编码建议</h2>
-
 <h3 id="字符串">字符串</h3>
-
 <ul>
 <li>使用字符串的 <code>join</code> 方法拼接字符串</li>
 <li>使用字符串类型的方法，而不是 <code>string</code> 模块的方法</li>
 <li>使用 <code>startswith</code> 和 <code>endswith</code> 方法比较前缀和后缀</li>
 <li>使用 <code>format</code> 方法格式化字符串</li>
 </ul>
-
 <h3 id="比较">比较</h3>
-
 <ul>
 <li>空的 <code>list</code>, <code>str</code>, <code>tuple</code>, <code>set</code>, <code>dict</code> 和 <code>0</code>, <code>0.0</code>, <code>None</code> 都是 <code>False</code></li>
 <li>使用 <code>if some_list</code> 而不是 <code>if len(some_list)</code> 判断某个 <code>list</code> 是否为空，其他类型同理</li>
@@ -417,27 +401,26 @@ finally:
 <li>使用 <code>if a is not None</code> 而不是 <code>if not a is None</code></li>
 <li>用 <code>isinstance</code> 而不是 <code>type</code> 判断类型</li>
 <li>不要用 <code>==</code> 和 <code>!=</code> 与 <code>True</code> 和 <code>False</code> 比较（除非有特殊情况，如在 sqlalchemy 中可能用到）</li>
-
-<li><p>使用 <code>in</code> 操作：</p>
-
+<li>使用 <code>in</code> 操作：
 <ol>
-<li><p>用 <code>key in dict</code> 而不是 <code>dict.has_key()</code></p>
-
-<pre><code class="language-python"># bad
-if d.has_key(k):
+<li>
+<p>用 <code>key in dict</code> 而不是 <code>dict.has_key()</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># bad</span>
+<span style="color:#66d9ef">if</span> d<span style="color:#f92672">.</span>has_key(k):
     do_something()
 
-# good
-if k in d:
+<span style="color:#75715e"># good</span>
+<span style="color:#66d9ef">if</span> k <span style="color:#f92672">in</span> d:
     do_something()
-</code></pre></li>
-
-<li><p>用 <code>set</code> 加速 “存在性” 检查，<code>list</code> 的查找是线性的，复杂度 O(n)，<code>set</code> 底层是 hash table, 复杂度 O(1)，但用 <code>set</code> 需要比 <code>list</code> 更多内存空间</p></li>
-</ol></li>
+</code></pre></div><p>``</p>
+</li>
+<li>
+<p>用 <code>set</code> 加速 “存在性” 检查，<code>list</code> 的查找是线性的，复杂度 O(n)，<code>set</code> 底层是 hash table, 复杂度 O(1)，但用 <code>set</code> 需要比 <code>list</code> 更多内存空间</p>
+</li>
+</ol>
+</li>
 </ul>
-
 <h3 id="其他">其他</h3>
-
 <ul>
 <li>使用列表表达式（<a href="https://www.python.org/dev/peps/pep-0202/">list comprehension</a>），字典表达式(<a href="https://www.python.org/dev/peps/pep-0274/">dict comprehension</a>, Python 2.7+) 和生成器(generator)</li>
 <li><code>dict</code> 的 <code>get</code> 方法可以指定默认值，但有些时候应该用 <code>[]</code> 操作，使得可以抛出 <code>KeyError</code></li>
@@ -493,13 +476,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

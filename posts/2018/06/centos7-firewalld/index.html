@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>CentOS 7 FirewallD - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2018/06/centos7-firewalld/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2018/06/centos7-firewalld/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,187 +127,157 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/devops"> devops </a>
+	    <a href="https://liyangliang.me/categories/devops"> devops </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2018/06/centos7-firewalld/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">CentOS 7 FirewallD</h1>
 	<div class="entry-content" itemprop="articleBody"><h2 id="背景故事">背景故事</h2>
-
 <p>线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。</p>
-
 <p>因为没有防火墙，其实也发生过几次安全事故：</p>
-
 <ul>
 <li>某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；</li>
 <li>某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序</li>
 <li>某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录</li>
 </ul>
-
 <p>这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 <code>0.0.0.0</code>，加上没有开启认证，很容易被拖库。</p>
-
 <h2 id="firewalld">FirewallD</h2>
-
 <p>最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 <a href="http://www.firewalld.org/">FirewallD</a>，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。</p>
-
 <p>FirewallD 有很多种 zone policy，直接使用默认的 <code>public</code>.</p>
-
 <p>首先内网之间必须能相互访问，否则各种集群的节点之间无法通信，会导致集群无法使用。我们有两套内网环境，一个是机房服务器之间，IP 网段是 <code>172.16.24.0/24</code>；另一个是本地和服务器之间，通过 openvpn 连接，有两个 IP 段 <code>10.8.0.0/24</code> 和 <code>10.8.1.0/24</code>. 参考 <a href="http://xuxping.com/2017/04/04/hadoop%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/">这篇文章</a>进行配置：</p>
-
-<pre><code class="language-bash">sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=172.16.24.0/24 accept'
-sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=10.8.0.0/24 accept'
-sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=10.8.1.0/24 accept'
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;rule family=ipv4 source address=172.16.24.0/24 accept&#39;</span>
+sudo firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;rule family=ipv4 source address=10.8.0.0/24 accept&#39;</span>
+sudo firewall-cmd --permanent --add-rich-rule<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;rule family=ipv4 source address=10.8.1.0/24 accept&#39;</span>
 sudo firewall-cmd  --reload
-</code></pre>
+</code></pre></div><p>其次常用服务、端口也需要开启：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo firewall-cmd --permanent --add-service<span style="color:#f92672">=</span>http
+sudo firewall-cmd --permanent --add-service<span style="color:#f92672">=</span>https
+sudo firewall-cmd --permanent --add-service<span style="color:#f92672">=</span>openvpn
 
-<p>其次常用服务、端口也需要开启：</p>
-
-<pre><code class="language-bash">sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=https
-sudo firewall-cmd --permanent --add-service=openvpn
-
-sudo firewall-cmd --permanent --add-port=5000
-sudo firewall-cmd --permanent --add-port=8080
-sudo firewall-cmd --permanent --add-port=8088
+sudo firewall-cmd --permanent --add-port<span style="color:#f92672">=</span><span style="color:#ae81ff">5000</span>
+sudo firewall-cmd --permanent --add-port<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span>
+sudo firewall-cmd --permanent --add-port<span style="color:#f92672">=</span><span style="color:#ae81ff">8088</span>
 sudo firewall-cmd --reload
-</code></pre>
-
-<p>配置完成之后可以查看 <code>/etc/firewalld/zones/public.xml</code> 文件进一步确认开启的 service、source 和 port. 挑个端口用 <code>telnet</code> 测试：</p>
-
-<pre><code class="language-bash">&gt; telnet &lt;public-ip&gt; 21050
+</code></pre></div><p>配置完成之后可以查看 <code>/etc/firewalld/zones/public.xml</code> 文件进一步确认开启的 service、source 和 port. 挑个端口用 <code>telnet</code> 测试：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; telnet &lt;public-ip&gt; <span style="color:#ae81ff">21050</span>
 
 Trying &lt;public-ip&gt;...
 telnet: connect to address &lt;public-ip&gt;: Connection refused
 telnet: Unable to connect to remote host
 
-&gt; telnet 172.16.24.123 21050
+&gt; telnet 172.16.24.123 <span style="color:#ae81ff">21050</span>
 
 Trying 172.16.24.123...
 Connected to 172.16.24.123.
-Escape character is '^]'.
-</code></pre>
-
-<h2 id="firewalld-docker">FirewallD &amp; Docker</h2>
-
+Escape character is <span style="color:#e6db74">&#39;^]&#39;</span>.
+</code></pre></div><h2 id="firewalld--docker">FirewallD &amp; Docker</h2>
 <p>如果先运行 <code>dockerd</code> 再运行 <code>firewalld</code>, 会导致 Docker 无法正常工作，用 Docker 部署的程序无法访问了。这个问题在网上有很多讨论，Docker 的 GitHub 主页就有<a href="https://github.com/moby/moby/issues/16137">一个 issue</a>.
 我是这么解决的：</p>
-
-<pre><code class="language-bash">sudo firewall-cmd --permanent --zone=trusted --change-interface=docker0
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo firewall-cmd --permanent --zone<span style="color:#f92672">=</span>trusted --change-interface<span style="color:#f92672">=</span>docker0
 sudo firewall-cmd --reload
 sudo service docker restard
-</code></pre>
-
-<p>也就是把 <code>docker0</code> 网卡添加到 <code>trusted</code> zone，再重启 <code>dockerd</code>. 操作完成后 Docker 服务恢复正常，但是 <code>firewalld</code> 进程却意外退出了，大量这种日志：</p>
-
-<pre><code class="language-text">ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -n -L DOCKER' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -n -L DOCKER' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -n -L DOCKER-ISOLATION' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C DOCKER-ISOLATION -j RETURN' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -C POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -C POSTROUTING -m addrtype --src-type LOCAL -o docker0 -j MASQUERADE' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -i docker0 -o docker0 -j ACCEPT' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -i docker0 ! -o docker0 -j ACCEPT' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -C PREROUTING -m addrtype --dst-type LOCAL -j DOCKER' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -C OUTPUT -m addrtype --dst-type LOCAL -j DOCKER' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -j DOCKER' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -j DOCKER-ISOLATION' failed: iptables: No chain/target/match by that name.
-ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP' failed: iptables: Bad rule (does a matching rule exist in that chain?).
-</code></pre>
-
-<p>参照 <a href="https://github.com/moby/moby/issues/16137#issuecomment-271615192">这个</a> 和 <a href="https://stackoverflow.com/questions/33600154/docker-not-starting-could-not-delete-the-default-bridge-network-network-bridg/33604859#33604859">这个</a> 做法均无法消除这种错误日志，但是配置的防火墙规则都生效了。</p>
-
+</code></pre></div><p>也就是把 <code>docker0</code> 网卡添加到 <code>trusted</code> zone，再重启 <code>dockerd</code>. 操作完成后 Docker 服务恢复正常，但是 <code>firewalld</code> 进程却意外退出了，大量这种日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -n -L DOCKER&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -n -L DOCKER&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -n -L DOCKER-ISOLATION&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C DOCKER-ISOLATION -j RETURN&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C POSTROUTING -m addrtype --src-type LOCAL -o docker0 -j MASQUERADE&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -i docker0 -o docker0 -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -i docker0 ! -o docker0 -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C PREROUTING -m addrtype --dst-type LOCAL -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t nat -C OUTPUT -m addrtype --dst-type LOCAL -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -j DOCKER&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -t filter -C FORWARD -j DOCKER-ISOLATION&#39; failed: iptables: No chain/target/match by that name.
+ERROR: COMMAND_FAILED: &#39;/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP&#39; failed: iptables: Bad rule (does a matching rule exist in that chain?).
+</code></pre></div><p>参照 <a href="https://github.com/moby/moby/issues/16137#issuecomment-271615192">这个</a> 和 <a href="https://stackoverflow.com/questions/33600154/docker-not-starting-could-not-delete-the-default-bridge-network-network-bridg/33604859#33604859">这个</a> 做法均无法消除这种错误日志，但是配置的防火墙规则都生效了。</p>
 <h2 id="ansible-role">Ansible Role</h2>
-
 <p>把以上配置写成 Ansible 任务进行自动化：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
 
-<pre><code class="language-yaml">---
+- <span style="color:#66d9ef">name</span>: stop iptables and disable iptables on boot
+  <span style="color:#66d9ef">service</span>: name=iptables state=stopped enabled=no
+  <span style="color:#66d9ef">ignore_errors</span>: <span style="color:#66d9ef">true</span>
 
-- name: stop iptables and disable iptables on boot
-  service: name=iptables state=stopped enabled=no
-  ignore_errors: true
+- <span style="color:#66d9ef">name</span>: ensure firewalld installed
+  <span style="color:#66d9ef">yum</span>: name=firewalld state=present
 
-- name: ensure firewalld installed
-  yum: name=firewalld state=present
+- <span style="color:#66d9ef">name</span>: enable firewalld
+  <span style="color:#66d9ef">service</span>: name=firewalld state=started enabled=yes
 
-- name: enable firewalld
-  service: name=firewalld state=started enabled=yes
+- <span style="color:#66d9ef">name</span>: set public as default zone policy
+  <span style="color:#66d9ef">command</span>: firewall-cmd --set-default-zone=public
 
-- name: set public as default zone policy
-  command: firewall-cmd --set-default-zone=public
+- <span style="color:#66d9ef">name</span>: ensure private network is not blocked
+  <span style="color:#66d9ef">firewalld</span>:
+    <span style="color:#66d9ef">rich_rule</span>: <span style="color:#e6db74">&#39;rule family=ipv4 source address={{ item }} accept&#39;</span>
+    <span style="color:#66d9ef">permanent</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#66d9ef">state</span>: enabled
+  <span style="color:#66d9ef">with_items</span>:
+      - <span style="color:#ae81ff">172.16.24.0</span>/<span style="color:#ae81ff">24</span>
+      - <span style="color:#ae81ff">10.8.0.0</span>/<span style="color:#ae81ff">24</span>
+      - <span style="color:#ae81ff">10.8.1.0</span>/<span style="color:#ae81ff">24</span>
 
-- name: ensure private network is not blocked
-  firewalld:
-    rich_rule: 'rule family=ipv4 source address={{ item }} accept'
-    permanent: true
-    state: enabled
-  with_items:
-      - 172.16.24.0/24
-      - 10.8.0.0/24
-      - 10.8.1.0/24
-
-- name: enable common services
-  firewalld:
-    service: '{{ item }}'
-    permanent: true
-    state: enabled
-  with_items:
+- <span style="color:#66d9ef">name</span>: enable common services
+  <span style="color:#66d9ef">firewalld</span>:
+    <span style="color:#66d9ef">service</span>: <span style="color:#e6db74">&#39;{{ item }}&#39;</span>
+    <span style="color:#66d9ef">permanent</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#66d9ef">state</span>: enabled
+  <span style="color:#66d9ef">with_items</span>:
     - http
     - https
     - ssh
     - ntp
     - openvpn
 
-- name: enable ports
-  firewalld:
-    port: '{{ item }}'
-    permanent: true
-    state: enabled
-  with_items:
-    - 58890/tcp
-    - 58880/tcp
-    - 5000/tcp
-    - 8080/tcp
-    - 8088/tcp
-    - 8888/tcp
+- <span style="color:#66d9ef">name</span>: enable ports
+  <span style="color:#66d9ef">firewalld</span>:
+    <span style="color:#66d9ef">port</span>: <span style="color:#e6db74">&#39;{{ item }}&#39;</span>
+    <span style="color:#66d9ef">permanent</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#66d9ef">state</span>: enabled
+  <span style="color:#66d9ef">with_items</span>:
+    - <span style="color:#ae81ff">58890</span>/tcp
+    - <span style="color:#ae81ff">58880</span>/tcp
+    - <span style="color:#ae81ff">5000</span>/tcp
+    - <span style="color:#ae81ff">8080</span>/tcp
+    - <span style="color:#ae81ff">8088</span>/tcp
+    - <span style="color:#ae81ff">8888</span>/tcp
 
-- name: enable docker interface
-  firewalld:
-    zone: trusted
-    interface: docker0
-    permanent: true
-    state: enabled
+- <span style="color:#66d9ef">name</span>: enable docker interface
+  <span style="color:#66d9ef">firewalld</span>:
+    <span style="color:#66d9ef">zone</span>: trusted
+    <span style="color:#66d9ef">interface</span>: docker0
+    <span style="color:#66d9ef">permanent</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#66d9ef">state</span>: enabled
 
-- name: enable docker ports
-  firewalld:
-    port: '{{ item }}'
-    permanent: true
-    state: enabled
-  with_items:
-    - 4243/tcp
+- <span style="color:#66d9ef">name</span>: enable docker ports
+  <span style="color:#66d9ef">firewalld</span>:
+    <span style="color:#66d9ef">port</span>: <span style="color:#e6db74">&#39;{{ item }}&#39;</span>
+    <span style="color:#66d9ef">permanent</span>: <span style="color:#66d9ef">true</span>
+    <span style="color:#66d9ef">state</span>: enabled
+  <span style="color:#66d9ef">with_items</span>:
+    - <span style="color:#ae81ff">4243</span>/tcp
 
-# 有些机器可能没有运行 dockerd，简单的通过 ignore_errors 来跳过
-- name: restart docker daemon
-  service: name=docker state=restarted
-  ignore_errors: true
+<span style="color:#75715e"># 有些机器可能没有运行 dockerd，简单的通过 ignore_errors 来跳过</span>
+- <span style="color:#66d9ef">name</span>: restart docker daemon
+  <span style="color:#66d9ef">service</span>: name=docker state=restarted
+  <span style="color:#66d9ef">ignore_errors</span>: <span style="color:#66d9ef">true</span>
 
-- name: reload firewalld
-  service: name=firewalld state=reloaded
+- <span style="color:#66d9ef">name</span>: reload firewalld
+  <span style="color:#66d9ef">service</span>: name=firewalld state=reloaded
 
-# 有时候会出现 firewalld 进程意外退出的情况，具体原因待查
-- name: enable firewalld
-  service: name=firewalld state=started enabled=yes
-</code></pre>
-
-<h2 id="references">References</h2>
-
+<span style="color:#75715e"># 有时候会出现 firewalld 进程意外退出的情况，具体原因待查</span>
+- <span style="color:#66d9ef">name</span>: enable firewalld
+  <span style="color:#66d9ef">service</span>: name=firewalld state=started enabled=yes
+</code></pre></div><h2 id="references">References</h2>
 <ul>
 <li><a href="http://www.firewalld.org/">FirewallD 官网</a></li>
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-using-firewalld-on-centos-7">DigitalOcean: How To Set Up a Firewall Using FirewallD on CentOS 7</a></li>
@@ -355,13 +325,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

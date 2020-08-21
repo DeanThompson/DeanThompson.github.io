@@ -1,86 +1,74 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Flask on 李林克斯</title>
-    <link>http://liyangliang.me/categories/flask/</link>
-    <description>Recent content in Flask on 李林克斯</description>
+    <title>flask on 李林克斯</title>
+    <link>https://liyangliang.me/categories/flask/</link>
+    <description>Recent content in flask on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Wed, 10 May 2017 17:48:17 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/categories/flask/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/categories/flask/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Flask 应用国际化</title>
-      <link>http://liyangliang.me/posts/2017/05/flask-i18n/</link>
+      <link>https://liyangliang.me/posts/2017/05/flask-i18n/</link>
       <pubDate>Wed, 10 May 2017 17:48:17 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2017/05/flask-i18n/</guid>
+      <guid>https://liyangliang.me/posts/2017/05/flask-i18n/</guid>
       <description>&lt;h2 id=&#34;babel&#34;&gt;Babel&lt;/h2&gt;
-
 &lt;blockquote&gt;
 &lt;p&gt;Babel is an integrated collection of utilities that assist in internationalizing and localizing Python applications, with an emphasis on web-based applications.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;ul&gt;
-&lt;li&gt;文档：&lt;a href=&#34;http://babel.pocoo.org/en/latest/&#34;&gt;http://babel.pocoo.org/en/latest/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/babel&#34;&gt;https://github.com/python-babel/babel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;文档：http://babel.pocoo.org/en/latest/&lt;/li&gt;
+&lt;li&gt;代码：https://github.com/python-babel/babel&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;flask-babel&#34;&gt;Flask-Babel&lt;/h2&gt;
-
 &lt;p&gt;Flask 的 i18n 扩展，集成 babel、pytz 等。&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;文档：&lt;a href=&#34;https://pythonhosted.org/Flask-Babel/&#34;&gt;https://pythonhosted.org/Flask-Babel/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;代码：&lt;a href=&#34;https://github.com/python-babel/flask-babel&#34;&gt;https://github.com/python-babel/flask-babel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;文档：https://pythonhosted.org/Flask-Babel/&lt;/li&gt;
+&lt;li&gt;代码：https://github.com/python-babel/flask-babel&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
-
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装：&lt;code&gt;pip install Flask-Babel&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;babel 配置文件：babel.cfg&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-ini&#34;&gt;[python: **.py]
-[jinja2: **.html]
-extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ini&#34; data-lang=&#34;ini&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;[python: **.py]&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;[jinja2: **.html]&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;extensions&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExtension&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
       <title>在 Flask 项目的 celery 中使用 gevent</title>
-      <link>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
+      <link>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</link>
       <pubDate>Tue, 17 May 2016 16:42:37 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2016/05/using-celery-with-flask-and-gevent/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2015/11/using-celery-with-flask/&#34;&gt;在 Flask 项目中使用 Celery&lt;/a&gt; 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。&lt;/p&gt;
 &lt;h2 id=&#34;1-使用-gevent-并发模型&#34;&gt;1. 使用 gevent 并发模型&lt;/h2&gt;
-
 &lt;p&gt;如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c 10 -l INFO
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ celery worker -A celery_worker.celery -P gevent -c &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; -l INFO
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上面的命令，&lt;code&gt;-P&lt;/code&gt; 选项指定 pool，默认是 prefork，这里是 gevent; &lt;code&gt;-c&lt;/code&gt; 设置并发数。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>在 Flask 项目中使用 Celery</title>
-      <link>http://liyangliang.me/posts/2015/11/using-celery-with-flask/</link>
+      <link>https://liyangliang.me/posts/2015/11/using-celery-with-flask/</link>
       <pubDate>Sat, 14 Nov 2015 16:57:03 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/using-celery-with-flask/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
-
+      <guid>https://liyangliang.me/posts/2015/11/using-celery-with-flask/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://liyangliang.me/posts/2015/11/a-introduction-to-celery/&#34;&gt;前一篇 Blog&lt;/a&gt; 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.&lt;/p&gt;
 &lt;p&gt;注意，这篇 Blog 严重参考了这两篇文章：&lt;/p&gt;
-
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/using-celery-with-flask&#34;&gt;Using Celery With Flask&lt;/a&gt;: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern&#34;&gt;Celery and the Flask Application Factory Pattern&lt;/a&gt;: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 &lt;a href=&#34;http://flask.pocoo.org/docs/0.10/patterns/appfactories/&#34;&gt;Flask Application Factory&lt;/a&gt; 的结合使用。&lt;/li&gt;
@@ -89,33 +77,28 @@ extensions=jinja2.ext.autoescape,jinja2.ext.with_,webassets.ext.jinja2.AssetsExt
     
     <item>
       <title>Tornado 和 Flask 应用缓存响应结果</title>
-      <link>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
+      <link>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
       <pubDate>Thu, 05 Nov 2015 16:52:12 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
       <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
-
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
-
 &lt;p&gt;对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;GET 查询&lt;/li&gt;
 &lt;li&gt;查询很耗时&lt;/li&gt;
 &lt;li&gt;相同条件、不同时间（或某段时间内）的查询结果是一致的&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>用 WTForms 和装饰器做表单校验</title>
-      <link>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
+      <link>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</link>
       <pubDate>Sat, 31 Oct 2015 01:46:10 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/</guid>
       <description>&lt;p&gt;在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。&lt;/p&gt;
-
 &lt;p&gt;&lt;a href=&#34;https://github.com/wtforms/wtforms&#34;&gt;WTForms&lt;/a&gt; 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。&lt;/p&gt;</description>
     </item>
     

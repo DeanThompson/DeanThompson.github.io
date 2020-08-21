@@ -1,30 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Database on 李林克斯</title>
-    <link>http://liyangliang.me/tags/database/</link>
-    <description>Recent content in Database on 李林克斯</description>
+    <title>database on 李林克斯</title>
+    <link>https://liyangliang.me/tags/database/</link>
+    <description>Recent content in database on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Fri, 11 Oct 2019 14:09:28 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 21 Aug 2020 13:48:05 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/tags/database/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/tags/database/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>记一次 ClickHouse 数据迁移</title>
+      <link>https://liyangliang.me/posts/2020/08/clickhouse-migration/</link>
+      <pubDate>Fri, 21 Aug 2020 13:48:05 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>https://liyangliang.me/posts/2020/08/clickhouse-migration/</guid>
+      <description>背景 大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。
+方案调研 迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。
+拷贝数据目录 先观察一下 ClickHouse 在文件系统上的目录结构（配置文件 /ect/clickhouse-server/config.xml 里面配置的 &amp;lt;path&amp;gt;），为了便于查看，只保留了 data 和 metadata 目录。
+. ├── data │ ├── default │ ├── system │ │ ├── asynchronous_metric_log │ │ ├── metric_log │ │ ├── query_log │ │ ├── query_thread_log │ │ └── trace_log ├── metadata │ ├── default │ │ └── v_table_size.</description>
+    </item>
+    
+    <item>
       <title>Impala 添加和使用 UDF</title>
-      <link>http://liyangliang.me/posts/2019/10/impala-udf/</link>
+      <link>https://liyangliang.me/posts/2019/10/impala-udf/</link>
       <pubDate>Fri, 11 Oct 2019 14:09:28 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/10/impala-udf/</guid>
+      <guid>https://liyangliang.me/posts/2019/10/impala-udf/</guid>
       <description>&lt;p&gt;Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;pre&gt;&lt;code&gt;hdfs dfs -mkdir /user/hive/udfs
 
 hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
@@ -33,14 +43,12 @@ hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-c
     
     <item>
       <title>一个轻量级通用的数据同步方案</title>
-      <link>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
+      <link>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</link>
       <pubDate>Sat, 27 Apr 2019 14:02:16 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
+      <guid>https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/</guid>
       <description>&lt;p&gt;在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。&lt;/p&gt;
-
 &lt;p&gt;首先梳理一下需求和目标：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度&lt;/li&gt;
 &lt;li&gt;扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等&lt;/li&gt;

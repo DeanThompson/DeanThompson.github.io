@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,63 +127,45 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/nginx"> nginx </a>
+	    <a href="https://liyangliang.me/categories/nginx"> nginx </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Nginx AWS ELB 域名解析</h1>
 	<div class="entry-content" itemprop="articleBody"><p>最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：</p>
-
 <ul>
 <li>两个域名：api.example.com, web.example.com</li>
 <li>环境：AWS + ELB + Nginx</li>
 <li>后端：Python + Django + Gunicorn</li>
 </ul>
-
 <p>出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：</p>
-
 <pre><code>                      proxy_pass         backends                      proxy_pass
 APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) ------------&gt; Gunicorn(s)
-</code></pre>
-
-<p>其中 API 的 Nginx 配置大概是这样：</p>
-
-<pre><code class="language-nginx">location /test {
-    proxy_pass http://name.of.elb.aws.com;
+</code></pre><p>其中 API 的 Nginx 配置大概是这样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">location</span> <span style="color:#e6db74">/test</span> {
+    <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://name.of.elb.aws.com</span>;
 }
-</code></pre>
-
-<p>文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。</p>
-
+</code></pre></div><p>文章开头描述的现象就是，在 API 的 Nginx 能看到 access log，但是 Backend 的 Nginx 没有接收到请求。所以问题可能出在代理这一步。奇怪的地方在于，刚上线时一切正常，运行了一段时间后才突然出现。猜测有可能是 DNS 解析的问题，但没有根据，也不知道如何解决。</p>
 <p>后来 Google 了一番，发现确实是 DNS 的问题。Nginx 会在启动的时候进行域名查找，然后把 IP 地址缓存起来，后续就直接使用这些 IP 地址。而 AWS 的 ELB 所指向的 IP 地址是不固定的，会经常更新；所以这会导致 Nginx 缓存的 IP 地址实际上已经失效。定位出了问题，也参考网上的做法，把 API 的 Nginx 配置稍作修改：</p>
-
-<pre><code class="language-nginx">location /test {
-    resolver 233.5.5.5 valid=30s;
-    proxy_pass http://name.of.elb.aws.com;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">location</span> <span style="color:#e6db74">/test</span> {
+    <span style="color:#f92672">resolver</span> <span style="color:#ae81ff">233</span><span style="color:#e6db74">.5.5.5</span> <span style="color:#e6db74">valid=30s</span>;
+    <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://name.of.elb.aws.com</span>;
 }
-</code></pre>
-
-<p>其中 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver">resolver</a> 就是 Nginx 用于把域名转换为 IP 地址的域名服务器。后面的第一个参数是域名服务器，valid 指定了缓存有效期，这里是 30s （默认 5min）. 加上这个配置后，Nginx 会用指定的域名服务器来解析域名，并定期把缓存失效。这样就能避免 ELB 地址更新带来的问题。</p>
-
-<p>刚开始以为只需要加上 resolver 这一行配置就可以，后来看 <a href="[http://serverfault.com/a/562518/192152">这个 serverfault 上的回答</a>，还需要把 proxy_pass 的地址定义成一个变量。于是最终的配置变成了：</p>
-
-<pre><code class="language-nginx">location /test {
-    resolver 233.5.5.5 valid=30s;
-    set $backends &quot;http://name.of.elb.aws.com&quot;;
-    proxy_pass $backends;
+</code></pre></div><p>其中 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver">resolver</a> 就是 Nginx 用于把域名转换为 IP 地址的域名服务器。后面的第一个参数是域名服务器，valid 指定了缓存有效期，这里是 30s （默认 5min）. 加上这个配置后，Nginx 会用指定的域名服务器来解析域名，并定期把缓存失效。这样就能避免 ELB 地址更新带来的问题。</p>
+<p>刚开始以为只需要加上 resolver 这一行配置就可以，后来看 <a href="%5Bhttp://serverfault.com/a/562518/192152">这个 serverfault 上的回答</a>，还需要把 proxy_pass 的地址定义成一个变量。于是最终的配置变成了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">location</span> <span style="color:#e6db74">/test</span> {
+    <span style="color:#f92672">resolver</span> <span style="color:#ae81ff">233</span><span style="color:#e6db74">.5.5.5</span> <span style="color:#e6db74">valid=30s</span>;
+    <span style="color:#f92672">set</span> $backends <span style="color:#e6db74">&#34;http://name.of.elb.aws.com&#34;</span>;
+    <span style="color:#f92672">proxy_pass</span> $backends;
 }
-</code></pre>
-
-<p>修改配置，reload，一两天后如果无响应的现象不再出现，说明问题已经解决。</p>
-
+</code></pre></div><p>修改配置，reload，一两天后如果无响应的现象不再出现，说明问题已经解决。</p>
 <p>参考材料：</p>
-
 <ul>
 <li><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver">Nginx 文档</a></li>
 <li><a href="http://tenzer.dk/nginx-with-dynamic-upstreams/">Nginx with dynamic upstreams</a></li>
@@ -230,13 +212,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

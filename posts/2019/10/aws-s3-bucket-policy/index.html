@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>AWS S3 Bucket 指定权限 - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,65 +127,52 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/aws"> aws </a>
+	    <a href="https://liyangliang.me/categories/aws"> aws </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">AWS S3 Bucket 指定权限</h1>
 	<div class="entry-content" itemprop="articleBody"><p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
-
 <h2 id="创建-iam-用户">创建 IAM 用户</h2>
-
 <p>创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 <code>arn:aws-cn:iam::123456789012:user/exampleuser</code>.</p>
-
 <h2 id="配置-s3-bucket-权限">配置 S3 bucket 权限</h2>
-
-<p>创建 S3 bucket，假设名字为 <code>example-bucket</code>，于是对应的 ARN 为 <code>arn:aws-cn:s3:::example-bucket</code>. 进入 Permissions 页面，编辑 Bucket Policy.</p>
-
-<pre><code class="language-json">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Id&quot;: &quot;Policy1571646921804&quot;,
-    &quot;Statement&quot;: [
+<p>创建 S3 bucket，假设名字为 <code>example-bucket</code>，于是对应的 ARN 为 <code>arn:aws-cn:s3:::example-bucket </code>. 进入 Permissions 页面，编辑 Bucket Policy.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+    <span style="color:#f92672">&#34;Id&#34;</span>: <span style="color:#e6db74">&#34;Policy1571646921804&#34;</span>,
+    <span style="color:#f92672">&#34;Statement&#34;</span>: [
         {
-            &quot;Sid&quot;: &quot;Stmt1571646903119&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Principal&quot;: {
-                &quot;AWS&quot;: &quot;arn:aws-cn:iam::123456789012:user/exampleuser&quot;
+            <span style="color:#f92672">&#34;Sid&#34;</span>: <span style="color:#e6db74">&#34;Stmt1571646903119&#34;</span>,
+            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+            <span style="color:#f92672">&#34;Principal&#34;</span>: {
+                <span style="color:#f92672">&#34;AWS&#34;</span>: <span style="color:#e6db74">&#34;arn:aws-cn:iam::123456789012:user/exampleuser&#34;</span>
             },
-            &quot;Action&quot;: &quot;s3:ListBucket&quot;,
-            &quot;Resource&quot;: &quot;arn:aws-cn:s3:::example-bucket&quot;
+            <span style="color:#f92672">&#34;Action&#34;</span>: <span style="color:#e6db74">&#34;s3:ListBucket&#34;</span>,
+            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;arn:aws-cn:s3:::example-bucket&#34;</span>
         },
         {
-            &quot;Sid&quot;: &quot;Stmt1571646919492&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Principal&quot;: {
-                &quot;AWS&quot;: &quot;arn:aws-cn:iam::123456789012:user/exampleuser&quot;
+            <span style="color:#f92672">&#34;Sid&#34;</span>: <span style="color:#e6db74">&#34;Stmt1571646919492&#34;</span>,
+            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+            <span style="color:#f92672">&#34;Principal&#34;</span>: {
+                <span style="color:#f92672">&#34;AWS&#34;</span>: <span style="color:#e6db74">&#34;arn:aws-cn:iam::123456789012:user/exampleuser&#34;</span>
             },
-            &quot;Action&quot;: &quot;s3:GetObject&quot;,
-            &quot;Resource&quot;: &quot;arn:aws-cn:s3:::example-bucket/*&quot;
+            <span style="color:#f92672">&#34;Action&#34;</span>: <span style="color:#e6db74">&#34;s3:GetObject&#34;</span>,
+            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;arn:aws-cn:s3:::example-bucket/*&#34;</span>
         }
     ]
 }
-</code></pre>
-
-<p>这里分配了 <code>s3:ListBucket</code> 和 <code>s3:GetObject</code> 两个权限，即可以列出及读取  bucket  里所有对象。要注意 <code>s3:ListBucket</code> 是 bucket 级别的，所以 <code>Resource</code> 就是 bucket 的 ARN；<code>s3:GetObject</code> 是对象级别的，所以 <code>Resource</code> 最后要加上 <code>/*</code>.</p>
-
+</code></pre></div><p>这里分配了 <code>s3:ListBucket</code> 和 <code>s3:GetObject</code> 两个权限，即可以列出及读取  bucket  里所有对象。要注意 <code>s3:ListBucket</code> 是 bucket 级别的，所以 <code>Resource</code> 就是 bucket 的 ARN；<code>s3:GetObject</code> 是对象级别的，所以 <code>Resource</code> 最后要加上 <code>/*</code>.</p>
 <p>Bucket Policy 可以通过 <a href="https://awspolicygen.s3.cn-north-1.amazonaws.com.cn/policygen.html">Policy generator</a> 生成。添加 2 个 Statement，如下图所示</p>
-
-<p><img src="https://i.loli.net/2019/10/23/KAr2RdmwGLEUbyX.png" alt="s3_bucket_policy_generator.png" /></p>
-
+<p><img src="https://i.loli.net/2019/10/23/KAr2RdmwGLEUbyX.png" alt="s3_bucket_policy_generator.png"></p>
 <p>点击 Generate Policy 即可生成 JSON 格式的 policy.</p>
-
 <h2 id="测试">测试</h2>
-
 <p>用 <code>aws</code> 命令行程序测试（安装：<code>pip install awscli</code>）。先配置好 access key 和 region 信息。</p>
-
 <pre><code>$ aws s3 ls
 
 An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied
@@ -240,13 +227,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

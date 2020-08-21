@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2012/12/python-dict-slice/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2012/12/python-dict-slice/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,67 +127,50 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">Python字典切片</h1>
 	<div class="entry-content" itemprop="articleBody"><p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-
 <p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-
-<pre><code class="language-python">def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-</code></pre>
-
-<hr />
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dict_slice</span>(adict, start, end):
+    keys <span style="color:#f92672">=</span> adict<span style="color:#f92672">.</span>keys()
+    dict_slice <span style="color:#f92672">=</span> {}
+    <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> keys[start:end]:
+        dict_slice[k] <span style="color:#f92672">=</span> adict[k]
+    <span style="color:#66d9ef">return</span> dict_slice
+</code></pre></div><hr>
 <p><strong>EDIT 2013-10-26 01:13</strong></p>
-
 <p>补充一个一行的版本（one-liner）:</p>
-
-<pre><code class="language-python">dict_slice = lambda adict, start, end: dict((k, adict[k]) for k in adict.keys()[start:end])
-</code></pre>
-
-<p>这行代码主要是用了 <code>lambda</code> 来创建一个匿名函数，再用 built-in 函数 <code>dict()</code> 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 <code>dict()</code> 函数：</p>
-
-<pre><code class="language-python">dict_slice = lambda adict, start, end: { k:adict[k] for k in adict.keys()[start:end] }
-</code></pre>
-
-<p>这个看起来和 list comprehension 就很像了。非常优雅，且节省空间 ：）</p>
-
-<hr />
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">dict_slice <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> adict, start, end: dict((k, adict[k]) <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> adict<span style="color:#f92672">.</span>keys()[start:end])
+</code></pre></div><p>这行代码主要是用了 <code>lambda</code> 来创建一个匿名函数，再用 built-in 函数 <code>dict()</code> 来生成新的字典。作用和上面的函数一模一样，调用方式也是一样的。如果是 python 2.7 及以上的版本，还可以用 dict comprehension 来替换 <code>dict()</code> 函数：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">dict_slice <span style="color:#f92672">=</span> <span style="color:#66d9ef">lambda</span> adict, start, end: { k:adict[k] <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> adict<span style="color:#f92672">.</span>keys()[start:end] }
+</code></pre></div><p>这个看起来和 list comprehension 就很像了。非常优雅，且节省空间 ：）</p>
+<hr>
 <p>简单验证：</p>
-
-<pre><code class="language-python">&gt;&gt;&gt; d = {}.fromkeys(range(10), 5)
-&gt;&gt;&gt; d
-{0: 5, 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 5, 7: 5, 8: 5, 9: 5}
-&gt;&gt;&gt;
-&gt;&gt;&gt; slice = dict_slice(d, 3, 5)
-&gt;&gt;&gt; slice
-{3: 5, 4: 5}
-&gt;&gt;&gt;
-&gt;&gt;&gt; slice = dict_slice(d, 4, 8)
-&gt;&gt;&gt; slice
-{4: 5, 5: 5, 6: 5, 7: 5}
-&gt;&gt;&gt;
-&gt;&gt;&gt; slice = dict_slice(d, 5, -1)
-&gt;&gt;&gt; slice
-{5: 5, 6: 5, 7: 5, 8: 5}
-</code></pre>
-
-<p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> d <span style="color:#f92672">=</span> {}<span style="color:#f92672">.</span>fromkeys(range(<span style="color:#ae81ff">10</span>), <span style="color:#ae81ff">5</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> d
+{<span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">4</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">8</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">9</span>: <span style="color:#ae81ff">5</span>}
+<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice <span style="color:#f92672">=</span> dict_slice(d, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">5</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice
+{<span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">4</span>: <span style="color:#ae81ff">5</span>}
+<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice <span style="color:#f92672">=</span> dict_slice(d, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">8</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice
+{<span style="color:#ae81ff">4</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">5</span>}
+<span style="color:#f92672">&gt;&gt;&gt;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice <span style="color:#f92672">=</span> dict_slice(d, <span style="color:#ae81ff">5</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> slice
+{<span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">8</span>: <span style="color:#ae81ff">5</span>}
+</code></pre></div><p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p></div>
 					</article>
 					
 					<section id="comment">
@@ -228,13 +211,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

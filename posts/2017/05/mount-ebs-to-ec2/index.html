@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>EC2 挂载 EBS - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,45 +127,34 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/aws"> aws </a>
+	    <a href="https://liyangliang.me/categories/aws"> aws </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2017/05/mount-ebs-to-ec2/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
     <h1 class="title" itemprop="name">EC2 挂载 EBS</h1>
 	<div class="entry-content" itemprop="articleBody"><p>创建 EC2 实例的时候可以选择添加 EBS 卷，在实例运行后，需要手动挂载上去。</p>
-
 <p>详情见 <a href="http://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/ebs-using-volumes.html">EBS 的文档</a></p>
-
 <h2 id="用-lsblk-命令查看所有可用的磁盘及其安装点">用 <code>lsblk</code> 命令查看所有可用的磁盘及其安装点</h2>
-
 <pre><code>$ lsblk
 NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 xvda    202:0    0   8G  0 disk
 `-xvda1 202:1    0   8G  0 part /
 xvdb    202:16   0  30G  0 disk
-</code></pre>
-
-<p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
-
+</code></pre><p>其中 <code>xvda1</code> 是根设备，挂载到了 <code>/</code>；<code>xvdb</code> 是刚才添加的 EBS 卷，还没有挂载。</p>
 <h2 id="确定是否需要在卷上创建文件系统">确定是否需要在卷上创建文件系统。</h2>
-
 <p>如果是新的 EBS，是一个原始的块存储设备，需要先创建文件系统才能安装使用。从快照还原的卷可能已经含有文件系统。</p>
-
 <pre><code>$ sudo file -s /dev/xvdb
 /dev/xvdb: data
 
 $ sudo file -s /dev/xvda1
 /dev/xvda1: Linux rev 1.0 ext4 filesystem data, UUID=9fbb7c51-0409-4b50-ad40-068dcfe4bc89, volume name &quot;cloudimg-rootfs&quot; (needs journal recovery) (extents) (large files) (huge files)
-</code></pre>
-
-<p>可以看到 <code>/dev/xvdb</code> 上面还没有文件系统，需要手动创建:</p>
-
+</code></pre><p>可以看到 <code>/dev/xvdb</code> 上面还没有文件系统，需要手动创建:</p>
 <pre><code>$ sudo mkfs -t ext4 /dev/xvdb
 mke2fs 1.42.13 (17-May-2015)
 Creating filesystem with 7864320 4k blocks and 1966080 inodes
@@ -181,22 +170,12 @@ Writing superblocks and filesystem accounting information: done
 
 $ sudo file -s /dev/xvdb
 /dev/xvdb: Linux rev 1.0 ext4 filesystem data, UUID=2a0dae23-7b6e-42ec-95e1-df58f29520a4 (extents) (large files) (huge files)
-</code></pre>
-
-<p>注意：<code>mkfs</code> 会格式化卷，删除所有数据。</p>
-
-<h2 id="创建安装点-也就是要挂载的位置">创建安装点，也就是要挂载的位置:</h2>
-
+</code></pre><p>注意：<code>mkfs</code> 会格式化卷，删除所有数据。</p>
+<h2 id="创建安装点也就是要挂载的位置">创建安装点，也就是要挂载的位置:</h2>
 <pre><code>$ sudo mkdir /data
-</code></pre>
-
-<h2 id="挂载">挂载</h2>
-
+</code></pre><h2 id="挂载">挂载</h2>
 <pre><code>sudo mount /dev/xvdb /data/
-</code></pre>
-
-<h2 id="用-df-命令磁盘空间">用 <code>df</code> 命令磁盘空间</h2>
-
+</code></pre><h2 id="用-df-命令磁盘空间">用 <code>df</code> 命令磁盘空间</h2>
 <pre><code>$ df -h
 Filesystem      Size  Used Avail Use% Mounted on
 udev            489M     0  489M   0% /dev
@@ -248,13 +227,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

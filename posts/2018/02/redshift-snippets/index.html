@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Redshift Snippets - 李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -19,10 +19,10 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/posts/2018/02/redshift-snippets/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/posts/2018/02/redshift-snippets/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
 	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
@@ -127,18 +127,18 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/devops"> devops </a>,
+		<a href="https://liyangliang.me/categories/devops"> devops </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/sql"> sql </a>
+	    <a href="https://liyangliang.me/categories/sql"> sql </a>
 	
 
 
 </div>
 							
-								<span class="comments"><a href="http://liyangliang.me/posts/2018/02/redshift-snippets/#disqus_thread">Comments</a></span>
+								<span class="comments"><a href="https://liyangliang.me/posts/2018/02/redshift-snippets/#disqus_thread">Comments</a></span>
 							
 						</div>
 						
@@ -146,188 +146,146 @@
 	<div class="entry-content" itemprop="articleBody"><ul>
 <li>查询所有 session</li>
 </ul>
-
-<pre><code class="language-sql">SELECT * FROM stv_sessions;
-</code></pre>
-
-<ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> stv_sessions;
+</code></pre></div><ul>
 <li>终止 session</li>
 </ul>
-
-<pre><code class="language-sql">SELECT pg_terminate_backend(32281);
-</code></pre>
-
-<p>即，调用 <code>pg_terminate_backend</code> 函数，传入 process_id。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_terminate_backend(<span style="color:#ae81ff">32281</span>);
+</code></pre></div><p>即，调用 <code>pg_terminate_backend</code> 函数，传入 process_id。</p>
 <p>权限：普通用户只能终止自己的 session，超级用户能终止任意 session.</p>
-
 <ul>
 <li>查询正在运行的 queries</li>
 </ul>
-
 <p>类似 MySQL 的 <code>SHOW PROCESSLIST</code>.</p>
-
-<pre><code class="language-sql">SELECT stv_recents.userid, stv_recents.status, stv_recents.starttime,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> stv_recents.userid, stv_recents.status, stv_recents.starttime,
        stv_recents.duration, stv_recents.user_name, stv_recents.db_name,
        stv_recents.query, stv_recents.pid
-FROM stv_recents
-WHERE stv_recents.status = 'Running'::bpchar;
-</code></pre>
-
-<ul>
+<span style="color:#66d9ef">FROM</span> stv_recents
+<span style="color:#66d9ef">WHERE</span> stv_recents.status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Running&#39;</span>::bpchar;
+</code></pre></div><ul>
 <li>创建数据库时报错：<code>source database &quot;template1&quot; is being accessed by other users</code></li>
 </ul>
-
 <p>原因：<code>template1</code> 数据库被其他 session 占用，锁住了。</p>
-
 <p>解决方法：先从 <code>stv_sessions</code> 表查找 <code>template1</code> 相关的 session，然后用 <code>pg_terminate_backend</code> 杀掉。</p>
-
 <ul>
 <li>备份数据到 S3</li>
 </ul>
-
-<pre><code class="language-sql">UNLOAD ('SELECT * FROM public.category') TO 's3://redshift-backup/unload/public/category/category_'
-access_key_id '&lt;access_key_id&gt;' secret_access_key '&lt;secret_access_key&gt;'
-DELIMITER '|' ADDQUOTES ESCAPE ALLOWOVERWRITE;
-</code></pre>
-
-<ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">UNLOAD (<span style="color:#e6db74">&#39;SELECT * FROM public.category&#39;</span>) <span style="color:#66d9ef">TO</span> <span style="color:#e6db74">&#39;s3://redshift-backup/unload/public/category/category_&#39;</span>
+access_key_id <span style="color:#e6db74">&#39;&lt;access_key_id&gt;&#39;</span> secret_access_key <span style="color:#e6db74">&#39;&lt;secret_access_key&gt;&#39;</span>
+<span style="color:#66d9ef">DELIMITER</span> <span style="color:#e6db74">&#39;|&#39;</span> ADDQUOTES <span style="color:#66d9ef">ESCAPE</span> ALLOWOVERWRITE;
+</code></pre></div><ul>
 <li>从 S3 加载数据</li>
 </ul>
-
-<pre><code class="language-sql">COPY public.category FROM 's3://redshift-backup/unload/public/category'
-CREDENTIALS 'aws_access_key_id=&lt;access_key_id&gt;;aws_secret_access_key=&lt;secret_access_key&gt;'
-DELIMITER '|' REMOVEQUOTES ESCAPE REGION 'cn-north-1';
-</code></pre>
-
-<ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COPY</span> <span style="color:#66d9ef">public</span>.category <span style="color:#66d9ef">FROM</span> <span style="color:#e6db74">&#39;s3://redshift-backup/unload/public/category&#39;</span>
+CREDENTIALS <span style="color:#e6db74">&#39;aws_access_key_id=&lt;access_key_id&gt;;aws_secret_access_key=&lt;secret_access_key&gt;&#39;</span>
+<span style="color:#66d9ef">DELIMITER</span> <span style="color:#e6db74">&#39;|&#39;</span> REMOVEQUOTES <span style="color:#66d9ef">ESCAPE</span> REGION <span style="color:#e6db74">&#39;cn-north-1&#39;</span>;
+</code></pre></div><ul>
 <li>定义 Python UDF</li>
 </ul>
-
 <p>文档: <a href="http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html"><a href="http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html">http://docs.aws.amazon.com/redshift/latest/dg/udf-python-language-support.html</a></a></p>
-
-<pre><code class="language-sql">CREATE FUNCTION f_hash(value varchar) returns varchar immutable as $$
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">FUNCTION</span> f_hash(value varchar) <span style="color:#66d9ef">returns</span> varchar <span style="color:#66d9ef">immutable</span> <span style="color:#66d9ef">as</span> <span style="color:#960050;background-color:#1e0010">$$</span>
     def sha256_hash(value):
         import hashlib, base64
-        return base64.urlsafe_b64encode(hashlib.sha256(value or '').digest())
-    return sha256_hash(value)
-$$ language plpythonu;
+        <span style="color:#66d9ef">return</span> base64.urlsafe_b64encode(hashlib.sha256(value <span style="color:#66d9ef">or</span> <span style="color:#e6db74">&#39;&#39;</span>).digest())
+    <span style="color:#66d9ef">return</span> sha256_hash(value)
+<span style="color:#960050;background-color:#1e0010">$$</span> <span style="color:#66d9ef">language</span> plpythonu;
 
-SELECT address, mobile_no, f_hash(address), f_hash(mobile_no)
-FROM leqi_orders LIMIT 10;
-</code></pre>
-
-<ul>
+<span style="color:#66d9ef">SELECT</span> address, mobile_no, f_hash(address), f_hash(mobile_no)
+<span style="color:#66d9ef">FROM</span> leqi_orders <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;
+</code></pre></div><ul>
 <li>查看表所占磁盘等信息</li>
 </ul>
-
-<pre><code class="language-sql">SELECT btrim(pgdb.datname::CHARACTER varying::text) AS &quot;database&quot;,
-       btrim(a.name::CHARACTER varying::text) AS &quot;table&quot;,
-       (b.mbytes::numeric::numeric(18, 0) / part.total::numeric::numeric(18, 0) * 100::numeric::numeric(18, 0))::numeric(5, 2) AS pct_of_total,
-       a.&quot;rows&quot;,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> btrim(pgdb.datname::CHARACTER varying::text) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#34;database&#34;</span>,
+       btrim(a.name::CHARACTER varying::text) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#34;table&#34;</span>,
+       (b.mbytes::numeric::numeric(<span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">/</span> part.total::numeric::numeric(<span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">100</span>::numeric::numeric(<span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">0</span>))::numeric(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">AS</span> pct_of_total,
+       a.<span style="color:#e6db74">&#34;rows&#34;</span>,
        b.mbytes,
        b.unsorted_mbytes
-FROM
-  (SELECT id,
+<span style="color:#66d9ef">FROM</span>
+  (<span style="color:#66d9ef">SELECT</span> id,
           db_id,
           name,
-          SUM(&quot;rows&quot;) AS &quot;rows&quot;
-   FROM stv_tbl_perm
-   GROUP BY id,
+          <span style="color:#66d9ef">SUM</span>(<span style="color:#e6db74">&#34;rows&#34;</span>) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#34;rows&#34;</span>
+   <span style="color:#66d9ef">FROM</span> stv_tbl_perm
+   <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> id,
             db_id,
             name) a
-JOIN pg_database pgdb ON pgdb.oid = a.db_id::oid
-JOIN
-  (SELECT stv_blocklist.tbl,
-          sum(CASE
-                  WHEN stv_blocklist.unsorted = 1
-                       OR stv_blocklist.unsorted IS NULL
-                       AND 1 IS NULL THEN 1
-                  ELSE 0
-              END) AS unsorted_mbytes,
-          count(*) AS mbytes
-   FROM stv_blocklist
-   GROUP BY stv_blocklist.tbl) b ON a.id = b.tbl
-JOIN
-  (SELECT sum(stv_partitions.capacity) AS total
-   FROM stv_partitions
-   WHERE stv_partitions.part_begin = 0) part ON 1 = 1
-ORDER BY b.mbytes DESC,
+<span style="color:#66d9ef">JOIN</span> pg_database pgdb <span style="color:#66d9ef">ON</span> pgdb.oid <span style="color:#f92672">=</span> a.db_id::oid
+<span style="color:#66d9ef">JOIN</span>
+  (<span style="color:#66d9ef">SELECT</span> stv_blocklist.tbl,
+          <span style="color:#66d9ef">sum</span>(<span style="color:#66d9ef">CASE</span>
+                  <span style="color:#66d9ef">WHEN</span> stv_blocklist.unsorted <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+                       <span style="color:#66d9ef">OR</span> stv_blocklist.unsorted <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span>
+                       <span style="color:#66d9ef">AND</span> <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">THEN</span> <span style="color:#ae81ff">1</span>
+                  <span style="color:#66d9ef">ELSE</span> <span style="color:#ae81ff">0</span>
+              <span style="color:#66d9ef">END</span>) <span style="color:#66d9ef">AS</span> unsorted_mbytes,
+          <span style="color:#66d9ef">count</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">AS</span> mbytes
+   <span style="color:#66d9ef">FROM</span> stv_blocklist
+   <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> stv_blocklist.tbl) b <span style="color:#66d9ef">ON</span> a.id <span style="color:#f92672">=</span> b.tbl
+<span style="color:#66d9ef">JOIN</span>
+  (<span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">sum</span>(stv_partitions.capacity) <span style="color:#66d9ef">AS</span> total
+   <span style="color:#66d9ef">FROM</span> stv_partitions
+   <span style="color:#66d9ef">WHERE</span> stv_partitions.part_begin <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) part <span style="color:#66d9ef">ON</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> b.mbytes <span style="color:#66d9ef">DESC</span>,
          a.db_id,
          a.name
-</code></pre>
-
-<p>查询结果样例：</p>
-
-<pre><code class="language-text">database  table pct_of_total  rows  mbytes  unsorted_mbytes
+</code></pre></div><p>查询结果样例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">database  table pct_of_total  rows  mbytes  unsorted_mbytes
 roma	mda_price_idx	0	50005	10	10
 roma	mda_vendor	0	4	10	10
 roma	mda_vendor	0	8	10	7
 roma	sku_bodytype	0	9	10	7
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li>查看数据库里的表和字段</li>
 </ul>
-
-<pre><code class="language-sql">SELECT
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
   table_catalog,
   table_schema,
-  table_name,
-  column_name,
+  <span style="color:#66d9ef">table_name</span>,
+  <span style="color:#66d9ef">column_name</span>,
   data_type,
   character_maximum_length,
   column_default,
   is_nullable
-FROM information_schema.columns
-WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
-ORDER BY table_catalog, table_schema, table_name, column_name, ordinal_position;
-</code></pre>
-
-<ul>
+<span style="color:#66d9ef">FROM</span> information_schema.columns
+<span style="color:#66d9ef">WHERE</span> table_schema <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">IN</span> (<span style="color:#e6db74">&#39;pg_catalog&#39;</span>, <span style="color:#e6db74">&#39;information_schema&#39;</span>)
+<span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> table_catalog, table_schema, <span style="color:#66d9ef">table_name</span>, <span style="color:#66d9ef">column_name</span>, ordinal_position;
+</code></pre></div><ul>
 <li>查询持有锁定的会话</li>
 </ul>
-
-<pre><code class="language-sql">SELECT a.txn_owner,
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> a.txn_owner,
        a.txn_db,
        a.xid,
        a.pid,
        a.txn_start,
        a.lock_mode,
-       a.relation                                          AS table_id,
-       nvl(trim(c.&quot;name&quot;), d.relname)                      AS tablename,
-       a.granted,
-       b.pid                                               AS blocking_pid,
-       datediff(S, a.txn_start, getdate()) / 86400 || ' days ' || datediff(S, a.txn_start, getdate()) % 86400 / 3600 ||
-       ' hrs ' || datediff(S, a.txn_start, getdate()) % 3600 / 60 || ' mins ' ||
-       datediff(S, a.txn_start, getdate()) % 60 || ' secs' AS txn_duration
-FROM svv_transactions a
-         LEFT JOIN (SELECT pid, relation, granted FROM pg_locks GROUP BY 1, 2, 3) b
-                   ON a.relation = b.relation AND a.granted = 'f' AND b.granted = 't'
-         LEFT JOIN (SELECT * FROM stv_tbl_perm WHERE slice = 0) c
-                   ON a.relation = c.id
-         LEFT JOIN pg_class d ON a.relation = d.oid
-WHERE a.relation IS NOT NULL;
-</code></pre>
-
-<p>查询结果样例：</p>
-
-<pre><code class="language-text">txn_owner | txn_db |   xid   |  pid  |         txn_start          |      lock_mode      | table_id | tablename | granted | blocking_pid |        txn_duration         | 
+       a.relation                                          <span style="color:#66d9ef">AS</span> table_id,
+       nvl(<span style="color:#66d9ef">trim</span>(<span style="color:#66d9ef">c</span>.<span style="color:#e6db74">&#34;name&#34;</span>), d.relname)                      <span style="color:#66d9ef">AS</span> tablename,
+       a.<span style="color:#66d9ef">granted</span>,
+       b.pid                                               <span style="color:#66d9ef">AS</span> blocking_pid,
+       datediff(S, a.txn_start, getdate()) <span style="color:#f92672">/</span> <span style="color:#ae81ff">86400</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; days &#39;</span> <span style="color:#f92672">||</span> datediff(S, a.txn_start, getdate()) <span style="color:#f92672">%</span> <span style="color:#ae81ff">86400</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">3600</span> <span style="color:#f92672">||</span>
+       <span style="color:#e6db74">&#39; hrs &#39;</span> <span style="color:#f92672">||</span> datediff(S, a.txn_start, getdate()) <span style="color:#f92672">%</span> <span style="color:#ae81ff">3600</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">60</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; mins &#39;</span> <span style="color:#f92672">||</span>
+       datediff(S, a.txn_start, getdate()) <span style="color:#f92672">%</span> <span style="color:#ae81ff">60</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39; secs&#39;</span> <span style="color:#66d9ef">AS</span> txn_duration
+<span style="color:#66d9ef">FROM</span> svv_transactions a
+         <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> (<span style="color:#66d9ef">SELECT</span> pid, relation, <span style="color:#66d9ef">granted</span> <span style="color:#66d9ef">FROM</span> pg_locks <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>) b
+                   <span style="color:#66d9ef">ON</span> a.relation <span style="color:#f92672">=</span> b.relation <span style="color:#66d9ef">AND</span> a.<span style="color:#66d9ef">granted</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;f&#39;</span> <span style="color:#66d9ef">AND</span> b.<span style="color:#66d9ef">granted</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;t&#39;</span>
+         <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> (<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> stv_tbl_perm <span style="color:#66d9ef">WHERE</span> slice <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">c</span>
+                   <span style="color:#66d9ef">ON</span> a.relation <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.id
+         <span style="color:#66d9ef">LEFT</span> <span style="color:#66d9ef">JOIN</span> pg_class d <span style="color:#66d9ef">ON</span> a.relation <span style="color:#f92672">=</span> d.oid
+<span style="color:#66d9ef">WHERE</span> a.relation <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>;
+</code></pre></div><p>查询结果样例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">txn_owner | txn_db |   xid   |  pid  |         txn_start          |      lock_mode      | table_id | tablename | granted | blocking_pid |        txn_duration         | 
 ----------+--------+---------+-------+----------------------------+---------------------+----------+-----------+---------+--------------+-----------------------------+
  usr1     | db1    | 5559898 | 19813 | 2018-06-30 10:51:57.485722 | AccessExclusiveLock |   351959 | lineorder | t       |              | 0 days 0 hrs 0 mins 52 secs |
  usr1     | db1    | 5559927 | 20450 | 2018-06-30 10:52:19.761199 | AccessShareLock     |   351959 | lineorder | f       |        19813 | 0 days 0 hrs 0 mins 30 secs |
  usr1     | db1    | 5559898 | 19813 | 2018-06-30 10:51:57.485722 | AccessShareLock     |   351959 | lineorder | t       |              | 0 days 0 hrs 0 mins 52 secs |
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li><strong>granted = f</strong>：说明该进程无法获得所需的锁定，因为另一个会话中的另一个事务正在持有该锁定</li>
 <li><strong>blocking_pid</strong>：显示正在持有该锁定的会话的进程 ID（此处 PID 19813 正在持有该锁定）</li>
 </ul>
-
 <p>要释放锁定，请等待持有锁定的事务完成，或者通过运行以下命令来手动终止会话：</p>
-
-<pre><code class="language-sql">SELECT pg_terminate_backend(19813);
-</code></pre></div>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> pg_terminate_backend(<span style="color:#ae81ff">19813</span>);
+</code></pre></div></div>
 					</article>
 					
 					<section id="comment">
@@ -368,13 +326,13 @@ ript">comments powered by Disqus.</a></noscript>
 				    </div>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
 Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();

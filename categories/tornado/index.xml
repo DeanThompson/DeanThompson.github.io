@@ -1,36 +1,32 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tornado on 李林克斯</title>
-    <link>http://liyangliang.me/categories/tornado/</link>
-    <description>Recent content in Tornado on 李林克斯</description>
+    <title>tornado on 李林克斯</title>
+    <link>https://liyangliang.me/categories/tornado/</link>
+    <description>Recent content in tornado on 李林克斯</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
     <lastBuildDate>Thu, 05 Nov 2015 16:52:12 +0800</lastBuildDate>
     
-	<atom:link href="http://liyangliang.me/categories/tornado/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liyangliang.me/categories/tornado/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Tornado 和 Flask 应用缓存响应结果</title>
-      <link>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
+      <link>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</link>
       <pubDate>Thu, 05 Nov 2015 16:52:12 +0800</pubDate>
       <author>yanglianglee@gmail.com (Yangliang Li)</author>
-      <guid>http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
+      <guid>https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/</guid>
       <description>&lt;p&gt;写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。&lt;/p&gt;
-
 &lt;p&gt;如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。&lt;/p&gt;
-
 &lt;p&gt;对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;GET 查询&lt;/li&gt;
 &lt;li&gt;查询很耗时&lt;/li&gt;
 &lt;li&gt;相同条件、不同时间（或某段时间内）的查询结果是一致的&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。&lt;/p&gt;</description>
     </item>
     
