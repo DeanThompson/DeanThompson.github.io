@@ -3,10 +3,10 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.51" />
+	<meta name="generator" content="Hugo 0.72.0" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -20,15 +20,15 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
 	
-	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -64,7 +64,7 @@
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
-	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
 	
 </div>
 
@@ -94,7 +94,7 @@
 		
 		
 		
-		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
 		
 		
 		
@@ -119,9 +119,94 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 					
-					<div itemscope itemtype="http://schema.org/Blog">
+					<div itemscope itemtype="https://schema.org/Blog">
 					
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, Mar 13, 2013' data-updated="true" itemprop="datePublished">Wed, Mar 13, 2013</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2013/03/understand-python-decorators/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2013/03/understand-python-decorators/" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="note">Note</h2>
+<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
+<blockquote>
+<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
+</blockquote>
+<hr>
+<h1 id="1-python的函数是对象pythons-functions-are-objects">1. python的函数是对象（Python&rsquo;s functions are objects）</h1>
+<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shout</span>(word<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>):
+    <span style="color:#66d9ef">return</span> word<span style="color:#f92672">.</span>capitalize()<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;!&#34;</span>
+ 
+<span style="color:#66d9ef">print</span> shout()
+<span style="color:#75715e"># outputs : &#39;Yes!&#39;</span>
+ 
+<span style="color:#75715e"># 作为一个对象，你可以像其他对象一样把函数赋值给其他变量</span>
+ 
+scream <span style="color:#f92672">=</span> shout
+ 
+<span style="color:#75715e"># 注意我们没有用括号：我们不是在调用函数，</span>
+<span style="color:#75715e"># 而是把函数&#39;shout&#39;的值绑定到&#39;scream&#39;这个变量上</span>
+<span style="color:#75715e"># 这也意味着你可以通过&#39;scream&#39;这个变量来调用&#39;shout&#39;函数</span>
+ 
+<span style="color:#66d9ef">print</span> scream()
+<span style="color:#75715e"># outputs : &#39;Yes!&#39;</span>
+ 
+<span style="color:#75715e"># 不仅如此，这也还意味着你可以把原来的名字&#39;shout&#39;删掉，</span>
+<span style="color:#75715e"># 而这个函数仍然可以通过&#39;scream&#39;来访问</span>
+<span style="color:#66d9ef">del</span> shout
+<span style="color:#66d9ef">try</span>:
+    <span style="color:#66d9ef">print</span> shout()
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">NameError</span>, e:
+    <span style="color:#66d9ef">print</span> e
+    <span style="color:#75715e">#outputs: &#34;name &#39;shout&#39; is not defined&#34;</span>
+ 
+<span style="color:#66d9ef">print</span> scream()
+outputs: <span style="color:#e6db74">&#39;Yes!&#39;</span>
+</code></pre></div><p>OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">talk</span>():
+ 
+    <span style="color:#75715e"># 你可以在 &#39;talk&#39; 里动态的(on the fly)定义一个函数...</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">whisper</span>(word<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>):
+        <span style="color:#66d9ef">return</span> word<span style="color:#f92672">.</span>lower()<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;...&#34;</span>
+ 
+    <span style="color:#75715e"># ... 然后马上调用它！</span>
+ 
+    <span style="color:#66d9ef">print</span> whisper()
+ 
+<span style="color:#75715e"># 每当调用&#39;talk&#39;，都会定义一次&#39;whisper&#39;，然后&#39;whisper&#39;在&#39;talk&#39;里被调用</span>
+talk()
+<span style="color:#75715e"># outputs:</span>
+<span style="color:#75715e"># &#34;yes...&#34;</span>
+ 
+<span style="color:#75715e"># 但是&#34;whisper&#34; 在 &#34;talk&#34;外并不存在:</span>
+ 
+<span style="color:#66d9ef">try</span>:
+    <span style="color:#66d9ef">print</span> whisper()
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">NameError</span>, e:
+    <span style="color:#66d9ef">print</span> e
+    <span style="color:#75715e">#outputs : &#34;name &#39;whisper&#39; is not defined&#34;*</span>
+</code></pre></div>
+		<a href="https://liyangliang.me/posts/2013/03/understand-python-decorators/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Mon, Feb 25, 2013' data-updated="true" itemprop="datePublished">Mon, Feb 25, 2013</time>
 </div>
@@ -130,26 +215,25 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" itemprop="url">用 openpyxl 处理 xlsx 文件</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>久违的图书馆~~虽然刚开学，图书馆里已经有不少同学在看书自习了，学校的氛围就是不一样，在安静的环境和熟悉的书香中，很容易就静下心来。OK，下面进入正题。</p>
-
 <p><code>openpyxl</code> 是一个用来处理 excel 文件的 python 代码库。Python 有一些内置的功能相似的代码库，不过我都没用过，而且好像都有不少局限性。<code>openpyxl</code> 用起来还是挺简单的，对照文档就可以解决一些基本需求，比如常见的都写操作。不过有一个前提，它只能用来处理 Excel 2007 及以上版本的 excel 文件，也就是 <code>.xlsx/.xlsm</code> 格式的表格文件。顺便提一下，<code>xls</code> 和 <code>xlsx</code> 是两种完全不同的格式，其本质的差别相比字面的区别要多很多。xls 的核心结构是复合文档类型的结构，而 xlsx 的核心结构是 XML 类型的结构，采用的是基于XML的压缩方式，使其占用的空间更小。<code>xlsx</code> 中最后一个 <code>x</code> 的意义就在于此。</p>
-		<a href="http://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2013/02/using-openpyxl-to-read-and-write-xlsx-files/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Dec 1, 2012' data-updated="true" itemprop="datePublished">Sat, Dec 1, 2012</time>
 </div>
@@ -158,34 +242,32 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2012/12/python-dict-slice/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" itemprop="url">Python字典切片</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2012/12/python-dict-slice/" itemprop="url">Python字典切片</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
-
 <p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
-
-<pre><code class="language-python">def dict_slice(adict, start, end):
-    keys = adict.keys()
-    dict_slice = {}
-    for k in keys[start:end]:
-        dict_slice[k] = adict[k]
-    return dict_slice
-</code></pre>
-		<a href="http://liyangliang.me/posts/2012/12/python-dict-slice/" class="more-link">Read on →</a>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dict_slice</span>(adict, start, end):
+    keys <span style="color:#f92672">=</span> adict<span style="color:#f92672">.</span>keys()
+    dict_slice <span style="color:#f92672">=</span> {}
+    <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> keys[start:end]:
+        dict_slice[k] <span style="color:#f92672">=</span> adict[k]
+    <span style="color:#66d9ef">return</span> dict_slice
+</code></pre></div>
+		<a href="https://liyangliang.me/posts/2012/12/python-dict-slice/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Oct 21, 2012' data-updated="true" itemprop="datePublished">Sun, Oct 21, 2012</time>
 </div>
@@ -194,25 +276,23 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" itemprop="url">Python 时间戳和日期相互转换</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" itemprop="url">Python 时间戳和日期相互转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>在写Python的时候经常会遇到时间格式的问题，每次都是上 Google 搜索然后找别人的博客或网站来参考。现在自己简单总结一下，方便以后查询。</p>
-
 <p>首先就是最近用到的时间戳（timestamp）和时间字符串之间的转换。所谓时间戳，就是从 1970 年 1 月 1 日 00:00:00 到现在的秒数。那关于为什么是1970年这个特殊的日期，这篇文章有个简单明了的介绍：</p>
-
 <blockquote>
 <p><a href="http://www.scriptlover.com/static/1071-%E6%97%A5%E6%9C%9F-%E6%97%B6%E9%97%B4-%E7%BC%96%E7%A8%8B-%E6%95%B0%E6%8D%AE%E5%BA%93">为什么计算机时间要从1970年1月1日开始算起？</a></p>
 </blockquote>
-		<a href="http://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2012/10/python-timestamp-to-timestr/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -223,22 +303,23 @@
 					        <a href="/page/4/" class="prev">Prev</a>
 					    
 					    
-					    <div class="center"><a href="http://liyangliang.me/post/">Blog Archives</a></div>
+					    <div class="center"><a href="https://liyangliang.mepost/">Blog Archives</a></div>
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
 })(jQuery);
-</script></footer>
+</script>
+</footer>
 		</div>
 	</div>
 	<script type="text/javascript">

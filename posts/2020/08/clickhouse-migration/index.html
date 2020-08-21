@@ -24,10 +24,10 @@
 	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
 	
-	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -63,7 +63,7 @@
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
-	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
 	
 </div>
 
@@ -93,7 +93,7 @@
 		
 		
 		
-		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
 		
 		
 		
@@ -117,8 +117,8 @@
 			
 			<div class="mid-col-container">
 				<div id="content" class="inner">
-					<div itemscope itemtype="http://schema.org/Blog">
-					<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+					<div itemscope itemtype="https://schema.org/Blog">
+					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
 						<div class="meta">
 							<div class="date"><time datetime='Fri, Aug 21, 2020' data-updated="true" itemprop="datePublished">Fri, Aug 21, 2020</time>
 </div>
@@ -142,7 +142,6 @@
 <p>大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。</p>
 <h2 id="方案调研">方案调研</h2>
 <p>迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。</p>
-<!-- raw HTML omitted -->
 <h3 id="拷贝数据目录">拷贝数据目录</h3>
 <p>先观察一下 ClickHouse 在文件系统上的目录结构（配置文件 <code>/ect/clickhouse-server/config.xml</code> 里面配置的 <code>&lt;path&gt;</code>），为了便于查看，只保留了 <code>data</code> 和 <code>metadata</code> 目录。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">.
@@ -478,8 +477,7 @@ target_conn <span style="color:#f92672">=</span> Client(host<span style="color:#
     main()
 </code></pre></div><p>使用方式：直接运行即可，挂了重跑，不会有副作用。</p>
 <h3 id="局限性">局限性</h3>
-<p>仅通过对比行数来判断数据同步完整，没有比较内部数据的一致性，因此如果上游表行数不变，更新了部分字段，将无法自动识别，需要先从目标库里把表删掉重新同步。</p>
-</div>
+<p>仅通过对比行数来判断数据同步完整，没有比较内部数据的一致性，因此如果上游表行数不变，更新了部分字段，将无法自动识别，需要先从目标库里把表删掉重新同步。</p></div>
 					</article>
 					
 					<section id="comment">
@@ -510,9 +508,9 @@ getElementsByTagName('BODY')[0]).appendChild(s); }());
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
 </script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 ript">comments powered by Disqus.</a></noscript>
 </div>
 					</section>
@@ -524,14 +522,15 @@ ript">comments powered by Disqus.</a></noscript>
 
     Yangliang Li
 
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
 <script src="https://liyangliang.me/js/slash.js"></script>
 <script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
 })(jQuery);
-</script></footer>
+</script>
+</footer>
 		</div>
 	</div>
 	

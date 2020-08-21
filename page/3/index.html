@@ -3,10 +3,10 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.51" />
+	<meta name="generator" content="Hugo 0.72.0" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -20,15 +20,15 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
 	
-	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -64,7 +64,7 @@
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
-	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
 	
 </div>
 
@@ -94,7 +94,7 @@
 		
 		
 		
-		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
 		
 		
 		
@@ -119,9 +119,48 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 					
-					<div itemscope itemtype="http://schema.org/Blog">
+					<div itemscope itemtype="https://schema.org/Blog">
 					
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Thu, Apr 14, 2016' data-updated="true" itemprop="datePublished">Thu, Apr 14, 2016</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/nginx"> nginx </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/" itemprop="url">Nginx AWS ELB 域名解析</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>最近生产环境上出现了一个奇怪的问题。某日下午，APP 向某个域名发出的所有请求没有响应，服务端也没收到请求；而向另一个域名的请求却没有问题。先记录一下背景：</p>
+<ul>
+<li>两个域名：api.example.com, web.example.com</li>
+<li>环境：AWS + ELB + Nginx</li>
+<li>后端：Python + Django + Gunicorn</li>
+</ul>
+<p>出问题的是 api.example.com （下文简称 API）这个域名，所以 web.example.com 就不细说。由于一些历史原因，API 的请求链路大概是这样：</p>
+<pre><code>                      proxy_pass         backends                      proxy_pass
+APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) ------------&gt; Gunicorn(s)
+</code></pre><p>其中 API 的 Nginx 配置大概是这样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">location</span> <span style="color:#e6db74">/test</span> {
+    <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://name.of.elb.aws.com</span>;
+}
+</code></pre></div>
+		<a href="https://liyangliang.me/posts/2016/04/nginx-aws-elb-name-resolution/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Wed, Mar 30, 2016' data-updated="true" itemprop="datePublished">Wed, Mar 30, 2016</time>
 </div>
@@ -130,28 +169,26 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/go"> go </a>
+	    <a href="https://liyangliang.me/categories/go"> go </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" itemprop="url">zhihu-go 源码解析：用 goquery 解析 HTML</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" itemprop="url">zhihu-go 源码解析：用 goquery 解析 HTML</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2016/03/zhihu-go/">上一篇博客</a> 简单介绍了 <a href="https://github.com/DeanThompson/zhihu-go">zhihu-go</a> 项目的缘起，本篇简单介绍一下关于处理 HTML 的细节。</p>
-
 <p>因为知乎没有开发 API，所以只能通过模拟浏览器操作的方式获取数据，这些数据有两种格式：普通的 HTML 文档和某些 Ajax 接口返回的 JSON（返回的数据实际上也是 HTML）。其实也就是爬虫了，抓取网页，然后提取数据。一般来说从 HTML 文档提取数据有这些做法：正则、XPath、CSS 选择器等。对我来说，正则写起来比较复杂，代码可读性差而且维护起来麻烦；XPath 没有详细了解，不过用起来应该不难，而且 Chrome 浏览器可以直接提取 XPath. zhihu-go 里用的是选择器的方式，使用了 <a href="https://github.com/PuerkitoBio/goquery">goquery</a>.</p>
-
 <p>goquery 是 &ldquo;a little like that j-thing, only in Go&rdquo;，也就是用 jQuery 的方式去操作 DOM. jQuery 大家都很熟，API 也很简单明了。本文不详细介绍 goquery，下面选几个场景（API）讲讲在 zhihu-go 里的应用。</p>
-		<a href="http://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2016/03/zhihu-go-insight-parsing-html-with-goquery/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Mon, Mar 28, 2016' data-updated="true" itemprop="datePublished">Mon, Mar 28, 2016</time>
 </div>
@@ -160,24 +197,24 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/go"> go </a>
+	    <a href="https://liyangliang.me/categories/go"> go </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2016/03/zhihu-go/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2016/03/zhihu-go/" itemprop="url">zhihu-go: 知乎非官方 API库 with Go</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2016/03/zhihu-go/" itemprop="url">zhihu-go: 知乎非官方 API库 with Go</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>我是知乎重度用户，每天都会花点时间在知乎上面看点东西。有段时间时间线里经常出现爬虫相关的话题，也看到不少直接爬知乎信息的项目；其中一个就是 <a href="https://github.com/egrcc/zhihu-python">zhihu-python</a>. 实际上 zhihu-python 不是一个完整的爬虫，正如其文档说明的那样，是一个 API 库，可以基于这些 API 实现一个爬虫应用。zhihu-python 实现了用户、问题、答案、收藏夹相关的信息获取类 API，对于大多数信息获取的目的已经足够。这个项目很受欢迎，然而说实话，代码质量一般，不过思路值得借鉴。</p>
-		<a href="http://liyangliang.me/posts/2016/03/zhihu-go/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2016/03/zhihu-go/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Nov 28, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 28, 2015</time>
 </div>
@@ -186,35 +223,31 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/go"> go </a>
+	    <a href="https://liyangliang.me/categories/go"> go </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/11/jpush-api-go-client/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/jpush-api-go-client/" itemprop="url">极光推送 Go SDK</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/11/jpush-api-go-client/" itemprop="url">极光推送 Go SDK</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="https://www.jpush.cn/">极光推送</a> 是国内最早的第三方消息推送服务，官方提供了多种语言的 SDK 和 REST API，详情见 <a href="http://docs.jpush.io/server/server_overview/">官方文档</a>。遗憾的是缺少一个 Go 语言版本的 SDK，于是我就动手造轮子，封装了一个 Go 的版本。</p>
-
 <p>实际上这个项目在今年 3 月份就完成了主要的推送相关的接口，在 GitHub 上也收获了几个 star 和 fork. 最近几天突然兴起，又翻出来把 device, tag, alias, report 的一些相关接口也封装完成了。</p>
-
 <p>啰嗦了一大堆，差点忘了最重要的东西，下面给出链接：</p>
-
 <ul>
 <li>源代码和示例：<a href="https://github.com/DeanThompson/jpush-api-go-client">https://github.com/DeanThompson/jpush-api-go-client</a></li>
 <li>官方文档：<a href="http://docs.jpush.io/server/rest_api_v3_push/">http://docs.jpush.io/server/rest_api_v3_push/</a></li>
 </ul>
-
 <p>欢迎使用，并 <a href="https://github.com/DeanThompson/jpush-api-go-client/issues">反馈 issues</a> 或 <a href="https://github.com/DeanThompson/jpush-api-go-client/pulls">创建 pull request</a>.</p>
 		
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
 </div>
@@ -223,41 +256,39 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/flask"> flask </a>,
+		<a href="https://liyangliang.me/categories/flask"> flask </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/celery"> celery </a>
+	    <a href="https://liyangliang.me/categories/celery"> celery </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/11/using-celery-with-flask/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/" itemprop="url">在 Flask 项目中使用 Celery</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/11/using-celery-with-flask/" itemprop="url">在 Flask 项目中使用 Celery</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
-
 <p>注意，这篇 Blog 严重参考了这两篇文章：</p>
-
 <ol>
 <li><a href="http://blog.miguelgrinberg.com/post/using-celery-with-flask">Using Celery With Flask</a>: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.</li>
 <li><a href="http://blog.miguelgrinberg.com/post/celery-and-the-flask-application-factory-pattern">Celery and the Flask Application Factory Pattern</a>: 是上文的姊妹篇，描述的是更为真实的场景下，Celery 与 <a href="http://flask.pocoo.org/docs/0.10/patterns/appfactories/">Flask Application Factory</a> 的结合使用。</li>
 </ol>
-		<a href="http://liyangliang.me/posts/2015/11/using-celery-with-flask/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/11/using-celery-with-flask/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Nov 14, 2015' data-updated="true" itemprop="datePublished">Sat, Nov 14, 2015</time>
 </div>
@@ -266,53 +297,49 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/celery"> celery </a>
+	    <a href="https://liyangliang.me/categories/celery"> celery </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/11/a-introduction-to-celery/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" itemprop="url">Celery 使用简介</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/11/a-introduction-to-celery/" itemprop="url">Celery 使用简介</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="introduction">Introduction</h2>
-
 <h3 id="分布式任务队列">分布式任务队列</h3>
-
 <p>Celery 是一个分布式任务队列，下面是 <a href="http://www.celeryproject.org/">官网</a> 的一段描述：</p>
-
 <blockquote>
-<p>Celery is an asynchronous task queue/job queue based on distributed message passing.  It is focused on real-time operation, but supports scheduling as well.</p>
+<p>Celery is an asynchronous task queue/job queue based on distributed message passing.	It is focused on real-time operation, but supports scheduling as well.</p>
 </blockquote>
-
 <p>Celery 简单、灵活、可靠，是一个专注于实时处理的任务队列，同时也支持任务调度。</p>
-
 <h3 id="何为任务队列">何为任务队列？</h3>
-
 <p>摘自 Celery 官方文档的 <a href="http://docs.jinkan.org/docs/celery/getting-started/introduction.html">中文翻译</a>：</p>
-
 <blockquote>
 <p>任务队列是一种在线程或机器间分发任务的机制。</p>
-
+</blockquote>
+<blockquote>
 <p>消息队列的输入是工作的一个单元，称为任务，独立的职程（Worker）进程持续监视队列中是否有需要处理的新任务。</p>
-
+</blockquote>
+<blockquote>
 <p>Celery 用消息通信，通常使用中间人（Broker）在客户端和职程间斡旋。这个过程从客户端向队列添加消息开始，之后中间人把消息派送给职程。</p>
-
+</blockquote>
+<blockquote>
 <p>Celery 系统可包含多个职程和中间人，以此获得高可用性和横向扩展能力。</p>
 </blockquote>
-		<a href="http://liyangliang.me/posts/2015/11/a-introduction-to-celery/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/11/a-introduction-to-celery/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Thu, Nov 5, 2015' data-updated="true" itemprop="datePublished">Thu, Nov 5, 2015</time>
 </div>
@@ -321,51 +348,47 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/flask"> flask </a>,
+		<a href="https://liyangliang.me/categories/flask"> flask </a>,
 	
 
 	
 	
-		<a href="http://liyangliang.me/categories/tornado"> tornado </a>,
+		<a href="https://liyangliang.me/categories/tornado"> tornado </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/cache"> cache </a>
+	    <a href="https://liyangliang.me/categories/cache"> cache </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" itemprop="url">Tornado 和 Flask 应用缓存响应结果</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" itemprop="url">Tornado 和 Flask 应用缓存响应结果</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>写 API 的时候，总是会想着如何能提升性能。在一般的 Web 应用里，基本上没什么 CPU 密集型的计算，大部分时间还是消耗在 IO 上面：查询数据库、读写文件、调用第三方 API 等。有些可以异步的操作，比如发送注册邮件、手机验证码等，可以用任务队列来处理。在 Python 的生态里，Celery 就是一个很成熟的解决方案。但是对于很多查询请求，还是需要同步返回的。</p>
-
 <p>如果真的遇到性能问题，正确的做法是先找出性能瓶颈，然后对症下药。比如优化数据库索引、优化数据库查询语句、优化算法和数据结构，加速查询和计算。但是最快的计算就是不算——或只计算一次，也就是把计算（查询）的结果缓存起来，以后相同条件的计算（查询）直接从缓存里获取，而不需要重新计算（查询）。</p>
-
 <p>对于耗时的计算，缓存是一种非常有效的优化手段。但缓存也不是万能的，引入缓存的同时，一些其他问题或需要注意的事情也随之而来，比如数据同步、缓存失效、命中率、分布式等。这里不深入探讨这些问题，仅针对下面这种场景，使用缓存来优化 API 性能：</p>
-
 <ul>
 <li>GET 查询</li>
 <li>查询很耗时</li>
 <li>相同条件、不同时间（或某段时间内）的查询结果是一致的</li>
 </ul>
-
 <p>比如获取静态页面（也可以通过 Nginx 直接返回），查询某些元数据列表（如国家列表、产品分类等）。</p>
-		<a href="http://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/11/cache-response-in-tornado-and-flask/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sat, Oct 31, 2015' data-updated="true" itemprop="datePublished">Sat, Oct 31, 2015</time>
 </div>
@@ -374,31 +397,30 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/flask"> flask </a>
+	    <a href="https://liyangliang.me/categories/flask"> flask </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" itemprop="url">用 WTForms 和装饰器做表单校验</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>在一个 Web 应用里，不管是为了业务逻辑的正确性，还是系统安全性，做好参数（querystring, form, json）验证都是非常必要的。</p>
-
 <p><a href="https://github.com/wtforms/wtforms">WTForms</a> 是一个非常好用而且强大的表单校验和渲染的库，提供 Form 基类用于定义表单结构（类似 ORM），内置了丰富的字段类型和校验方法，可以很方便的用来做校验。如果应用需要输出 HTML，集成到模板里也很容易。对于 JSON  API 应用，用不到渲染的功能，但是结构化的表单和校验功能依然非常有用。</p>
-		<a href="http://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/10/using-wtforms-and-decorator-to-validate-form-in-flask/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Mon, Aug 10, 2015' data-updated="true" itemprop="datePublished">Mon, Aug 10, 2015</time>
 </div>
@@ -407,43 +429,38 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/08/simple-python-style-guide/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/" itemprop="url">Python 编码规范</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/08/simple-python-style-guide/" itemprop="url">Python 编码规范</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>遵循良好的编码风格，可以有效的提高代码的可读性，降低出错几率和维护难度。在团队开发中，使用（尽量）统一的编码风格，还可以降低沟通成本。</p>
-
 <p>网上有很多版本的编码规范，基本上都是遵循 PEP8 的规范：</p>
-
 <ul>
 <li><a href="https://www.python.org/dev/peps/pep-0008/">PEP 0008 &ndash; Style Guide for Python Code</a></li>
 <li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/google-python-styleguide/contents/">Google 的 Python 风格指南</a></li>
 <li><a href="http://docs.python-guide.org/en/latest/writing/style/">Python Guide - Code Style</a></li>
 <li><a href="http://flask.pocoo.org/docs/0.10/styleguide/">Pocoo Styleguide</a></li>
 </ul>
-
 <p>除了在编码时主动遵循规范，还有很多有用的工具：</p>
-
 <ul>
 <li>IntelliJ IDEA 和 PyCharm 的格式化代码功能</li>
 <li>Google 开源的 Python 文件格式化工具：<a href="https://github.com/google/yapf">github.com/google/yapf</a></li>
 <li>pyflakes, pylint 等工具及各种编辑器的插件</li>
 </ul>
-
 <p>本文的内容主要摘自互联网上各种版本的规范，因为公司有些小伙伴代码风格不太好，所以整理了一份算是团队的编码规范。</p>
-		<a href="http://liyangliang.me/posts/2015/08/simple-python-style-guide/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/08/simple-python-style-guide/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Fri, Jun 12, 2015' data-updated="true" itemprop="datePublished">Fri, Jun 12, 2015</time>
 </div>
@@ -452,93 +469,43 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
+		<a href="https://liyangliang.me/categories/python"> python </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/tools"> tools </a>
+	    <a href="https://liyangliang.me/categories/tools"> tools </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" itemprop="url">用 Fabric 实现自动化部署</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" itemprop="url">用 Fabric 实现自动化部署</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？</p>
-
 <p>部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。</p>
-
 <p>上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：</p>
-
 <ul>
 <li>rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
-
 <ul>
 <li>配置复杂，命令行参数多</li>
 <li>需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）</li>
-</ul></li>
+</ul>
+</li>
 <li>scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
-
 <ul>
 <li>不能增量更新，每次都是全部传输</li>
 <li>不能配置忽略文件（.git 怎么办？）</li>
-</ul></li>
+</ul>
+</li>
 <li>git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。</li>
 </ul>
-
 <p>很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。</p>
-
 <p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
-		<a href="http://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Tue, Jun 9, 2015' data-updated="true" itemprop="datePublished">Tue, Jun 9, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="http://liyangliang.me/categories/python"> python </a>,
-	
-
-	
-	
-		<a href="http://liyangliang.me/categories/development"> development </a>,
-	
-
-	
-	
-	    <a href="http://liyangliang.me/categories/tools"> tools </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/06/using-supervisor/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/06/using-supervisor/" itemprop="url">使用 supervisor 管理进程</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
-
-<h2 id="安装">安装</h2>
-
-<p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :</p>
-
-<pre><code class="language-bash">sudo pip install supervisor
-</code></pre>
-
-<p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
-		<a href="http://liyangliang.me/posts/2015/06/using-supervisor/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -551,22 +518,23 @@
 					    
 					        <a href="/page/4/" class="next">Next</a>
 					    
-					    <div class="center"><a href="http://liyangliang.me/post/">Blog Archives</a></div>
+					    <div class="center"><a href="https://liyangliang.mepost/">Blog Archives</a></div>
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
 })(jQuery);
-</script></footer>
+</script>
+</footer>
 		</div>
 	</div>
 	<script type="text/javascript">

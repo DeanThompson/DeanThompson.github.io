@@ -3,10 +3,10 @@
 <html lang="zh-CN">
 
 <head>
-	<meta name="generator" content="Hugo 0.51" />
+	<meta name="generator" content="Hugo 0.72.0" />
 	<meta charset="utf-8">
 	<title>李林克斯</title>
-	<meta name="author" content="map[name:Yangliang Li email:yanglianglee@gmail.com]">
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
 
 	
 	
@@ -20,15 +20,15 @@
     
 	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
 	
-	<link rel="canonical" href="http://liyangliang.me/">
-	<link href="http://liyangliang.me/favicon.jpeg" rel="shortcut icon">
-	<link href="http://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<link href="http://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link rel="canonical" href="https://liyangliang.me/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
 	
-	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -64,7 +64,7 @@
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
-	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
 	
 </div>
 
@@ -94,7 +94,7 @@
 		
 		
 		
-		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
 		
 		
 		
@@ -119,9 +119,49 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 					
-					<div itemscope itemtype="http://schema.org/Blog">
+					<div itemscope itemtype="https://schema.org/Blog">
 					
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Tue, Jun 9, 2015' data-updated="true" itemprop="datePublished">Tue, Jun 9, 2015</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="https://liyangliang.me/categories/python"> python </a>,
+	
+
+	
+	
+		<a href="https://liyangliang.me/categories/development"> development </a>,
+	
+
+	
+	
+	    <a href="https://liyangliang.me/categories/tools"> tools </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/06/using-supervisor/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/06/using-supervisor/" itemprop="url">使用 supervisor 管理进程</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Supervisor (<a href="http://supervisord.org">http://supervisord.org</a>) 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+<h2 id="安装">安装</h2>
+<p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo pip install supervisor
+</code></pre></div><p>如果是 Ubuntu 系统，还可以使用 apt-get 安装。</p>
+		<a href="https://liyangliang.me/posts/2015/06/using-supervisor/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, May 24, 2015' data-updated="true" itemprop="datePublished">Sun, May 24, 2015</time>
 </div>
@@ -130,43 +170,38 @@
 
 	
 	
-		<a href="http://liyangliang.me/categories/shadowsocks"> shadowsocks </a>,
+		<a href="https://liyangliang.me/categories/shadowsocks"> shadowsocks </a>,
 	
 
 	
 	
-	    <a href="http://liyangliang.me/categories/vpn"> vpn </a>
+	    <a href="https://liyangliang.me/categories/vpn"> vpn </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" itemprop="url">使用 shadowsocks 实现科学上网</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="缘起">缘起</h2>
-
 <p>GFW 早已经是臭名昭著，路人皆知的了，因为它的存在，使得整个大陆的用户都只能在「局域网」里活动。政治敏感的内容就不说了，很多技术性的网站也被墙掉，导致查找问题浏览网页时经常网络被重置。</p>
-
 <p>我是个重度 Google 用户，虽然经常用到的 Google 的产品基本上只有 Google 搜索和 Gmail，但只需要这两项就让我离不开 Google。此外，还有很多网站使用 Google 的 OpenID 登录，引用 Google 的字体文件和其他资源文件，这些网站也都几乎无法正常访问。我曾经使用过一些手段来实现翻墙，在大学时得益于教育网免费的 IPv6，毕业后使用了很久的 GoAgent，手机上用过 <a href="http://fqrouter.com/">fqrouter</a>，然而都不是很稳定和一劳永逸的解决方案。</p>
-
 <p>有很多人使用 VPN，有购买的，也有自己搭建的。在 GoAgent 无法使用后，我开始正式考虑使用 VPN 了，但不想买 VPN，主要原因有：</p>
-
 <ol>
 <li>很多人使用的 VPN 容易被盯上而面临被干掉的危险（应该是多虑了）</li>
 <li>出于信息安全和隐私的考虑，不希望自己的信息有被第三方获取的风险（所以也不想用 fqrouter 了）</li>
 <li>想自己折腾</li>
 </ol>
-
 <p>所以就选择了国外 VPS + Shadowsocks 的解决方案。</p>
-		<a href="http://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/05/bypass-gfw-with-shadowsocks/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Mar 15, 2015' data-updated="true" itemprop="datePublished">Sun, Mar 15, 2015</time>
 </div>
@@ -175,34 +210,31 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/linux"> linux </a>
+	    <a href="https://liyangliang.me/categories/linux"> linux </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/03/reuse-ssh-connection/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" itemprop="url">重用 SSH 连接</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/03/reuse-ssh-connection/" itemprop="url">重用 SSH 连接</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>平时需要经常用到 SSH，比如登录远程服务器，用 Git 推送和更新代码等。建立一次 SSH 连接可能并不需要多久长时间，但是如果要频繁登录同一台服务器，就未免显得有些繁琐和浪费时间。如果是用用户名和密码登录，每次都要输入密码就更加让人崩溃。还有使用 Git 的时候，短时间内可能需要经常 <code>git pull</code> 和 <code>git push</code>，如果每次操作都需要重新建立连接，等待过程就让人心生厌恶了。</p>
-
 <p>实际上，SSH 有个「鲜为人知」的特性可以做到重用连接，只有在第一次登录的时候会创建新的连接，后续的会话都可以重用这个已经存在的连接。这样，后续的登录就会非常快，而且不需要输入密码认证。配置也很简单，直接上代码。</p>
-
 <p>修改 <code>~/.ssh/config</code> 文件，添加如下配置：</p>
-
-<pre><code class="language-sshconfig">Host *
+<pre><code class="language-sshconfig" data-lang="sshconfig">Host *
     ControlMaster auto
     ControlPath /tmp/ssh_mux_%h_%p_%r
     ControlPersist 600
 </code></pre>
-		<a href="http://liyangliang.me/posts/2015/03/reuse-ssh-connection/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/03/reuse-ssh-connection/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Mon, Jan 12, 2015' data-updated="true" itemprop="datePublished">Mon, Jan 12, 2015</time>
 </div>
@@ -211,43 +243,36 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" itemprop="url">Golang 并发安全的 map 实现</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" itemprop="url">Golang 并发安全的 map 实现</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>Golang 里面 map 不是并发安全的，这一点是众所周知的，而且官方文档也很早就给了解释：<a href="http://golang.org/doc/faq#atomic_maps">Why are map operations not defined to be atomic?</a>. 也正如这个解释说的一样，要实现一个并发安全的 map 其实非常简单。</p>
-
 <h2 id="并发安全">并发安全</h2>
-
 <p>实际上，大多数情况下，对一个 map 的访问都是读操作多于写操作，而且读的时候，是可以共享的。所以这种场景下，用一个 <code>sync.RWMutex</code> 保护一下就是很好的选择：</p>
-
-<pre><code class="language-go">type syncMap struct {
-    items map[string]interface{}
-    sync.RWMutex
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">syncMap</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">items</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{}
+    <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">RWMutex</span>
 }
-</code></pre>
-
-<p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
-
+</code></pre></div><p>上面这个结构体定义了一个并发安全的 string map，用一个 map 来保存数据，一个读写锁来保护安全。这个 map 可以被任意多的 goroutine 同时读，但是写的时候，会阻塞其他读写操作。添加上 <code>Get</code>，<code>Set</code>，<code>Delete</code> 等方法，这个设计是能够工作的，而且大多数时候能表现不错。</p>
 <p>但是这种设计会有些性能隐患。主要是两个方面：</p>
-
 <ol>
 <li>读写锁的粒度太大了，保护了整个 map 的访问。写操作是阻塞的，此时其他任何读操作都无法进行。</li>
 <li>如果内部的 map 存储了很多 key，GC 的时候就需要扫描很久。</li>
 </ol>
-		<a href="http://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2015/01/concurrent-safe-map-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Thu, Dec 18, 2014' data-updated="true" itemprop="datePublished">Thu, Dec 18, 2014</time>
 </div>
@@ -256,59 +281,50 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2014/12/defer-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/12/defer-in-golang/" itemprop="url">Golang 的 defer 语句</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2014/12/defer-in-golang/" itemprop="url">Golang 的 defer 语句</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
-
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
-
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func a() {
-    i := 0
-    defer fmt.Println(i)
-    i++
-    return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">a</span>() {
+    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">i</span>)
+    <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+    <span style="color:#66d9ef">return</span>
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li>多个 <code>defer</code> 语句的执行顺序类似于 stack，即 Last In First Out. 比如下面的函数的输出将会是 <code>3210</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func b() {
-    for i := 0; i &lt; 4; i++ {
-        defer fmt.Print(i)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">b</span>() {
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">4</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Print</span>(<span style="color:#a6e22e">i</span>)
     }
 }
-</code></pre>
-
-<ul>
+</code></pre></div><ul>
 <li><code>defer</code> 语句可能会读取并修改函数的命名返回值（named return values）。比如下面的函数的返回值将会是 <code>2</code> ，而不是 <code>1</code>.</li>
 </ul>
-
-<pre><code class="language-golang">func c() (i int) {
-    defer func() { i++ }()
-    return 1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">c</span>() (<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) {
+    <span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() { <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> }()
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>
 }
-</code></pre>
-		<a href="http://liyangliang.me/posts/2014/12/defer-in-golang/" class="more-link">Read on →</a>
+</code></pre></div>
+		<a href="https://liyangliang.me/posts/2014/12/defer-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Wed, Jun 11, 2014' data-updated="true" itemprop="datePublished">Wed, Jun 11, 2014</time>
 </div>
@@ -317,63 +333,56 @@
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" itemprop="url">不要用 fmt.Sprintf 做类型转换</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>严格的讲，应该是在把 <code>int</code>，<code>float</code>等类型转换为字符串时，不要用 <code>fmt.Sprintf</code>，更好的做法是用标准库函数。<code>fmt.Sprintf</code> 的用途是格式化字符串，接受的类型是 interface{}，内部使用了反射。所以，与相应的标准库函数相比，<code>fmt.Sprintf</code> 需要更大的开销。大多数类型转换的函数都可以在 <code>strconv</code> 包里找到。</p>
-
 <h2 id="int-to-string">int to string</h2>
-
 <p>整数类型转换为字符串，推荐使用 <code>strconv.FormatInt</code>（<code>int64</code>），对于 <code>int</code> 类型，<code>strconv.Itoa</code> 对前者做了一个封装。</p>
-
 <p>比较一下 <code>strconv.FormatInt</code> 和 <code>fmt.Sprintf</code> 的时间开销：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;strconv&quot;
-    &quot;time&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;strconv&#34;</span>
+    <span style="color:#e6db74">&#34;time&#34;</span>
 )
 
-const LOOP = 10000
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">LOOP</span> = <span style="color:#ae81ff">10000</span>
 
-var num int64 = 10000
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">num</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">10000</span>
 
-func main() {
-    startTime := time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        fmt.Sprintf(&quot;%d&quot;, num)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">startTime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#a6e22e">num</span>)
     }
-    fmt.Printf(&quot;fmt.Sprintf taken: %v\n&quot;, time.Since(startTime))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;fmt.Sprintf taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">startTime</span>))
 
-    startTime = time.Now()
-    for i := 0; i &lt; LOOP; i++ {
-        strconv.FormatInt(num, 10)
+    <span style="color:#a6e22e">startTime</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">LOOP</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+        <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">FormatInt</span>(<span style="color:#a6e22e">num</span>, <span style="color:#ae81ff">10</span>)
     }
-    fmt.Printf(&quot;strconv.FormatInt taken: %v\n&quot;, time.Since(startTime))
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;strconv.FormatInt taken: %v\n&#34;</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">startTime</span>))
 }
-</code></pre>
-
-<p>其中某一次运行结果：</p>
-
+</code></pre></div><p>其中某一次运行结果：</p>
 <pre><code>fmt.Sprintf taken: 2.995178ms
 strconv.FormatInt taken: 1.057318ms
 </code></pre>
-		<a href="http://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2014/06/donnot-use-fmt-sprintf-for-type-conversion/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Tue, Jun 3, 2014' data-updated="true" itemprop="datePublished">Tue, Jun 3, 2014</time>
 </div>
@@ -382,64 +391,62 @@ strconv.FormatInt taken: 1.057318ms
 
 	
 	
-	    <a href="http://liyangliang.me/categories/golang"> golang </a>
+	    <a href="https://liyangliang.me/categories/golang"> golang </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2014/06/sort-in-golang/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/06/sort-in-golang/" itemprop="url">Golang 排序</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2014/06/sort-in-golang/" itemprop="url">Golang 排序</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<h2 id="interface-接口">Interface 接口</h2>
-
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
-
-<pre><code class="language-go">func quickSort(data Interface, a, b, maxDepth int) {
-    for b-a &gt; 7 {
-        if maxDepth == 0 {
-            heapSort(data, a, b)
-            return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">Interface</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">maxDepth</span> <span style="color:#66d9ef">int</span>) {
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &gt; <span style="color:#ae81ff">7</span> {
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+            <span style="color:#a6e22e">heapSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
+            <span style="color:#66d9ef">return</span>
         }
-        maxDepth--
-        mlo, mhi := doPivot(data, a, b)
-        // Avoiding recursion on the larger subproblem guarantees
-        // a stack depth of at most lg(b-a).
-        if mlo-a &lt; b-mhi {
-            quickSort(data, a, mlo, maxDepth)
-            a = mhi // i.e., quickSort(data, mhi, b)
-        } else {
-            quickSort(data, mhi, b, maxDepth)
-            b = mlo // i.e., quickSort(data, a, mlo)
-        }
+        <span style="color:#a6e22e">maxDepth</span><span style="color:#f92672">--</span>
+        <span style="color:#a6e22e">mlo</span>, <span style="color:#a6e22e">mhi</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">doPivot</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
+        <span style="color:#75715e">// Avoiding recursion on the larger subproblem guarantees
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// a stack depth of at most lg(b-a).
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mlo</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &lt; <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">mhi</span> {
+            <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">mlo</span>, <span style="color:#a6e22e">maxDepth</span>)
+            <span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">mhi</span> <span style="color:#75715e">// i.e., quickSort(data, mhi, b)
+</span><span style="color:#75715e"></span>        } <span style="color:#66d9ef">else</span> {
+            <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">mhi</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">maxDepth</span>)
+            <span style="color:#a6e22e">b</span> = <span style="color:#a6e22e">mlo</span> <span style="color:#75715e">// i.e., quickSort(data, a, mlo)
+</span><span style="color:#75715e"></span>        }
     }
-    if b-a &gt; 1 {
-        insertionSort(data, a, b)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &gt; <span style="color:#ae81ff">1</span> {
+        <span style="color:#a6e22e">insertionSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>)
     }
 }
 
-// Sort sorts data.
-// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
-// data.Less and data.Swap. The sort is not guaranteed to be stable.
-func Sort(data Interface) {
-    // Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
-    n := data.Len()
-    maxDepth := 0
-    for i := n; i &gt; 0; i &gt;&gt;= 1 {
-        maxDepth++
+<span style="color:#75715e">// Sort sorts data.
+</span><span style="color:#75715e">// It makes one call to data.Len to determine n, and O(n*log(n)) calls to
+</span><span style="color:#75715e">// data.Less and data.Swap. The sort is not guaranteed to be stable.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">Interface</span>) {
+    <span style="color:#75715e">// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">Len</span>()
+    <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span> &gt; <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span> {
+        <span style="color:#a6e22e">maxDepth</span><span style="color:#f92672">++</span>
     }
-    maxDepth *= 2
-    quickSort(data, 0, n, maxDepth)
+    <span style="color:#a6e22e">maxDepth</span> <span style="color:#f92672">*=</span> <span style="color:#ae81ff">2</span>
+    <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span>, <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">maxDepth</span>)
 }
-</code></pre>
-		<a href="http://liyangliang.me/posts/2014/06/sort-in-golang/" class="more-link">Read on →</a>
+</code></pre></div>
+		<a href="https://liyangliang.me/posts/2014/06/sort-in-golang/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Mar 2, 2014' data-updated="true" itemprop="datePublished">Sun, Mar 2, 2014</time>
 </div>
@@ -448,36 +455,32 @@ func Sort(data Interface) {
 
 	
 	
-	    <a href="http://liyangliang.me/categories/mysql"> mysql </a>
+	    <a href="https://liyangliang.me/categories/mysql"> mysql </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" itemprop="url">MySQL参数：innodb_flush_log_at_trx_commit 和 sync_binlog</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p><code>innodb_flush_log_at_trx_commit</code> 和 <code>sync_binlog</code> 是 MySQL 的两个配置参数，前者是 InnoDB 引擎特有的。之所以把这两个参数放在一起讨论，是因为在实际应用中，它们的配置对于 MySQL 的性能有很大影响。</p>
-
-<h2 id="1-innodb-flush-log-at-trx-commit">1. innodb_flush_log_at_trx_commit</h2>
-
+<h2 id="1-innodb_flush_log_at_trx_commit">1. innodb_flush_log_at_trx_commit</h2>
 <p>简而言之，<a href="http://dev.MySQL.com/doc/refman/4.1/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit"><code>innodb_flush_log_at_trx_commit</code></a> 参数指定了 InnoDB 在事务提交后的日志写入频率。这么说其实并不严谨，且看其不同取值的意义和表现。</p>
-
 <ol>
 <li>当 <code>innodb_flush_log_at_trx_commit</code> 取值为 <code>0</code> 的时候，log buffer 会 每秒写入到日志文件并刷写（flush）到磁盘。但每次事务提交不会有任何影响，也就是 log buffer 的刷写操作和事务提交操作没有关系。在这种情况下，MySQL性能最好，但如果 mysqld 进程崩溃，通常会导致最后 1s 的日志丢失。</li>
 <li>当取值为 <code>1</code> 时，每次事务提交时，log buffer 会被写入到日志文件并刷写到磁盘。这也是默认值。这是最安全的配置，但由于每次事务都需要进行磁盘I/O，所以也最慢。</li>
 <li>当取值为 <code>2</code> 时，每次事务提交会写入日志文件，但并不会立即刷写到磁盘，日志文件会每秒刷写一次到磁盘。这时如果 mysqld 进程崩溃，由于日志已经写入到系统缓存，所以并不会丢失数据；在操作系统崩溃的情况下，通常会导致最后 1s 的日志丢失。</li>
 </ol>
-
 <p>上面说到的「最后 1s」并不是绝对的，有的时候会丢失更多数据。有时候由于调度的问题，每秒刷写（once-per-second flushing）并不能保证 100% 执行。对于一些数据一致性和完整性要求不高的应用，配置为 <code>2</code> 就足够了；如果为了最高性能，可以设置为 <code>0</code>。有些应用，如支付服务，对一致性和完整性要求很高，所以即使最慢，也最好设置为 <code>1</code>.</p>
-		<a href="http://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" class="more-link">Read on →</a>
+		<a href="https://liyangliang.me/posts/2014/03/innodb_flush_log_at_trx_commit-and-sync_binlog/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Wed, Feb 26, 2014' data-updated="true" itemprop="datePublished">Wed, Feb 26, 2014</time>
 </div>
@@ -486,41 +489,34 @@ func Sort(data Interface) {
 
 	
 	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
+	    <a href="https://liyangliang.me/categories/python"> python </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" itemprop="url">Flask 路由做范围限制</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" itemprop="url">Flask 路由做范围限制</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
-
 <h1 id="1-what">1. What</h1>
-
 <p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
-
 <p>简单翻译一下，大致如下：</p>
-
 <p>Flask 应用里面有一个这样的路由</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> foo <span style="color:#f92672">import</span> get_foo
 
-<pre><code class="language-python">from foo import get_foo
-
-@app.route(&quot;/foo/&lt;int:id&gt;&quot;)
-def foo_id(id):
-    return render_template('foo.html', foo = get_foo(id))
-</code></pre>
-
-<p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
-		<a href="http://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" class="more-link">Read on →</a>
+<span style="color:#a6e22e">@app.route</span>(<span style="color:#e6db74">&#34;/foo/&lt;int:id&gt;&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo_id</span>(id):
+    <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;foo.html&#39;</span>, foo <span style="color:#f92672">=</span> get_foo(id))
+</code></pre></div><p>其中 <code>id</code> 的取值是 <code>1～300</code>，如何在路由层级做这个验证？也就是一个类似于这样的东西 <code>@app.route(&quot;/foo/&lt;int:id(1-300)&quot;)</code>.</p>
+		<a href="https://liyangliang.me/posts/2014/02/range-validation-in-flask-routing/" class="more-link">Read on →</a>
 	</div>
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Sun, Nov 3, 2013' data-updated="true" itemprop="datePublished">Sun, Nov 3, 2013</time>
 </div>
@@ -529,140 +525,33 @@ def foo_id(id):
 
 	
 	
-	    <a href="http://liyangliang.me/categories/linux"> linux </a>
+	    <a href="https://liyangliang.me/categories/linux"> linux </a>
 	
 
 
 </div>
 		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" itemprop="url">less 命令支持语法高亮和行号</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" itemprop="url">less 命令支持语法高亮和行号</a></h1>
 	<div class="entry-content" itemprop="articleBody">
 		<p>首先来一句装X的话：</p>
-
 <blockquote>
 <p>less is more</p>
 </blockquote>
-
 <h1 id="1-how">1. How</h1>
-
 <p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
-
-<pre><code class="language-bash">sudo apt-get install source-highlight
-</code></pre>
-
-<p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
-
-<pre><code class="language-bash"># less hightlight
-export LESSOPEN=&quot;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&quot;
-export LESS=&quot; -R &quot;
-</code></pre>
-
-<p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install source-highlight
+</code></pre></div><p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># less hightlight</span>
+export LESSOPEN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&#34;</span>
+export LESS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34; -R &#34;</span>
+</code></pre></div><p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
 <p>使配置生效：</p>
-
-<pre><code class="language-bash">source ~/.bashrc
-</code></pre>
-
-<p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
-		<a href="http://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Wed, Mar 13, 2013' data-updated="true" itemprop="datePublished">Wed, Mar 13, 2013</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="http://liyangliang.me/categories/python"> python </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/" itemprop="url">【翻译】理解 Python 装饰器</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="note">Note</h2>
-
-<p>前段时间在 stack overflow 上看到一个关于 python decorator（装饰器）的问题，有一个人很耐心的写了一篇很长的教程。我也很耐心的看完了，获益匪浅。现在尝试翻译过来，尽量追求准确和尊重原文。不明白的地方，或翻译不好的地方，请参照原文，地址：</p>
-
-<blockquote>
-<p><a href="http://stackoverflow.com/questions/739654/understanding-python-decorators#answer-1594484">Understanding Python decorators</a></p>
-</blockquote>
-
-<hr />
-
-<h1 id="1-python的函数是对象-python-s-functions-are-objects">1. python的函数是对象（Python&rsquo;s functions are objects）</h1>
-
-<p>要理解装饰器，就必须先知道，在python里，函数也是对象（functions are objects）。明白这一点非常重要，让我们通过一个例子来看看为什么。</p>
-
-<pre><code class="language-python">def shout(word=&quot;yes&quot;):
-    return word.capitalize()+&quot;!&quot;
- 
-print shout()
-# outputs : 'Yes!'
- 
-# 作为一个对象，你可以像其他对象一样把函数赋值给其他变量
- 
-scream = shout
- 
-# 注意我们没有用括号：我们不是在调用函数，
-# 而是把函数'shout'的值绑定到'scream'这个变量上
-# 这也意味着你可以通过'scream'这个变量来调用'shout'函数
- 
-print scream()
-# outputs : 'Yes!'
- 
-# 不仅如此，这也还意味着你可以把原来的名字'shout'删掉，
-# 而这个函数仍然可以通过'scream'来访问
-del shout
-try:
-    print shout()
-except NameError, e:
-    print e
-    #outputs: &quot;name 'shout' is not defined&quot;
- 
-print scream()
-outputs: 'Yes!'
-</code></pre>
-
-<p>OK，先记住这点，我们马上会用到。python 函数的另一个有趣的特性是，它们可以在另一个函数体内定义。</p>
-
-<pre><code class="language-python">def talk():
- 
-    # 你可以在 'talk' 里动态的(on the fly)定义一个函数...
-    def whisper(word=&quot;yes&quot;):
-        return word.lower()+&quot;...&quot;
- 
-    # ... 然后马上调用它！
- 
-    print whisper()
- 
-# 每当调用'talk'，都会定义一次'whisper'，然后'whisper'在'talk'里被调用
-talk()
-# outputs:
-# &quot;yes...&quot;
- 
-# 但是&quot;whisper&quot; 在 &quot;talk&quot;外并不存在:
- 
-try:
-    print whisper()
-except NameError, e:
-    print e
-    #outputs : &quot;name 'whisper' is not defined&quot;*
-</code></pre>
-		<a href="http://liyangliang.me/posts/2013/03/understand-python-decorators/" class="more-link">Read on →</a>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">source ~/.bashrc
+</code></pre></div><p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
+		<a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -675,22 +564,23 @@ except NameError, e:
 					    
 					        <a href="/page/5/" class="next">Next</a>
 					    
-					    <div class="center"><a href="http://liyangliang.me/post/">Blog Archives</a></div>
+					    <div class="center"><a href="https://liyangliang.mepost/">Blog Archives</a></div>
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2019
+			<footer id="footer" class="inner">Copyright &copy; 2020
 
     Yangliang Li
 
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
-<script src="http://liyangliang.me/js/slash.js"></script>
-<script src="http://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
 })(jQuery);
-</script></footer>
+</script>
+</footer>
 		</div>
 	</div>
 	<script type="text/javascript">

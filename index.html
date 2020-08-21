@@ -25,10 +25,10 @@
 	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
 	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
 	
-	<link href='http://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
 	
 	
-	<script type="text/javascript" src="http://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
 	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
 	
     <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -64,7 +64,7 @@
 			<div class="intrude-less">
 			<header id="header" class="inner"><div class="profilepic">
 	
-	<img src='http://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
 	
 </div>
 
@@ -94,7 +94,7 @@
 		
 		
 		
-		  <a class="stackoverflow" href='http://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
 		
 		
 		
@@ -119,22 +119,329 @@
 			<div class="mid-col-container">
 				<div id="content" class="inner">
 					
-					<div itemscope itemtype="http://schema.org/Blog">
+					<div itemscope itemtype="https://schema.org/Blog">
 					
-				        <article class="post" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
 		<div class="date"><time datetime='Fri, Aug 21, 2020' data-updated="true" itemprop="datePublished">Fri, Aug 21, 2020</time>
 </div>
 		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
 </div>
 		
-			<span class="comments"><a href="https://liyangliang.me/post/#disqus_thread">Comments</a></span>
+			<span class="comments"><a href="https://liyangliang.me/posts/2020/08/clickhouse-migration/#disqus_thread">Comments</a></span>
 		
 	</div>
-	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/post/" itemprop="url">Posts</a></h1>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2020/08/clickhouse-migration/" itemprop="url">记一次 ClickHouse 数据迁移</a></h1>
 	<div class="entry-content" itemprop="articleBody">
+		<h2 id="背景">背景</h2>
+<p>大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。</p>
+<h2 id="方案调研">方案调研</h2>
+<p>迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。</p>
+		<a href="https://liyangliang.me/posts/2020/08/clickhouse-migration/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Wed, Oct 23, 2019' data-updated="true" itemprop="datePublished">Wed, Oct 23, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/aws"> aws </a>
+	
+
+
+</div>
 		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/#disqus_thread">Comments</a></span>
 		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/" itemprop="url">AWS S3 Bucket 指定权限</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
+<h2 id="创建-iam-用户">创建 IAM 用户</h2>
+<p>创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 <code>arn:aws-cn:iam::123456789012:user/exampleuser</code>.</p>
+<h2 id="配置-s3-bucket-权限">配置 S3 bucket 权限</h2>
+<p>创建 S3 bucket，假设名字为 <code>example-bucket</code>，于是对应的 ARN 为 <code>arn:aws-cn:s3:::example-bucket </code>. 进入 Permissions 页面，编辑 Bucket Policy.</p>
+		<a href="https://liyangliang.me/posts/2019/10/aws-s3-bucket-policy/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Fri, Oct 11, 2019' data-updated="true" itemprop="datePublished">Fri, Oct 11, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/10/impala-udf/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/10/impala-udf/" itemprop="url">Impala 添加和使用 UDF</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>Impala 支持 C++ 和 Java 编写的 UDF, 把对应的 so 或 jar 文件放到 HDFS，再注册一下就能使用。官方推荐使用 C++ 编写 UDF，相比 Java 的实现有 10 倍性能提升。Hive 有丰富的函数，可以添加到 Impala 里。</p>
+<ul>
+<li>首先在 HDFS 创建目录保存 UDF 文件，并把 Hive 的 jar 包上传进去</li>
+</ul>
+<pre><code>hdfs dfs -mkdir /user/hive/udfs
+
+hdfs dfs -copyFromLocal /opt/cloudera/parcels/CDH/lib/hive/lib/hive-exec-1.1.0-cdh5.14.2.jar /user/hive/udfs/hive-builtins.jar
+</code></pre>
+		<a href="https://liyangliang.me/posts/2019/10/impala-udf/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Tue, May 7, 2019' data-updated="true" itemprop="datePublished">Tue, May 7, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/" itemprop="url">HDFS 异构存储调研</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="结论">结论</h2>
+<ul>
+<li>HDFS 支持配置多个数据目录，同一节点默认按照 Round Robin 策略写入。硬盘不做 RAID，每块盘单独挂载。</li>
+<li>HDFS 支持异构存储，即不同的存储类型和存储策略，可用于实现冷热分级，从而降低成本</li>
+</ul>
+<h2 id="存储类型">存储类型</h2>
+<p>按访问速度降序：</p>
+<ul>
+<li>RAM_DISK: 即内存</li>
+<li>SSD: SSD，OLTP 类场景（如 HBase）可以考虑使用</li>
+<li>DISK: 普通硬盘</li>
+<li>ARCHIVE: 归档存储，可使用廉价、高容量存储（甚至单机超百 T）</li>
+</ul>
+		<a href="https://liyangliang.me/posts/2019/05/hdfs-heterogeneous-storage/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Apr 27, 2019' data-updated="true" itemprop="datePublished">Sat, Apr 27, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+		<a href="https://liyangliang.me/categories/devops"> devops </a>,
+	
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/" itemprop="url">一个轻量级通用的数据同步方案</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。</p>
+<p>首先梳理一下需求和目标：</p>
+<ul>
+<li>实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度</li>
+<li>扩展性：需要支持多种异构数据源，如 MySQL, Hive, ElasticSearch 等</li>
+<li>性能要求：因为是离线系统，对性能要求无严格要求，但最好尽可能快，并有可能调优</li>
+<li>复杂度：复杂度低，依赖少，易使用，易运维</li>
+<li>功能要求：要满足全量同步和增量数据同步</li>
+</ul>
+		<a href="https://liyangliang.me/posts/2019/04/lightweight-data-sync-solution/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 17, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 17, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/03/idempotence/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/03/idempotence/" itemprop="url">聊聊幂等</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>计算机领域有很多概念都来自数学，今天要讨论的幂等性就是其中之一。在程序世界，幂等的意义是对于某个操作，执行一次和多次所产生的影响应该相同。比如赋值操作是幂等的，<code>a = 1</code> 无论运行多少次，最终的影响都是一样；而计数则不是。幂等在很多系统中都很重要，结合自己的经历，聊聊 HTTP 的幂等性和 ETL 场景里的幂等。</p>
+<h2 id="http-的幂等性">HTTP 的幂等性</h2>
+<p><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP RFC 规范</a>里有关于幂等方法的讨论：</p>
+<blockquote>
+<p>Methods can also have the property of &ldquo;idempotence&rdquo; in that (aside from error or expiration issues) the side-effects of N &gt; 0 identical requests is the same as for a single request. The methods GET, HEAD, PUT and DELETE share this property. Also, the methods OPTIONS and TRACE SHOULD NOT have side effects, and so are inherently idempotent.</p>
+</blockquote>
+		<a href="https://liyangliang.me/posts/2019/03/idempotence/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sun, Mar 10, 2019' data-updated="true" itemprop="datePublished">Sun, Mar 10, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/03/2018-holiday/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/03/2018-holiday/" itemprop="url">字节跳动（今日头条） 2018 校招后端第二批算法题</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>逛 V2EX 的时候无意间看到了有个叫 <a href="https://www.nowcoder.com">牛客网</a> 的网站，里面有很多公司的笔试真题和大家分享的面经。
+出于好奇，看了一下 <a href="https://www.nowcoder.com/test/8537209/summary">字节跳动（今日头条）的后端题</a>。</p>
+<p>一共有 5 题，3 道编程，2 道问答。时候发现前面 4 题跟算法有关，其中 3 道要实现，1 道是纠错和优化，最后一题是系统设计。
+做得比较差，只完成了前面两道算法题。用 Go 语言实现，代码如下。</p>
+		<a href="https://liyangliang.me/posts/2019/03/2018-holiday/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Mar 2, 2019' data-updated="true" itemprop="datePublished">Sat, Mar 2, 2019</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2019/03/data-encoding/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2019/03/data-encoding/" itemprop="url"> Designing Data-Intensive Applications 读书笔记（1） —— 数据编码</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>最近一段时间都在读 <em>Designing Data-Intensive Applications</em> 这本书，中文名叫《数据密集型应用系统设计》。进度比较慢，但感觉很有意思，获益匪浅。在读第四章 <em>Encoding and Evolution</em> （数据编码与演化）时，脑海里时常浮现出自己的开发经历，颇有共鸣。因此准备结合书本内容和自身体验，总结成文字作为记录。这一篇主要讨论编码。</p>
+<h2 id="编码和解码">编码和解码</h2>
+<p>在程序世界里，数据通常有两种不同的表现形式：内存和文件（网络）。在内存中，数据保存在对象、结构体、列表、哈希表等结构中，这些数据结构针对 CPU 的高效访问和操作进行了优化。而把数据写入文件或通过网络发送时，需要将其转换成字节序列。</p>
+<p>从内存中的表示到字节序列的转化称为编码或序列化，反之称为解码或反序列化。</p>
+		<a href="https://liyangliang.me/posts/2019/03/data-encoding/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Jun 2, 2018' data-updated="true" itemprop="datePublished">Sat, Jun 2, 2018</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/python"> python </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2018/06/python-date-time/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2018/06/python-date-time/" itemprop="url">Python 日期和时间处理</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		2012 年大四的时候写过一篇 Python 时间戳和日期相互转换，当时是初学 Python，对标准库也理解不深；随便找到一种解决方案就记录下来并发到博客上了。现在回看起来，其实太过繁琐了。然而从 Google Analytics 后台看，这竟然是点击率第二的文章，着实让我感到诧异。本着对读者负责的态度，有必要结合这些年的开发经验，再写一篇日期和时间处理的博客。
+首先再次回答「Python 时间戳和日期相互转换」的问题。
+时间戳转日期 import datetime import time t = time.time() print(&#39;Timestamp&#39;, t) dt = datetime.datetime.fromtimestamp(t) print(&#39;Datetime&#39;, dt) 输出：
+Timestamp 1527927420.684622 Datetime 2018-06-02 16:17:00.684622 日期转时间戳 import datetime now = datetime.datetime.now() print(&#39;Datetime&#39;, now) print(&#39;Timestamp&#39;, now.timestamp()) 输出：
+Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874 
+		
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
+		<div class="date"><time datetime='Sat, Jun 2, 2018' data-updated="true" itemprop="datePublished">Sat, Jun 2, 2018</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/devops"> devops </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/" itemprop="url">CentOS 7 FirewallD</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<h2 id="背景故事">背景故事</h2>
+<p>线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。</p>
+<p>因为没有防火墙，其实也发生过几次安全事故：</p>
+<ul>
+<li>某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；</li>
+<li>某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序</li>
+<li>某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录</li>
+</ul>
+<p>这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 <code>0.0.0.0</code>，加上没有开启认证，很容易被拖库。</p>
+<h2 id="firewalld">FirewallD</h2>
+<p>最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 <a href="http://www.firewalld.org/">FirewallD</a>，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。</p>
+<p>FirewallD 有很多种 zone policy，直接使用默认的 <code>public</code>.</p>
+		<a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/" class="more-link">Read on →</a>
 	</div>
 </article>
 
@@ -143,7 +450,9 @@
 				    <nav id="pagenavi">
 					    
 					    
-					    <div class="center"><a href="https://liyangliang.me/post/">Blog Archives</a></div>
+					        <a href="/page/2/" class="next">Next</a>
+					    
+					    <div class="center"><a href="https://liyangliang.mepost/">Blog Archives</a></div>
 					</nav>
 				</div>
 			</div>
@@ -151,14 +460,15 @@
 
     Yangliang Li
 
-Design credit: <a href="http://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
 <script src="https://liyangliang.me/js/slash.js"></script>
 <script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
 	$('.fancybox').fancybox();
 })(jQuery);
-</script></footer>
+</script>
+</footer>
 		</div>
 	</div>
 	<script type="text/javascript">
