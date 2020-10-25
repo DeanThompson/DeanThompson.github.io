@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">记一次 ClickHouse 数据迁移</h1>
-	<div class="entry-content" itemprop="articleBody"><h2 id="背景">背景</h2>
+	<div class="entry-content" itemprop="articleBody">
+        <h2 id="背景">背景</h2>
 <p>大约在 2018 年 8 月份开始正式接触 ClickHouse，当时机房没有合适的服务器，就在 Azure 开了一台虚拟机来部署。平稳运行了两年，支撑了 YiDrone 和 YiSonar 两个重要的产品的底层数据存储和查询。前段时间采购服务器的时候预留了一些资源，加上 Azure 的免费订阅即将到期，于是准备把 ClickHouse 迁回到机房。数据量不大，只有一个节点，硬盘上的数据加起来 500G 左右。</p>
 <h2 id="方案调研">方案调研</h2>
 <p>迁移集群实际上就是要把所有数据库（system 除外）的表结构和数据完整的复制一遍。ClickHouse 官方和社区有一些现成的解决方案，也可以自己实现。</p>
@@ -477,7 +478,12 @@ target_conn <span style="color:#f92672">=</span> Client(host<span style="color:#
     main()
 </code></pre></div><p>使用方式：直接运行即可，挂了重跑，不会有副作用。</p>
 <h3 id="局限性">局限性</h3>
-<p>仅通过对比行数来判断数据同步完整，没有比较内部数据的一致性，因此如果上游表行数不变，更新了部分字段，将无法自动识别，需要先从目标库里把表删掉重新同步。</p></div>
+<p>仅通过对比行数来判断数据同步完整，没有比较内部数据的一致性，因此如果上游表行数不变，更新了部分字段，将无法自动识别，需要先从目标库里把表删掉重新同步。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

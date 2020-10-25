@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">Flask 路由做范围限制</h1>
-	<div class="entry-content" itemprop="articleBody"><p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>这其实是我之前在 StackOverflow 上回答过的一道题，令我感到意外的是，这个问题只有我一个人回答，而且我也获得了 8 个赞同。小小的成就感。</p>
 <h1 id="1-what">1. What</h1>
 <p>原题在这里：<a href="http://stackoverflow.com/questions/19076226/how-to-validate-integer-range-in-flask-routing-werkzeug/">How to validate integer range in Flask routing (Werkzeug)?</a></p>
 <p>简单翻译一下，大致如下：</p>
@@ -171,7 +172,12 @@
     <span style="color:#66d9ef">return</span> render_template(<span style="color:#e6db74">&#39;foo.html&#39;</span>, foo <span style="color:#f92672">=</span> get_foo(id))
 </code></pre></div><p>这个路由就限定了 <code>id</code> 的范围，对于超出范围的请求，如 <code>/foo/1024/</code>，就会找不到对应的路由，因此会返回 <code>404</code>。</p>
 <h1 id="3-end">3. End</h1>
-<p>题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 <code>404</code>，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。</p></div>
+<p>题外话，其实题主开始的时候是在函数内部做了参数检测（我也基本这么干），而且最后也没有采用在路由做限制的方法。原因上面已经说了，就是对于超出范围的请求，会直接返回 <code>404</code>，某些情况下这是可以接受的，但另外的情况下最好能让用户知道他的请求到底哪里出了问题。用哪种方案取决于具体的应用场景，但对我来说至少多了一个选项，也对 converters 相关的内容更了解了一些。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

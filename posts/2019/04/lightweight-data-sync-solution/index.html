@@ -143,7 +143,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">一个轻量级通用的数据同步方案</h1>
-	<div class="entry-content" itemprop="articleBody"><p>在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>在不同的数据库系统之间做数据同步是大数据领域里常见的需求。一个典型的场景是，业务系统因为需要事务和随机查询，一般会使用 MySQL 这种数据库；数据仓库使用 Hive；ETL 之后的结果再放到 MySQL、AWS Redshift 等系统给 BI 和报表工具使用。</p>
 <p>首先梳理一下需求和目标：</p>
 <ul>
 <li>实时性：非实时，离线同步，一般为 T+1，或最细到小时粒度</li>
@@ -238,7 +239,12 @@
 <p>整体来讲，使用 CSV 应该可以满足 90% 以上的使用场景。</p>
 <p>使用 Kafka 作为数据交换总线，可以突破这些限制，但同时也增加了系统的复杂度。可根据实际情况进行选择。</p>
 <h2 id="show-me-the-code">SHOW ME THE CODE!</h2>
-<p>我在公司用 Python 实现了这种方案，目前已经支持十来种数据源（有些数据源只有读或写），暂时没有准备开源。思路比实现重要，本文讨论了整体方案和一些核心问题，基本上没什么复杂的技术，还是不难实现的。</p></div>
+<p>我在公司用 Python 实现了这种方案，目前已经支持十来种数据源（有些数据源只有读或写），暂时没有准备开源。思路比实现重要，本文讨论了整体方案和一些核心问题，基本上没什么复杂的技术，还是不难实现的。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

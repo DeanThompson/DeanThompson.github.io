@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">MySQL 数据导入到 Redshift</h1>
-	<div class="entry-content" itemprop="articleBody"><h2 id="设计表">设计表</h2>
+	<div class="entry-content" itemprop="articleBody">
+        <h2 id="设计表">设计表</h2>
 <p>首先是设计表结构。建表语法差别不大，有一些地方可以注意一下：</p>
 <ul>
 <li>Redshift 貌似没有无符号类型，所以要把 unsigned 类型的字段修改成相应的 INT 或 BIGINT 类型。</li>
@@ -162,7 +163,12 @@ region <span style="color:#e6db74">&#39;cn-north-1&#39;</span> CSV GZIP <span st
 <li>指定 region</li>
 <li>指定文件格式，<code>CSV GZIP</code> 表示是 gzip 压缩的 CSV 文件</li>
 <li>可以用 <code>NULL AS</code> 语句指定 NULL 值</li>
-</ul></div>
+</ul>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

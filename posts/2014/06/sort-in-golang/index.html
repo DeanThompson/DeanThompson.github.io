@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">Golang 排序</h1>
-	<div class="entry-content" itemprop="articleBody"><h2 id="interface-接口">Interface 接口</h2>
+	<div class="entry-content" itemprop="articleBody">
+        <h2 id="interface-接口">Interface 接口</h2>
 <p>Go 语言标准库提供了排序的package sort，也实现了对 <code>int</code>， <code>float64</code> 和 <code>string</code> 三种基础类型的排序接口。所有排序调用 <code>sort.Sort</code>，内部根据排序数据个数自动切换排序算法（堆排、快排、插排）。下面这段代码出自 Go 标准库 sort/sort.go：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">quickSort</span>(<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">Interface</span>, <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">maxDepth</span> <span style="color:#66d9ef">int</span>) {
     <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">b</span><span style="color:#f92672">-</span><span style="color:#a6e22e">a</span> &gt; <span style="color:#ae81ff">7</span> {
@@ -289,7 +290,12 @@
 <pre><code>&lt;Item(1, 819)&gt; &lt;Item(2, 959)&gt; &lt;Item(3, 812)&gt; &lt;Item(4, 193)&gt; &lt;Item(5, 408)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt;
 
 &lt;Item(2, 959)&gt; &lt;Item(6, 884)&gt; &lt;Item(7, 849)&gt; &lt;Item(1, 819)&gt; &lt;Item(3, 812)&gt; &lt;Item(5, 408)&gt; &lt;Item(4, 193)&gt;
-</code></pre></div>
+</code></pre>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

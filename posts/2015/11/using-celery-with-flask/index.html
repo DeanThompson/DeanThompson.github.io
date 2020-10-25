@@ -148,7 +148,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">在 Flask 项目中使用 Celery</h1>
-	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p><a href="/posts/2015/11/a-introduction-to-celery/">前一篇 Blog</a> 简单介绍了 Celery 及其用法，现在我们看看在 Flask 项目中如何使用 Celery.</p>
 <p>注意，这篇 Blog 严重参考了这两篇文章：</p>
 <ol>
 <li><a href="http://blog.miguelgrinberg.com/post/using-celery-with-flask">Using Celery With Flask</a>: 写了一个完整而且有意义的例子来展示如何在 Flask 中使用 Celery.</li>
@@ -297,7 +298,12 @@ app<span style="color:#f92672">.</span>app_context()<span style="color:#f92672">
 <p>在项目的根路径下启动 Celery worker:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ celery worker -A celery_worker.celery -l INFO
 </code></pre></div><h2 id="总结">总结</h2>
-<p>上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。</p></div>
+<p>上面两个例子，实际上主要的差别就是初始化方式和模块化，还有需要注意 Flask 的 application context 问题。文章内容比较简单，文中的一些链接是很好的扩展和补充，值得一看。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

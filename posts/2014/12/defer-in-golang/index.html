@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">Golang 的 defer 语句</h1>
-	<div class="entry-content" itemprop="articleBody"><p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>Golang 的 <code>defer</code> 语句是个非常有用的语法，可以把一些函数调用放到一个列表里，在函数返回前延迟执行。这个功能可以很方便的在函数结束前处理一些清理操作。比如关闭打开的文件，关闭一个连接，解锁，捕捉 panic 等。</p>
 <p><a href="http://blog.golang.org/defer-panic-and-recover">这篇 Go Blog</a> 用例子讲解了 <code>defer</code> 的用途和使用规则。总结一下主要就是三点：</p>
 <ul>
 <li>传递给 <code>defer</code> 语句的参数是在添加时就计算好的。比如下面的函数的输出将会是 <code>0</code>.</li>
@@ -183,7 +184,12 @@
 PASS
 BenchmarkDeferredUnlock     10000000            134 ns/op
 BenchmarkNotDeferredUnlock  30000000            40.6 ns/op
-</code></pre><p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p></div>
+</code></pre><p>可以看出，<code>defer</code> 大概需要 94ns，这对绝大多数应用来说几乎都是无关紧要的。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

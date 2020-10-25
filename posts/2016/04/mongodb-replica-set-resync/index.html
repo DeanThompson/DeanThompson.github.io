@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">MongoDB Replica Set 重新同步</h1>
-	<div class="entry-content" itemprop="articleBody"><p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
 <pre><code>2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
 </code></pre><p>其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：</p>
 <ol>
@@ -152,7 +153,12 @@
 </ol>
 <p>考虑到数据量并没有很多，所以决定使用第一种比较简单的方式。重启好后，发现数据目录很快就新建了很多文件。和 primary 节点对比，文件名和大小均一致；primary 节点和另一个 secondary 节点也不再出现连接失败的日志。</p>
 <p>遗憾的是，挂掉的原因却一直没有找到。日志文件里没有发现异常，<code>history</code> 也没发现有 <code>kill</code> 的记录。
-幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。</p></div>
+幸运的是，集群很快就恢复了，应用不受影响，数据也没丢失。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

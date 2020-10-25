@@ -148,7 +148,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">在 Flask 项目的 celery 中使用 gevent</h1>
-	<div class="entry-content" itemprop="articleBody"><p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p><a href="/posts/2015/11/using-celery-with-flask/">在 Flask 项目中使用 Celery</a> 这篇文章谈到了如何在 Flask 项目中集成 Celery，也讲了在 celery 任务中引用 Flask 的 application context 的方法。一般情况下那样使用是没问题的，但是如果需要在 task 中使用 gevent，就需要一些额外的改进。至少有两点。</p>
 <h2 id="1-使用-gevent-并发模型">1. 使用 gevent 并发模型</h2>
 <p>如果在 task 中要使用 gevent，就必须使用 gevent 并发模型。这很好处理，只需要修改启动选项就行：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ celery worker -A celery_worker.celery -P gevent -c <span style="color:#ae81ff">10</span> -l INFO
@@ -205,7 +206,12 @@
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(x, y):
     <span style="color:#66d9ef">print</span> app<span style="color:#f92672">.</span>config<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;SOME_CONFIG_KEY&#39;</span>)
     <span style="color:#66d9ef">return</span> x <span style="color:#f92672">+</span> y
-</code></pre></div></div>
+</code></pre></div>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

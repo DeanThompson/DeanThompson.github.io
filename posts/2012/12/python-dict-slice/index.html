@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">Python字典切片</h1>
-	<div class="entry-content" itemprop="articleBody"><p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>python 的 <code>list</code>, <code>string</code>, <code>tuple</code> 都提供了切片操作，用起来非常方便。有时候会需要对字典进行截取，只需要其中一部分数据。然而 python 的 <code>dict</code> 没有提供类似的切片操作，所以就得要自己实现。</p>
 <p>其实也很简单：先取出所有 keys，再对 keys 切片，然后用得到的键去字典里找值重新创建一个新的字典。示例代码：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dict_slice</span>(adict, start, end):
     keys <span style="color:#f92672">=</span> adict<span style="color:#f92672">.</span>keys()
@@ -170,7 +171,12 @@
 <span style="color:#f92672">&gt;&gt;&gt;</span> slice <span style="color:#f92672">=</span> dict_slice(d, <span style="color:#ae81ff">5</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
 <span style="color:#f92672">&gt;&gt;&gt;</span> slice
 {<span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">8</span>: <span style="color:#ae81ff">5</span>}
-</code></pre></div><p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p></div>
+</code></pre></div><p>在某些场景下，如果需要对字典的切片有其他需求，如字典按键值排序等，还可以在创建新字典之前进行处理。</p>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">

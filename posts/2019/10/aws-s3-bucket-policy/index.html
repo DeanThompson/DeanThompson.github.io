@@ -138,7 +138,8 @@
 						</div>
 						
     <h1 class="title" itemprop="name">AWS S3 Bucket 指定权限</h1>
-	<div class="entry-content" itemprop="articleBody"><p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
+	<div class="entry-content" itemprop="articleBody">
+        <p>有时候需要通过 S3 给外部用户交付数据，可通过这种方式实现：创建一个新的 IAM 用户和 S3 bucket，给该用户赋予对应的读写权限。</p>
 <h2 id="创建-iam-用户">创建 IAM 用户</h2>
 <p>创建新的 IAM 用户，不赋予任何权限，生成 access key. 假设新用户的 ARN 是 <code>arn:aws-cn:iam::123456789012:user/exampleuser</code>.</p>
 <h2 id="配置-s3-bucket-权限">配置 S3 bucket 权限</h2>
@@ -186,7 +187,12 @@ download: s3://example-bucket/test.txt to ./test.txt
 
 $ aws s3 rm s3://example-bucket/test.txt
 delete failed: s3://example-bucket/test.txt An error occurred (AccessDenied) when calling the DeleteObject operation: Access Denied
-</code></pre></div>
+</code></pre>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
 					</article>
 					
 					<section id="comment">
