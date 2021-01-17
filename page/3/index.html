@@ -123,6 +123,38 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Fri, Apr 15, 2016' data-updated="true" itemprop="datePublished">Fri, Apr 15, 2016</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/mongodb"> mongodb </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/" itemprop="url">MongoDB Replica Set 重新同步</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>生产环境上用了 MongoDB，三个节点组成的 ReplicaSet（复制集）。部署好后，应用一直没出过问题，所以平时也没管过。今天早上突然想上服务器看看，于是登录了 primary 节点查看日志，发现这条日志不断重复：</p>
+<pre><code>2016-04-15T03:02:39.470+0000 W NETWORK  [ReplExecNetThread-28676] Failed to connect to 172.31.168.48:11102, reason: errno:111 Connection refused
+</code></pre><p>其实就是有个 secondary 节点一直连接不上。不太可能是网络问题，所以很可能是那个节点的 mongod 进程挂掉了。登录上 secondary 节点，mongod 进程果然不在运行；查看日志发现最后一条是在 2016-03-21. 一时间有两个疑问涌上心头：</p>
+<ol>
+<li>为什么会挂掉？</li>
+<li>如何修复？</li>
+</ol>
+		<a href="https://liyangliang.me/posts/2016/04/mongodb-replica-set-resync/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Thu, Apr 14, 2016' data-updated="true" itemprop="datePublished">Thu, Apr 14, 2016</time>
 </div>
 		<div class="tags">
@@ -460,56 +492,6 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Fri, Jun 12, 2015' data-updated="true" itemprop="datePublished">Fri, Jun 12, 2015</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-		<a href="https://liyangliang.me/categories/python"> python </a>,
-	
-
-	
-	
-	    <a href="https://liyangliang.me/categories/tools"> tools </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" itemprop="url">用 Fabric 实现自动化部署</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<p>写完代码测试通过之后，终于松一口气，然后可以愉快的部署上线了。但是问题随之而来：如何部署？或者如何能更自动化的部署？</p>
-<p>部署应用是一系列的操作，就环境而言，分为本地和远程服务器，就操作而言，大概包括提交代码、备份代码、更新代码、安装依赖、迁移数据库、重启服务等流程。其中除了提交代码这一步是在本地完成，其余操作都需要在服务器环境执行。</p>
-<p>上面的流程当中，有一个很重要的，就是如何同步代码（提交、备份、更新）。就我的经验，了解或用过这些方式：</p>
-<ul>
-<li>rsync: rsync 是一个文件同步的工具，如果配置好使用起来体验也不错。但是有很多缺点：
-<ul>
-<li>配置复杂，命令行参数多</li>
-<li>需要在服务器上运行 rsyncd，默认监听 873 端口（可能会有防火墙）</li>
-</ul>
-</li>
-<li>scp: scp 底层用的是 SSH 协议，所以只要服务器上运行了 sshd 就可以双向 copy 文件。对于文件传输来说，scp 比 rsync 体验差的地方有：
-<ul>
-<li>不能增量更新，每次都是全部传输</li>
-<li>不能配置忽略文件（.git 怎么办？）</li>
-</ul>
-</li>
-<li>git: 就个人而言，git 是最方便的部署方式了，有版本控制，可以增量更新，可以配置忽略文件，使用简单。实际上只要有可能，都推荐用 git 来发布代码。但问题在于，很多公司的 git 服务器都是在内网的，所以在服务器上无法访问。</li>
-</ul>
-<p>很幸运的是，我们有一个公网可以访问的 git 服务器，所以可以用 git 来发布代码。发布完代码后就是后续的一系列操作了，最原始的方式，是登录到服务器，然后一步一步敲命令执行下来。但是如果要频繁部署的话（快速迭代时肯定要经常更新代码），这就变成了繁复的体力劳动，而且容易出错（漏了流程，看花眼了）。于是就想到了脚本，把这些操作写成 shell 脚本，然后执行脚本就好了。这是一个很大的进步，然而仍然存在一个问题：从本地环境到远程环境，需要登录，导致了流程上的阻断。</p>
-<p><a href="http://www.fabfile.org/">Fabric</a> 是 Python 编写的一个可以实现自动化部署和系统维护的命令行工具，只需要写一些简单的 Python 代码就能轻松解决上面提到的所有问题。Fabric 底层用的是 SSH 协议，提供了一系列语义清晰的 API 来组合实现部署任务。</p>
-		<a href="https://liyangliang.me/posts/2015/06/deploy-applications-using-fabric/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
 				    </div>
 				    <nav id="pagenavi">
 					    
@@ -522,7 +504,7 @@ APP -----&gt; API Nginx -------------&gt; ELB -----------&gt; Backend Nginx(s) -
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2020
+			<footer id="footer" class="inner">Copyright &copy; 2021
 
     Yangliang Li
 

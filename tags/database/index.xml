@@ -8,10 +8,32 @@
     <language>zh-CN</language>
     <managingEditor>yanglianglee@gmail.com (Yangliang Li)</managingEditor>
     <webMaster>yanglianglee@gmail.com (Yangliang Li)</webMaster>
-    <lastBuildDate>Fri, 21 Aug 2020 13:48:05 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 17 Jan 2021 18:15:40 +0800</lastBuildDate>
     
 	<atom:link href="https://liyangliang.me/tags/database/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何高效全表扫描 Apache Phoenix 的表</title>
+      <link>https://liyangliang.me/posts/2021/01/scan-phoenix-table/</link>
+      <pubDate>Sun, 17 Jan 2021 18:15:40 +0800</pubDate>
+      <author>yanglianglee@gmail.com (Yangliang Li)</author>
+      <guid>https://liyangliang.me/posts/2021/01/scan-phoenix-table/</guid>
+      <description>&lt;p&gt;前段时间有个需求，需要从 Phoenix 里全量导出一个大表到 Hive 用于后续的查询和分析。经过一番调研和对比，最终用 Python 实现了一版直接从 HBase 并行扫描导出的程序。全表大约 230 亿行记录，同步程序峰值导出速度大约 12 万行每秒，整个同步过程历时 55 个小时。&lt;/p&gt;
+&lt;h2 id=&#34;数据表介绍&#34;&gt;数据表介绍&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://phoenix.apache.org/index.html&#34;&gt;Apache Phoenix&lt;/a&gt; 是一个基于 Apache HBase 的 OLTP 和业务数据分析引擎，数据存储在 HBase，对外提供标准 SQL 和 JDBC API. 我们目前用 Phoenix/HBase 存储了几百 TB 的爬虫数据，日常的读写都是通过 QueryServer 调用 SQL 实现。Phoenix 支持二级索引，但我们在使用的时候出现过导致 HBase RegionServer 挂掉的情况（有可能是表太大或者使用方式不对），因此实际上基本没用二级索引&lt;/p&gt;
+&lt;p&gt;前面提到的大表是个评论内容表（后文简称 comment 表），当前的表结构大致如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;CREATE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;TABLE&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;COMMENT&lt;/span&gt;
+(
+    OBJECT_ID    BIGINT &lt;span style=&#34;color:#66d9ef&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NULL&lt;/span&gt;,     &lt;span style=&#34;color:#75715e&#34;&gt;-- 评论的对象 ID，可理解为电商的商品 ID，论坛的贴子 ID 等
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    COMMENT_TIME &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NULL&lt;/span&gt;,  &lt;span style=&#34;color:#75715e&#34;&gt;-- 评论的时间
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    COMMENT_ID   BIGINT &lt;span style=&#34;color:#66d9ef&#34;&gt;NOT&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NULL&lt;/span&gt;,     &lt;span style=&#34;color:#75715e&#34;&gt;-- 本条评论记录的 ID
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    UPDATE_TIME  &lt;span style=&#34;color:#66d9ef&#34;&gt;TIMESTAMP&lt;/span&gt;,           &lt;span style=&#34;color:#75715e&#34;&gt;-- 插入时间
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    ORIGIN_DATA  VARBINARY,           &lt;span style=&#34;color:#75715e&#34;&gt;-- 原始数据，是个用 snappy 压缩过的 JSON 对象
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;CONSTRAINT&lt;/span&gt; PK &lt;span style=&#34;color:#66d9ef&#34;&gt;PRIMARY&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;KEY&lt;/span&gt; (OBJECT_ID, COMMENT_TIME, COMMENT_ID)  &lt;span style=&#34;color:#75715e&#34;&gt;-- 联合主键
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;) DATA_BLOCK_ENCODING&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;FAST_DIFF&amp;#39;&lt;/span&gt;, COMPRESSION &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;GZ&amp;#39;&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中 &lt;code&gt;COMMENT_ID&lt;/code&gt; 是事实上的唯一主键，但由于查询条件主要是基于 &lt;code&gt;OBJECT_ID&lt;/code&gt; 和 &lt;code&gt;COMMENT_TIME&lt;/code&gt;，因此在建表的时候就用了 &lt;code&gt;OBJECT_ID, COMMENT_TIME, COMMENT_ID&lt;/code&gt; 作为联合主键。&lt;code&gt;OBJECT_ID&lt;/code&gt; 是评论对象的 ID，取值范围大，分布非常稀疏（10^6 ~ 10^12）。另外由于不同对象的热度差异也很大，从 &lt;code&gt;OBJECT_ID&lt;/code&gt; 的维度看存在数据倾斜，有的 &lt;code&gt;OBJECT_ID&lt;/code&gt;  可能只有几条评论，有的却几千万。&lt;code&gt;ORIGIN_DATA&lt;/code&gt; 是个用 snappy 压缩过的 JSON 对象，内部包含评论的所有详情信息，其中有个属性记录了评论对象的标签（后文称 &lt;code&gt;tag&lt;/code&gt;）。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>记一次 ClickHouse 数据迁移</title>

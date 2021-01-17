@@ -123,6 +123,46 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sun, Nov 3, 2013' data-updated="true" itemprop="datePublished">Sun, Nov 3, 2013</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/linux"> linux </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" itemprop="url">less 命令支持语法高亮和行号</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>首先来一句装X的话：</p>
+<blockquote>
+<p>less is more</p>
+</blockquote>
+<h1 id="1-how">1. How</h1>
+<p>less 是一个很方便的命令行工具，但不足的是不能语法高亮，查看的都是黑白的纯文本。幸运的是，<a href="http://www.gnu.org/software/src-highlite/">source-highlight</a> 可以弥补这一点。在 Ubuntu 安装 source-highlight 非常方便：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt-get install source-highlight
+</code></pre></div><p>安装完成后需要做一些简单的配置。编辑 .bashrc，加上以下配置项：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># less hightlight</span>
+export LESSOPEN<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;| /usr/share/source-highlight/src-hilite-lesspipe.sh %s&#34;</span>
+export LESS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34; -R &#34;</span>
+</code></pre></div><p>要注意的是 <code>/usr/share/source-highlight/src-hilite-lesspipe.sh</code> 是 <code>src-hilite-lesspipe.sh</code> 脚本的路径，不同的系统可能不一样，可以查找一下（<code>find / -name src-hilite-lesspipe.sh</code>）。</p>
+<p>使配置生效：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">source ~/.bashrc
+</code></pre></div><p>这样就可以在之后使用 <code>less filename</code> 查看文件内容时，支持语法高亮。</p>
+		<a href="https://liyangliang.me/posts/2013/11/less-with-syntax-highlight-and-line-number/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Wed, Mar 13, 2013' data-updated="true" itemprop="datePublished">Wed, Mar 13, 2013</time>
 </div>
 		<div class="tags">
@@ -307,7 +347,7 @@ talk()
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2020
+			<footer id="footer" class="inner">Copyright &copy; 2021
 
     Yangliang Li
 

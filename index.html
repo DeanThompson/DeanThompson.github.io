@@ -123,6 +123,45 @@
 					
 				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
     <div class="meta">
+		<div class="date"><time datetime='Sun, Jan 17, 2021' data-updated="true" itemprop="datePublished">Sun, Jan 17, 2021</time>
+</div>
+		<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+		
+			<span class="comments"><a href="https://liyangliang.me/posts/2021/01/scan-phoenix-table/#disqus_thread">Comments</a></span>
+		
+	</div>
+	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2021/01/scan-phoenix-table/" itemprop="url">如何高效全表扫描 Apache Phoenix 的表</a></h1>
+	<div class="entry-content" itemprop="articleBody">
+		<p>前段时间有个需求，需要从 Phoenix 里全量导出一个大表到 Hive 用于后续的查询和分析。经过一番调研和对比，最终用 Python 实现了一版直接从 HBase 并行扫描导出的程序。全表大约 230 亿行记录，同步程序峰值导出速度大约 12 万行每秒，整个同步过程历时 55 个小时。</p>
+<h2 id="数据表介绍">数据表介绍</h2>
+<p><a href="https://phoenix.apache.org/index.html">Apache Phoenix</a> 是一个基于 Apache HBase 的 OLTP 和业务数据分析引擎，数据存储在 HBase，对外提供标准 SQL 和 JDBC API. 我们目前用 Phoenix/HBase 存储了几百 TB 的爬虫数据，日常的读写都是通过 QueryServer 调用 SQL 实现。Phoenix 支持二级索引，但我们在使用的时候出现过导致 HBase RegionServer 挂掉的情况（有可能是表太大或者使用方式不对），因此实际上基本没用二级索引</p>
+<p>前面提到的大表是个评论内容表（后文简称 comment 表），当前的表结构大致如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#66d9ef">COMMENT</span>
+(
+    OBJECT_ID    BIGINT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,     <span style="color:#75715e">-- 评论的对象 ID，可理解为电商的商品 ID，论坛的贴子 ID 等
+</span><span style="color:#75715e"></span>    COMMENT_TIME <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  <span style="color:#75715e">-- 评论的时间
+</span><span style="color:#75715e"></span>    COMMENT_ID   BIGINT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,     <span style="color:#75715e">-- 本条评论记录的 ID
+</span><span style="color:#75715e"></span>    UPDATE_TIME  <span style="color:#66d9ef">TIMESTAMP</span>,           <span style="color:#75715e">-- 插入时间
+</span><span style="color:#75715e"></span>    ORIGIN_DATA  VARBINARY,           <span style="color:#75715e">-- 原始数据，是个用 snappy 压缩过的 JSON 对象
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">CONSTRAINT</span> PK <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (OBJECT_ID, COMMENT_TIME, COMMENT_ID)  <span style="color:#75715e">-- 联合主键
+</span><span style="color:#75715e"></span>) DATA_BLOCK_ENCODING<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;FAST_DIFF&#39;</span>, COMPRESSION <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;GZ&#39;</span>;
+</code></pre></div><p>其中 <code>COMMENT_ID</code> 是事实上的唯一主键，但由于查询条件主要是基于 <code>OBJECT_ID</code> 和 <code>COMMENT_TIME</code>，因此在建表的时候就用了 <code>OBJECT_ID, COMMENT_TIME, COMMENT_ID</code> 作为联合主键。<code>OBJECT_ID</code> 是评论对象的 ID，取值范围大，分布非常稀疏（10^6 ~ 10^12）。另外由于不同对象的热度差异也很大，从 <code>OBJECT_ID</code> 的维度看存在数据倾斜，有的 <code>OBJECT_ID</code>  可能只有几条评论，有的却几千万。<code>ORIGIN_DATA</code> 是个用 snappy 压缩过的 JSON 对象，内部包含评论的所有详情信息，其中有个属性记录了评论对象的标签（后文称 <code>tag</code>）。</p>
+		<a href="https://liyangliang.me/posts/2021/01/scan-phoenix-table/" class="more-link">Read on →</a>
+	</div>
+</article>
+
+				    
+				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <div class="meta">
 		<div class="date"><time datetime='Fri, Aug 21, 2020' data-updated="true" itemprop="datePublished">Fri, Aug 21, 2020</time>
 </div>
 		<div class="tags">
@@ -409,43 +448,6 @@ Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874
 </article>
 
 				    
-				        <article class="post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-    <div class="meta">
-		<div class="date"><time datetime='Sat, Jun 2, 2018' data-updated="true" itemprop="datePublished">Sat, Jun 2, 2018</time>
-</div>
-		<div class="tags">
-
-
-	
-	
-	    <a href="https://liyangliang.me/categories/devops"> devops </a>
-	
-
-
-</div>
-		
-			<span class="comments"><a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/#disqus_thread">Comments</a></span>
-		
-	</div>
-	<h1 class="title" itemprop="name"><a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/" itemprop="url">CentOS 7 FirewallD</a></h1>
-	<div class="entry-content" itemprop="articleBody">
-		<h2 id="背景故事">背景故事</h2>
-<p>线上服务器一直没有开启防火墙，没有约束用起来倒也省事。部署 Hadoop 集群（CDH 发行版）的时候，所有网上看过的教程和笔记（包括 CDH 官方文档），全部都提到了部署过程中要关闭防火墙；极少数教程会提到如果有需要，可以在部署完成后再开启；然而没有任何教程在最后真正开启了防火墙。</p>
-<p>因为没有防火墙，其实也发生过几次安全事故：</p>
-<ul>
-<li>某天某台服务器 CPU 利用率很高，后来发现是因为被人利用 rundeck 的漏洞植入了一个挖矿程序；</li>
-<li>某天有个跑在 Docker 里的 Redis 出现故障，经查也是被植入了挖矿程序</li>
-<li>某天发现有台机器上有个废弃的 MySQL 跑在公网上，日志里面几乎全是尝试登录的记录</li>
-</ul>
-<p>这几次事故虽然没有导致财产损失，但是公网太可怕，没有防火墙就是在外面裸奔，随时可能受到攻击。Hadoop 集群所有服务都是绑定到 <code>0.0.0.0</code>，加上没有开启认证，很容易被拖库。</p>
-<h2 id="firewalld">FirewallD</h2>
-<p>最先想到的是用 iptables，之前也有使用经历，然而这玩意儿实在太复杂，概念、规则太多，一直没弄懂。CentOS 7 默认安装了 <a href="http://www.firewalld.org/">FirewallD</a>，使用起来非常方便，也很好理解。网上的介绍和教程很多，不赘述。直接介绍我的使用策略。</p>
-<p>FirewallD 有很多种 zone policy，直接使用默认的 <code>public</code>.</p>
-		<a href="https://liyangliang.me/posts/2018/06/centos7-firewalld/" class="more-link">Read on →</a>
-	</div>
-</article>
-
-				    
 				    </div>
 				    <nav id="pagenavi">
 					    
@@ -456,7 +458,7 @@ Datetime 2018-06-02 16:18:42.170874 Timestamp 1527927522.170874
 					</nav>
 				</div>
 			</div>
-			<footer id="footer" class="inner">Copyright &copy; 2020
+			<footer id="footer" class="inner">Copyright &copy; 2021
 
     Yangliang Li
 

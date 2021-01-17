@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+
+<html lang="zh-CN">
+
+<head>
+	<meta charset="utf-8">
+	<title>如何高效全表扫描 Apache Phoenix 的表 - 李林克斯</title>
+	<meta name="author" content="map[email:yanglianglee@gmail.com name:Yangliang Li]">
+
+	
+	
+	<meta name="description" content="">
+	
+
+	
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+	<link href='/index.xml' rel="alternate" title="李林克斯" type="application/atom+xml">
+	
+	<link rel="canonical" href="https://liyangliang.me/posts/2021/01/scan-phoenix-table/">
+	<link href="https://liyangliang.me/favicon.jpeg" rel="shortcut icon">
+	<link href="https://liyangliang.me/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<link href="https://liyangliang.me/css/font-awesome.min.css" media="screen, projection" rel="stylesheet" type="text/css">
+	
+	<link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+	
+	
+	<script type="text/javascript" src="https://tajs.qq.com/stats?sId=57832219" charset="UTF-8"></script>
+	<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+	
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/languages/go.min.js"></script>
+<link href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css" rel="stylesheet">
+<script>hljs.initHighlightingOnLoad();</script>
+
+    
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-45384257-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+	<style media="screen">
+	article pre, article code {border-radius: 3px 3px 3px 3px; -moz-border-radius: 3px 3px 3px 3px; -webkit-border-radius: 3px 3px 3px 3px; border: 0px solid #000000;}
+	article code {background: #f8f8f8;}
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+		<div class="left-col">
+			<div class="intrude-less">
+			<header id="header" class="inner"><div class="profilepic">
+	
+	<img src='https://www.gravatar.com/avatar/fe812f189c0479f8cc24d7bd3b76e46d?s=160' alt="Profile Picture" style="width: 160px;" />
+	
+</div>
+
+<nav id="main-nav"><ul class="main">
+    <li><a href="/">Blog</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/post/">Archives</a></li>
+</ul>
+
+
+<section class="aboutme">
+  <p>
+    
+  </p>
+</section>
+</nav>
+<nav id="sub-nav">
+	<div class="social">
+		
+			<a class="email" href='mailto:yanglianglee@gmail.com' title="Email">Email</a>
+		
+		
+		
+		
+		
+			<a class="github" href='https://github.com/DeanThompson' title="GitHub">GitHub</a>
+		
+		
+		
+		  <a class="stackoverflow" href='https://stackoverflow.com/users/1461780/leon-young' title="StackOverflow"></a>
+		
+		
+		
+		
+		
+		
+			<a class="douban" href='https://www.douban.com/people/Touchthesky' title="Douban">Douban</a>
+		
+		
+		
+    	
+    	
+			<a class="rss" href='/index.xml' title="RSS">RSS</a>
+		
+	</div>
+</nav>
+</header>
+			</div>
+		</div>
+		<div class="mid-col">
+			
+			<div class="mid-col-container">
+				<div id="content" class="inner">
+					<div itemscope itemtype="https://schema.org/Blog">
+					<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+						<div class="meta">
+							<div class="date"><time datetime='Sun, Jan 17, 2021' data-updated="true" itemprop="datePublished">Sun, Jan 17, 2021</time>
+</div>
+							<div class="tags">
+
+
+	
+	
+	    <a href="https://liyangliang.me/categories/bigdata"> bigdata </a>
+	
+
+
+</div>
+							
+								<span class="comments"><a href="https://liyangliang.me/posts/2021/01/scan-phoenix-table/#disqus_thread">Comments</a></span>
+							
+						</div>
+						
+    <h1 class="title" itemprop="name">如何高效全表扫描 Apache Phoenix 的表</h1>
+	<div class="entry-content" itemprop="articleBody">
+        <p>前段时间有个需求，需要从 Phoenix 里全量导出一个大表到 Hive 用于后续的查询和分析。经过一番调研和对比，最终用 Python 实现了一版直接从 HBase 并行扫描导出的程序。全表大约 230 亿行记录，同步程序峰值导出速度大约 12 万行每秒，整个同步过程历时 55 个小时。</p>
+<h2 id="数据表介绍">数据表介绍</h2>
+<p><a href="https://phoenix.apache.org/index.html">Apache Phoenix</a> 是一个基于 Apache HBase 的 OLTP 和业务数据分析引擎，数据存储在 HBase，对外提供标准 SQL 和 JDBC API. 我们目前用 Phoenix/HBase 存储了几百 TB 的爬虫数据，日常的读写都是通过 QueryServer 调用 SQL 实现。Phoenix 支持二级索引，但我们在使用的时候出现过导致 HBase RegionServer 挂掉的情况（有可能是表太大或者使用方式不对），因此实际上基本没用二级索引</p>
+<p>前面提到的大表是个评论内容表（后文简称 comment 表），当前的表结构大致如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#66d9ef">COMMENT</span>
+(
+    OBJECT_ID    BIGINT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,     <span style="color:#75715e">-- 评论的对象 ID，可理解为电商的商品 ID，论坛的贴子 ID 等
+</span><span style="color:#75715e"></span>    COMMENT_TIME <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,  <span style="color:#75715e">-- 评论的时间
+</span><span style="color:#75715e"></span>    COMMENT_ID   BIGINT <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,     <span style="color:#75715e">-- 本条评论记录的 ID
+</span><span style="color:#75715e"></span>    UPDATE_TIME  <span style="color:#66d9ef">TIMESTAMP</span>,           <span style="color:#75715e">-- 插入时间
+</span><span style="color:#75715e"></span>    ORIGIN_DATA  VARBINARY,           <span style="color:#75715e">-- 原始数据，是个用 snappy 压缩过的 JSON 对象
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">CONSTRAINT</span> PK <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (OBJECT_ID, COMMENT_TIME, COMMENT_ID)  <span style="color:#75715e">-- 联合主键
+</span><span style="color:#75715e"></span>) DATA_BLOCK_ENCODING<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;FAST_DIFF&#39;</span>, COMPRESSION <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;GZ&#39;</span>;
+</code></pre></div><p>其中 <code>COMMENT_ID</code> 是事实上的唯一主键，但由于查询条件主要是基于 <code>OBJECT_ID</code> 和 <code>COMMENT_TIME</code>，因此在建表的时候就用了 <code>OBJECT_ID, COMMENT_TIME, COMMENT_ID</code> 作为联合主键。<code>OBJECT_ID</code> 是评论对象的 ID，取值范围大，分布非常稀疏（10^6 ~ 10^12）。另外由于不同对象的热度差异也很大，从 <code>OBJECT_ID</code> 的维度看存在数据倾斜，有的 <code>OBJECT_ID</code>  可能只有几条评论，有的却几千万。<code>ORIGIN_DATA</code> 是个用 snappy 压缩过的 JSON 对象，内部包含评论的所有详情信息，其中有个属性记录了评论对象的标签（后文称 <code>tag</code>）。</p>
+<h2 id="需求">需求</h2>
+<p>原始需求是这样，要统计每个对象不同 tag 出现的次数，用 SQL 伪代码描述如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> OBJECT_ID, year_month_day(COMMENT_TIME), ORIGIN_DATA[tag], <span style="color:#66d9ef">count</span>(<span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">AS</span> freq
+<span style="color:#66d9ef">FROM</span> <span style="color:#66d9ef">COMMENT</span>
+<span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>
+</code></pre></div><p>这个统计在 Phoenix 很显然无法完成，一方面是数据量太大，Phoenix 本身不适合这种 OLAP 场景；另一方面，在 Phoenix 里无法访问到 <code>ORIGIN_DATA</code> 里的 <code>tag</code> 字段。为了实现这个统计需求，并考虑到对 comment 表的查询需求较多，决定把这个表全量同步到 Hive.</p>
+<p>Hive 上的结果表在设计上有这些考虑：</p>
+<ul>
+<li>按照评论日期进行分区，大部分查询都会基于评论时间做过滤。</li>
+<li>把 <code>ORIGIN_DATA</code>  中常用的字段（如 <code>tag</code>）解析出来，存为单独的字段，查询的时候更方便和高效。</li>
+<li>把 <code>ORIGIN_DATA</code> 解压出来，保存为 <code>STRING</code> 类型，对于未解析出来的字段将来也能用 UDF 访问到。</li>
+</ul>
+<h2 id="同步方案对比">同步方案对比</h2>
+<p>同步过程主要分为两个阶段：</p>
+<ul>
+<li>从 Phoenix 读取数据，对数据做转换、解析</li>
+<li>导入到 Hive</li>
+</ul>
+<p>有几种很容易想到的方案。</p>
+<h3 id="1-query-server">1. Query Server</h3>
+<p><a href="https://phoenix.apache.org/server.html">Phoenix Query Server</a> 是一个独立的、无状态的 HTTP 服务，基于 Apache Calcite 的 Avatica 组件，对客户端提供 SQL 查询服务。客户端通过 JDBC（Java） 或 DBAPI（Python）驱动即可查询 Phoenix 的数据，跟查询 MySQL、PostgreSQL 没什么区别。我们目前有个通用的数据同步服务（Python 实现）就是从 QueryServer 查询导出实现的。</p>
+<p>这种方式的问题是</p>
+<ul>
+<li>由于数据倾斜，没有合适的分片方式，从而无法很好的做并行化</li>
+<li>在我们的环境里，会出现查询在 10 分钟后强制超时断开连接的情况，异常信息是 <code>ERROR 1101 (XCL01): ResultSet is closed.</code> 调整 <code>phoenix.query.timeoutMs</code>（默认 10 分钟）也没用，暂时无解。由于数据倾斜，很可能出现单个扫描查询需要运行 10 分钟以上。</li>
+</ul>
+<h3 id="2-hive--phoenixstoragehandler">2. Hive + PhoenixStorageHandler</h3>
+<p>Phoenix 官方也提供了 <a href="https://phoenix.apache.org/hive_storage_handler.html">PhoenixStorageHandler</a> 来给 Hive 读写 Phoenix. 用法比较简单，我也曾经用过这种方式来实现在两个 Phoenix 集群之间做数据同步。</p>
+<p>但对于本文的场景并不适用，原因是</p>
+<ul>
+<li>由于只能使用 SQL，没法实现对 <code>ORIGIN_DATA</code> 字段的解压、解析和提取</li>
+<li>同样存在数据倾斜和并行化问题</li>
+<li>底层只支持 MapReduce 引擎，而且 reducer 数量无法调整，只能是 1</li>
+</ul>
+<h3 id="3-spark">3. Spark</h3>
+<p>Phoenix 官方提供了 <a href="https://phoenix.apache.org/phoenix_spark.html">Spark 集成的插件</a> 可用于在 Spark 中读写 Phoenix 的数据。文档里（<em>Why not JDBC?</em> 这一节）提到，由于并行化问题这种方式没有使用 JDBC，而是用到了 Phoenix 内部的分片机制（<em>the phoenix-spark integration is able to leverage the underlying splits provided by Phoenix</em>）。考虑到 Spark 的分布式计算能力，这种方式应该是比较理想的选择。一个顾虑是，如果用单个 Spark 程序直接读取全表，可能会占用大量内存，同时对 HBase 也会有比较大压力。实践起来，可能要做一下初步划分，比如用 <code>OBJECT_ID</code> 初步将整个表尽量切分为比较均衡的若干个范围。</p>
+<p>之前尝试使用 PySpark 操作 Phoenix，遇到很多问题没有成功。这次找同学尝试用 Scala 实现，也一直遇到各种 jar 包版本之类的问题，最终还是没能调通。</p>
+<h3 id="4-并行扫描-hbase">4. 并行扫描 HBase</h3>
+<p>上述方案中都提到数据倾斜和并行化的问题，理论上用 Spark 是比较好的选择，但由于测试失败，且没有足够时间去定位调试。于是我学习了一下 Phoenix 的文档和源代码，另辟蹊径，设计了一种高效、通用的数据导出方案：绕过了 Phoenix，直接去扫描 HBase。最终用 Python 实现了一个完整的程序。</p>
+<h2 id="思路和原理">思路和原理</h2>
+<h3 id="并行化">并行化</h3>
+<p>通过 Phoenix 来扫描最大的问题就是数据倾斜导致不方便并行化，因此首先要解决的问题是找到一种能均匀分片的方式。<a href="https://phoenix.apache.org/update_statistics.html">Phoenix 的 Statistics Collection 文档</a> 提到了 Phoenix 内部通过收集数据的统计信息来实现并行化：</p>
+<blockquote>
+<p>The UPDATE STATISTICS command updates the statistics collected on a table. This command collects a set of keys per region per column family that are equal byte distanced from each other. These collected keys are called <em>guideposts</em> and they act as <em>hints/guides</em> to improve the parallelization of queries on a given target region.</p>
+</blockquote>
+<p>这些统计信息保存在 <code>SYSTEM.STATS</code> 表当中，可以通过表名查到对应的信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> COLUMN_FAMILY, GUIDE_POST_KEY, GUIDE_POSTS_WIDTH, GUIDE_POSTS_ROW_COUNT
+<span style="color:#66d9ef">FROM</span> <span style="color:#66d9ef">SYSTEM</span>.STATS
+<span style="color:#66d9ef">WHERE</span> PHYSICAL_NAME <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;COMMENT&#39;</span>
+<span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">5</span>;
+</code></pre></div><table>
+<thead>
+<tr>
+<th>COLUMN_FAMILY</th>
+<th>GUIDE_POST_KEY</th>
+<th>GUIDE_POSTS_WIDTH</th>
+<th>GUIDE_POSTS_ROW_COUNT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>rowkey bytes</td>
+<td>314572865</td>
+<td>263441</td>
+</tr>
+<tr>
+<td>0</td>
+<td>rowkey bytes</td>
+<td>314573187</td>
+<td>251522</td>
+</tr>
+<tr>
+<td>0</td>
+<td>rowkey bytes</td>
+<td>314573504</td>
+<td>271022</td>
+</tr>
+<tr>
+<td>0</td>
+<td>rowkey bytes</td>
+<td>314572810</td>
+<td>256136</td>
+</tr>
+</tbody>
+</table>
+<p>这个结果显示 Phoenix 保存了很多个 row key 的值，这些 key 之间大约间隔 300MB，26 万行，分布非常均匀。因此就可以用这些 row key 去并行扫描 HBase.</p>
+<h3 id="解码">解码</h3>
+<p>直接扫描 HBase 得到的是一系列 KV 而不是像 Query Server 那样的结构化数据。因此新的问题是，如何从 HBase 的结果解码出结构化字段。</p>
+<p>先来看看 HBase 的数据（有截取），可以看到有个 row key 和多个 column.</p>
+<pre><code>hbase(main):002:0&gt; scan 'COMMENT', {LIMIT =&gt; 1}
+
+ROW                                                                   COLUMN+CELL
+ \x80\x00\x00\x00\x12\xB9\xB7G\x80\x00\x01N\xF1O\xDD\xA0\x00\x00\x00\ column=0:\x00\x00\x00\x00, timestamp=1560824973623, value=x
+ x00\x80\x00\x009\xBDc\xF6\x0C
+ \x80\x00\x00\x00\x12\xB9\xB7G\x80\x00\x01N\xF1O\xDD\xA0\x00\x00\x00\ column=0:\x80\x0B, timestamp=1560824973623, value=\x80\x00\x01S\x8E\x91'L\x00\x00\x00\x00
+ x00\x80\x00\x009\xBDc\xF6\x0C
+ \x80\x00\x00\x00\x12\xB9\xB7G\x80\x00\x01N\xF1O\xDD\xA0\x00\x00\x00\ column=0:\x80\x0C, timestamp=1560824973623
+...
+</code></pre><h4 id="1-分析-schema">1. 分析 schema</h4>
+<p>经过观察可以发现：</p>
+<ul>
+<li>row key 和值都是二进制格式，COMMENT 表的 row key 的长度都是 28 字节</li>
+<li>我们只用了一个 column family，都是 0</li>
+<li>每一行记录的第一个 cell 都是 key 为 <code>\x00\x00\x00\x00</code> value 为 <code>x</code> 的组合</li>
+<li>每一行记录的 cell 里的 key 是有序的，都是 <code>\x80\x0B</code>,<code>\x80\x0C</code> 这种</li>
+<li>cell 的数量少于 Phoenix 表的 column 数量，此时 Phoenix 里可以看到部分字段是 <code>NULL</code></li>
+</ul>
+<p>通过查阅文档发现：</p>
+<ul>
+<li>
+<p><code>\x00\x00\x00\x00</code> =&gt; <code>x</code> 这个键值对是 Phoenix 有意设计的（<em>We’ll also add an empty key value for each row so that queries behave as expected (without requiring all columns to be projected during scans).</em>）</p>
+</li>
+<li>
+<p>Phoenix 的复合主键是直接将每个字段拼接在一起形成 row key，如果有变长字段（如 VARCHAR）会以一个 zero byte 结尾。（<em>Our composite row keys are formed by simply concatenating the values together, with a zero byte character used as a separator after a variable length type.</em> <a href="https://phoenix.apache.org/faq.html">见文档</a>）</p>
+</li>
+</ul>
+<p>因此主键字段都编码到了 row key. 本文 comment 表的 <code>OBJECT_ID</code> 和 <code>COMMENT_ID</code> 都是 BIGINT，占 8 字节；<code>COMMENT_TIME</code> 是 TIMESTAMP，也是定长类型，通过推导长度为 12 字节（28 - 8 - 8）。</p>
+<p>经过进一步观察对比 HBase 的键值对和 Phoenix 的表结构和数据发现，Phoenix 中的字段按顺序映射到 HBase，从 <code>\x80\x0B</code> 开始按 1 递增（<code>\x80\x0C</code>,<code>\x80\x0D</code>&hellip;），Phoenix 中为 <code>NULL</code> 的字段在 HBase 不会保存。</p>
+<h4 id="2-解码">2. 解码</h4>
+<p>文档有提到部分字段的编解码方式:</p>
+<blockquote>
+<p>For VARCHAR,CHAR, and UNSIGNED_* types, we use the HBase Bytes methods. The CHAR type expects only single-byte characters and the UNSIGNED types expect values greater than or equal to zero. For signed types(TINYINT, SMALLINT, INTEGER and BIGINT), Phoenix will flip the first bit so that negative values will sort before positive values. Because HBase sorts row keys in lexicographical order and negative value’s first bit is 1 while positive 0 so that negative value is ‘greater than’ positive value if we don’t flip the first bit. So if you stored integers by HBase native API and want to access them by Phoenix, make sure that all your data types are UNSIGNED types.</p>
+</blockquote>
+<p>具体的编解码方式，还是需要通过看源码来弄清楚。<a href="https://github.com/apache/phoenix/tree/master/phoenix-core/src/main/java/org/apache/phoenix/schema/types">Phoenix Core 的 schema/types</a> 里面有所有类型的编解码实现；如果是用 Java  或 Scala 实现数据同步可以直接调用这些类。以下举例说明几种类型的 Python 解码方式，其他类型照此思路实现即可。</p>
+<ul>
+<li>BIGINT 类型</li>
+</ul>
+<p>BIGINT 的解码方法在 <a href="https://github.com/apache/phoenix/blob/master/phoenix-core/src/main/java/org/apache/phoenix/schema/types/PLong.java#L254">PLong 类的 decodeLong 方法</a>。需要注意的是 Phoenix 里区分有符号和无符号两种类型，为了方便排序，有符号类型的第一个比特做了位翻转。仿照 Java 源码实现了一个 Python 版本。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decode_bigint</span>(bs: bytes) <span style="color:#f92672">-&gt;</span> int:
+    <span style="color:#e6db74">&#34;&#34;&#34;解码 BIGINT，共 8 字节，符号位做了翻转&#34;&#34;&#34;</span>
+    b <span style="color:#f92672">=</span> bs[<span style="color:#ae81ff">0</span>]
+    v <span style="color:#f92672">=</span> b <span style="color:#f92672">^</span> <span style="color:#ae81ff">0x80</span>
+    <span style="color:#66d9ef">for</span> bb <span style="color:#f92672">in</span> bs[<span style="color:#ae81ff">1</span>:]:
+        v <span style="color:#f92672">=</span> (v <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">8</span>) <span style="color:#f92672">+</span> (bb <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>)
+    <span style="color:#66d9ef">return</span> v
+</code></pre></div><ul>
+<li>TIMESTAMP 类型</li>
+</ul>
+<p>TIMESTAMP 的解码方法在 <a href="https://github.com/apache/phoenix/blob/master/phoenix-core/src/main/java/org/apache/phoenix/schema/types/PTimestamp.java#L134">PTimestamp 类的 toObject 方法</a>，原理是前 8 个字节用 BIGINT（Long）类型表示毫秒数，后 4 字节用无符号 INT 类型表示纳秒数。实际中不需要到纳秒精度，所以解码的时候丢弃了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> datetime
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decode_unsigned_int</span>(bs: bytes) <span style="color:#f92672">-&gt;</span> int:
+    <span style="color:#e6db74">&#34;&#34;&#34;解码无符号 INT 类型，共 4 字节&#34;&#34;&#34;</span>
+    v <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">for</span> bb <span style="color:#f92672">in</span> bs[:]:
+        v <span style="color:#f92672">=</span> (v <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">8</span>) <span style="color:#f92672">^</span> (bb <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>)
+    <span style="color:#66d9ef">return</span> v
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decode_timestamp</span>(bs: bytes) <span style="color:#f92672">-&gt;</span> datetime<span style="color:#f92672">.</span>datetime:
+    <span style="color:#e6db74">&#34;&#34;&#34;解码 TIMESTAMP 类型，共 12 个字节，前 8 字节是毫秒数，后 4 字节是纳秒；返回东八区时间&#34;&#34;&#34;</span>
+    mills <span style="color:#f92672">=</span> decode_bigint(bs[:<span style="color:#ae81ff">8</span>])
+    <span style="color:#75715e"># nanos = decode_unsigned_int(bs[8:12])</span>
+    dttm <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>utcfromtimestamp(mills <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000</span>) <span style="color:#f92672">+</span> datetime<span style="color:#f92672">.</span>timedelta(hours<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>)
+    <span style="color:#66d9ef">return</span> dttm
+</code></pre></div><ul>
+<li>VARCHAR 类型</li>
+</ul>
+<p>直接用 UTF-8 解码即可：<code>s.decode('utf8')</code>.</p>
+<ul>
+<li>VARBINARY 类型</li>
+</ul>
+<p>本身就是字节数组，不需要处理。</p>
+<ul>
+<li>comment 表的 row key 解码方式</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decode_comment_table_row_key</span>(key: bytes):
+    object_id <span style="color:#f92672">=</span> decode_bigint(key[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">8</span>])
+    comment_time <span style="color:#f92672">=</span> decode_timestamp(key[<span style="color:#ae81ff">8</span>:<span style="color:#ae81ff">20</span>])
+    comment_id <span style="color:#f92672">=</span> decode_bigint(key[<span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">28</span>])
+    <span style="color:#66d9ef">return</span> object_id, comment_time, comment_id
+
+<span style="color:#75715e"># decode_comment_table_row_key(b&#39;\x80\x00\x00\x00\x12\xB9\xB7G\x80\x00\x01N\xF1O\xDD\xA0\x00\x00\x00\x00\x80\x00\x009\xBDc\xF6\x0C&#39;)</span>
+<span style="color:#75715e"># (314160967, datetime.datetime(2015, 8, 3, 10, 7), 247990580748)</span>
+</code></pre></div><h3 id="扫描">扫描</h3>
+<p>调用 happybase 连接 HBase 的 ThriftServer 进行扫描，可以参考 <a href="https://happybase.readthedocs.io/en/latest/api.html#happybase.Table.scan">happybase 的 API 文档</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> happybase
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">scan</span>(start_key, end_key):
+    conn <span style="color:#f92672">=</span> happybase<span style="color:#f92672">.</span>Connection(host<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;hbase1&#39;</span>, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">7200</span>)
+    table <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>table(<span style="color:#e6db74">&#39;COMMENT&#39;</span>)
+    <span style="color:#75715e"># 注意，扫描结果不包含 end_key</span>
+    <span style="color:#66d9ef">for</span> key, row <span style="color:#f92672">in</span> table<span style="color:#f92672">.</span>scan(row_start<span style="color:#f92672">=</span>start_key, row_stop<span style="color:#f92672">=</span>end_key):
+        object_id, comment_time, comment_id <span style="color:#f92672">=</span> decode_comment_table_row_key(key)
+        <span style="color:#75715e"># 处理其他字段...</span>
+</code></pre></div><h2 id="工程化实现">工程化实现</h2>
+<p>上一部分基本上把底层原理和问题都解决了，剩下的就是如何实现。实际上就是常见的并行处理程序，具体细节不详细阐述，描述一下关键内容。</p>
+<p>首先从 <code>SYSTEM.STATS</code> 表读出 comment 表所有的 row key 节点，并把相邻的 key 组装成 (start_key, end_key) 的二元组。这些二元组就是整个任务集，初始化一次即可，保存到 MySQL、Redis 或文件，给扫描程序使用。</p>
+<p>扫描程序读取上述任务集，启动多进程（Python 的线程比较鸡肋，其他语言可以用多线程）去消费任务，扫描数据、处理、保存为文件（Hive 的 Textfile 格式或 Parquet）。启动一个后台进程，把文件上传到 HDFS 和 Hive.</p>
+<p>一些可以注意的细节</p>
+<ul>
+<li>为了能实现「断点续传」，可记录每个任务的状态（开始、结束时间），只处理新任务。</li>
+<li>记录扫描的行数，用于统计整体进度。</li>
+<li>准备多个 HBase ThriftServer，并做好负载均衡（比如客户端随机选择）</li>
+<li>可在多台服务器上同时跑实现分布式，注意一下任务调度不要重复消费。一种简单的策略是对任务编号，每个节点只消费一个区间内的任务。</li>
+<li>注意观察 HBase 的负载情况，适当调整并行度。本次实践中，最高的时候有 40 多个并行扫描，此时 HBase 负载稳定，其他读写程序也没有异常。在并行度上调过程中，整体的扫描性能大致是线性提升的。</li>
+</ul>
+        <h2 id="欢迎关注我的公众号">欢迎关注我的公众号</h2>
+        <p>
+            <a href="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png"><img src="https://i.loli.net/2020/10/25/YnRdU7I3paSGxgP.png" alt=""></a>
+        </p>
+    </div>
+					</article>
+					
+					<section id="comment">
+					    <h1 class="title">Comments</h1>
+					    <div id="disqus_thread" aria-live="polite"><script type="text/javascript">
+var disqus_shortname = "liyangliang";
+(function () {
+    var s = document.createElement('script'); s.async = true;
+    s.type = 'text/javascript';
+    s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+}());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s); }());
+</script>
+getElementsByTagName('BODY')[0]).appendChild(s); }());
+</script>
+
+
+<script type="text/javascript">
+    var disqus_shortname = "liyangliang";
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+ript">comments powered by Disqus.</a></noscript>
+</div>
+					</section>
+					
+				    </div>
+				</div>
+			</div>
+			<footer id="footer" class="inner">Copyright &copy; 2021
+
+    Yangliang Li
+
+Design credit: <a href="https://shashankmehta.in/archive/2012/greyshade.html">Shashank Mehta</a>
+<script src="https://liyangliang.me/js/slash.js"></script>
+<script src="https://liyangliang.me/js/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script>
+</footer>
+		</div>
+	</div>
+	
+</body>
+</html>
